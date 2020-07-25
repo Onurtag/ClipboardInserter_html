@@ -1,0 +1,798 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Clipboard Inserter HTML Enhanced</title>
+    <link href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAC90lEQVQ4jU2SW2tVRxTH19z23uca05zEJEZzDpEmNbXeQCoqIiheCkUE8+IX8M2nfoJ+gD4UCnkqtEie+tiAlQZFRMUgCW3qJTHectMk5mSffc6evWdmTdnHfQ4ZWDDMrPn91//PkL6Fhw4A8LREWiwpPXH7JD0yPEdHylUAMACgAUCllew1TZuTxwnIBYAMAOTMH1Nn1aPZcf3rn9N2cbkXALIA4KU9LVFGdyg76eMsNyYPq5un5NpagRAi3P4SaZ59hrQAzUl5OkFL3dO/T45B1os5pwmsudzFpXL13swFcv74BN2/dyk9tomtneqe/m3ymrz/5AfqOHbXoeHbLcDWrb9+ri3Md+dW1k87P94YAwBMM1FtC24Ue7QeDip/O0OFAEGI1wJQziL1YRVMrdYHkw9Ocq3bwbdDdJRycWX9TNLIvGyWgXVbgP6Dlan86DdhY2E+Z2ZejDGDIgVQ2hTQmmfrYcYqrEAcAWekym3TWnMNVPreusUi6pX3gNvhCfF6+QsAIEmlAEODv5+c0X415L390NlVeEWtpS2AUIqXSh3PRHkIwtUlG01Nf5+REWvaS9JkxpDw1fK5xrs3mUJlSO4r9z4l1tp2Bmj14GD3dLE8JOW7N0IurV8WSiX3TRXLHv87IP3GsWREJhzc1dPx1qJVLYAlpNHVVVwkwuG48REQYaj0YYN5MrK0ENStnX8/jEGA2a8P656O7AxDbFjEHQDwAcAveWyu+7ur6uLonuu7N6s2IyPkRT/AL78auDe7tnn/U6N46sRI/0QDMQSDcduCMQlAXTqw56dEUKPaWNn2sVALNO+s+ti55eOVctcvFHFii0B05+4/N2tSfxvNzUK+sh+E1gEQCJFSh6IFrk09Vw+VGyvDPRlpL4ripMkwZg3jkjG6UXv5H9BSz+evLON6UMxXg3wO3FgRS6AmPbeeTMUNY7F0XZ9pQ5FSP3IFHq30jEfB8CgHYB2CPM+HYfCp1Lm9trsUK8EtsVZGjhNGjtD/Awy3cVQ9IGG0AAAAAElFTkSuQmCC" rel="icon" type="image/png" />
+    <!-- 
+/////////////////////////////////////////////////////////////////////
+/////////// Downloadable HTML for Clipboard Inserter ////////////////
+/////////////////////////////////////////////////////////////////////
+
+❗❗❗ Non-default Clipboard Inserter settings are required:
+- element name: pre
+- container selector: #textlines
+
+❗ If you append #largemode to the url of this page (bookmark it if you want), it will switch to large mode with bigger margins and buttons.
+
+
+Original page was from: https://pastebin.com/raw/HxjV6YrB, which was found here: https://pastebin.com/gNJfqpmN
+
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////// 
+-->
+    <style id="maincss" type="text/css">
+        body {
+            background-color: #202020;
+            color: #BCBCBC;
+            font-size: 1.2em;
+            font-weight: 400;
+            line-height: 150%;
+            margin-top: 5%;
+            margin-left: 15%;
+            margin-right: 15%;
+            /*margin-left: 640px;
+            margin-right: 8%;
+            margin-bottom: 15%;*/
+            margin-bottom: 420px;
+            font-family: "MS Gothic", "Meiryo";
+            /* font-family: "IPAGothic", "Sazanami Gothic", "Kochi Gothic", "VL Gothic", "Ume Gothic", "Pro W3", "Hiragino Kaku Gothic Pro", "Osaka Mono", "Osaka", "MS Gothic", "Meiryo", "M+ 1m"; */
+        }
+
+        /* Main text style is here */
+        pre {
+            /*white-space: pre;*/
+            /*font-family: "IPAGothic", "Sazanami Gothic", "Kochi Gothic", "VL Gothic", "Ume Gothic", "Pro W3", "Hiragino Kaku Gothic Pro", "Osaka Mono", "Osaka", "MS Gothic", "Meiryo", "M+ 1m";*/
+            font-family: "Segoe UI";
+            white-space: pre-wrap;
+            margin: 0em 0em 0em 0em;
+            padding-bottom: 0px;
+        }
+
+        #textlines>pre {
+            border-bottom: #414141 solid 1px;
+            padding-bottom: 1.3em;
+            margin-bottom: 0.46em;
+        }
+
+        .buttoncontainer {
+            position: absolute;
+            top: 0px;
+            right: 125px;
+            display: inline-block;
+            font-size: 1.4em;
+            font-family: "VL Gothic";
+            user-select: none;
+        }
+
+        .countercontainer {
+            right: 0px;
+        }
+        
+        .buttoncontainer>div:not(#counter):hover {
+            filter: brightness(130%);
+            background-color: rgba(20, 20, 20, 0.5);
+        }
+
+        .buttoncontainer>div {
+            border-radius: 0.2vw !important;
+        }
+
+        #counter {
+            background-color: rgba(25, 25, 25, 0.5);
+            color: #9d9d9d;
+            font-size: 16px;
+            line-height: 100%;
+            float: left;
+            padding-left: 8px;
+            padding-right: 8px;
+            padding-top: 3px;
+            padding-bottom: 7px;
+            font-family: "Calibri";
+        }
+
+        #clear_button {
+            background-color: rgba(25, 25, 25, 0.5);
+            color: #9d9d9d;
+            font-size: 14px;
+            line-height: 100%;
+            float: left;
+            margin-right: 8px;
+            padding-left: 6px;
+            padding-right: 6px;
+            padding-top: 6px;
+            padding-bottom: 6px;
+            cursor: pointer;
+        }
+
+        .undoredoButtons {
+            background-color: rgba(25, 25, 25, 0.5);
+            color: #9d9d9d;
+            font-size: 22px;
+            line-height: 100%;
+            float: left;
+            margin-right: 8px;
+            padding-left: 6px;
+            padding-right: 6px;
+            padding-top: 3px;
+            padding-bottom: 1px;
+            cursor: pointer;
+            pointer-events: initial;
+        }
+
+        .undoredoButtons[disabled] {
+            pointer-events: none;
+            color: #4e4e4e;
+        }
+
+        #undo_button {
+            margin-right: 0px;
+            padding-right: 2px;
+        }
+
+        #scroll_button {
+            background-color: rgba(25, 25, 25, 0.5);
+            color: #9d9d9d;
+            font-size: 18px;
+            line-height: 100%;
+            float: left;
+            margin-right: 8px;
+            padding-left: 6px;
+            padding-right: 6px;
+            padding-top: 4px;
+            padding-bottom: 4px;
+            cursor: pointer;
+        }
+
+        #remove_button {
+            background-color: rgba(25, 25, 25, 0.5);
+            color: #9d9d9d;
+            font-size: 24px;
+            line-height: 100%;
+            float: right;
+            margin-right: 10px;
+            padding-left: 5px;
+            padding-right: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            cursor: pointer;
+        }
+
+        #go_to_last_button {
+            position: relative;
+            bottom: -20px;
+            width: 50px;
+            cursor: pointer;
+            user-select: none;
+            font-size: 50px;
+            filter: opacity(20%);
+        }
+
+        #go_to_last_button:hover {
+            filter: opacity(40%);
+        }
+
+        #go_bottom_button {
+            position: absolute;
+            top: 9px;
+            width: 50px;
+            cursor: pointer;
+            user-select: none;
+            font-size: 50px;
+            filter: opacity(20%);
+        }
+
+        #go_bottom_button:hover {
+            filter: opacity(40%);
+        }
+
+        /* Hover CSS */
+        .hoverButtonsContainer:hover,
+        pre:hover>.hoverButtonsContainer>.hoverButtonsBackground {
+            display: flex !important;
+        }
+
+        .hoverButtonsBackground:hover,
+        .hoverButtonsBackground:hover>.hoverButtons {
+            opacity: 90%;
+        }
+
+        .hoverButtonsBackground {
+            position: absolute;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-evenly;
+            background-color: #1D1D1D;
+            /* background-color: rgba(0, 0, 0, .3); */
+            padding: 2px 5px 5px 10px;
+            border-radius: 0.3vw;
+            z-index: 555;
+            /* filter: opacity(45%); */
+            font-size: 14px;
+            margin-left: -6px;
+            margin-top: -2px;
+            user-select: none;
+            display: none;
+        }
+
+        .hoverButtonsContainer {
+            position: absolute;
+            width: 138px;
+            height: 30vh;
+            display: flex;
+            background-color: transparent;
+            margin-left: -138px;
+            margin-top: 0px;
+            user-select: none;
+        }
+
+        .hoverButtons {
+            cursor: pointer;
+            margin-right: 0px;
+            color: #adadad;
+            opacity: 40%;
+        }
+
+        .hoverButtons:hover {
+            color: #fff;
+        }
+
+        .hoverButtonDelete {
+            font-size: 25px;
+            line-height: 28px;
+            margin-right: 4px;
+            margin-top: -1px;
+        }
+
+        .hoverButtonDown,
+        .hoverButtonUp {
+            font-size: 22px;
+        }
+
+        .hoverButtonReduceNewlines {
+            font-size: 33px;
+            line-height: 22px;
+            font-family: Arial;
+            margin-top: 4px;
+            margin-right: 2px;
+        }
+
+        .hoverButtonCopy:hover {
+            filter: contrast(170%);
+        }
+
+        .hoverButtonCopy {
+            font-size: 20px;
+            line-height: 22px;
+            font-family: Arial;
+            margin-top: 4px;
+            filter: contrast(90%);
+        }
+
+    </style>
+
+
+    <!-- CSS FOR SMALL PAGE (enabled by default) -->
+    <style id="smallcss" type="text/css">
+        body {
+            margin-top: 24px;
+            margin-left: 2%;
+            margin-right: 2%;
+            margin-bottom: 420px;
+        }
+
+        .buttoncontainer {
+            scale: 70%;
+            right: 66px !important;
+            top: 0px !important;
+            margin-top: -5px !important;
+        }
+
+        .countercontainer {
+            right: -14px !important;
+        }
+        
+        #counter {
+            padding-bottom: 5px !important;
+        }
+
+        #go_bottom_button {
+            scale: 44%;
+            top: -4px !important;
+            margin-left: 100px;
+        }
+
+        #go_to_last_button {
+            scale: 44%;
+            margin-left: 100px;
+        }
+
+        .hoverButtonsContainer {
+            width: 96px !important;
+            margin-left: 0px !important;
+            margin-top: -20px;
+            height: 20px;
+        }
+
+        .hoverButtonsBackground {
+            scale: 63%;
+            margin-left: -26px !important;
+            margin-top: -8px;
+            border-radius: 0.3vw;
+        }
+
+
+        .hoverButtonReduceNewlines {
+            font-size: 36px;
+            margin-top: 4px;
+        }
+
+        .hoverButtonDelete {
+            font-size: 27px;
+            margin-top: 0px;
+        }
+
+    </style>
+
+    <!------------------------
+
+
+To change background color or text color, just replace the style values above with the hex values for the colors you want.
+If you want the background of the counter to remain semi-transparent, you must use rgb values like above. The last number (where I've put 0.8) is the opacity level (1.0 = completely opaque).
+To change font size, just change the em value to what works for you (the standard size is 1, I like it at 1.5).
+To change font weight (boldness), just edit the value above.  100 is quite thin, 400 is default, 900 is quite thick.  You may want it higher than default for Mincho fonts.
+The line-height value changes the spacing between lines.
+
+To use the font of your choice, remove the list of fonts above and put the ENGLISH name of your font in quotation marks (some JP font names are in Japanese, such as "ä¸‰æ¬¡å…ƒåˆ‡çµµå­—").
+Be sure to leave a semi-colon at the end of the line.
+To find the English name of a given font, first install it, then open Firefox.
+Go to about:preferences#content in the address bar, then click on the 'Default font' drop-down menu.
+The "correct" name of your font will be listed here - just copy that down and paste it up above.
+
+Note that if you would like to use your browser default font, replace the font-family line with font-family:""; or delete it altogether.
+Your default is probably Gothic - if you want to try out a good Mincho font, try Aozora Mincho at http://www.freejapanesefont.com/aozora-mincho-download/
+For various other free Japanese fonts, visit http://www.freejapanesefont.com/
+For more font attribute information visit http://www.w3schools.com/css/css_font.asp
+
+------------------------>
+</head>
+
+<body>
+    <div id="go_bottom_button" title="Scroll to the bottom">🡻</div>
+    <div class="buttoncontainer">
+        <!-- This is the div used for the "Clear all lines" button. -->
+        <div id="clear_button" title="Clear all lines">🗑️</div>
+        <!-- This is the div used for the "Toggle scroll to bottom a when new line is added" button. -->
+        <div id="scroll_button" title="Scroll to bottom(⇓)/top(⇑)/nowhere(⇕) when a new line is added.">⇓</div>
+        <!-- This is the div used for the "Undo/Redo" buttons. -->
+        <div id="undo_button" class="undoredoButtons" disabled="" title="Undo">
+            <div style="transform: scale(1, -1);top: 2px;position: relative;">⤾</div>
+        </div>
+        <div id="redo_button" class="undoredoButtons" disabled="" title="Redo">
+            <div style="transform: scale(1, -1);top: 2px;position: relative;">⤿</div>
+        </div>
+    </div>
+    <div class="buttoncontainer countercontainer">
+        <!-- This is the div used for the "remove last line" button. -->
+        <div id="remove_button" title="Remove last line">✖</div>
+        <!-- This is the div used for the counter. -->
+        <div id="counter" title="No. of characters / No. of lines">0 / 0</div>
+    </div>
+
+    <div style="display:none;">
+        <!-- Dummy div for buttons-->
+    </div>
+
+    <script>
+        //javascript (native)
+        var domdebug = "";
+        var scroll_fix_alignment = 10;
+        var historystack = [];
+        var historystack_forward = [];
+        var myMutationObserver = null;
+        var forgiveHistoryTimes = 0;
+
+        document.addEventListener("DOMContentLoaded", function(event) {
+            //1: scroll down on newline
+            //2: scroll up
+            //0: disabled
+            var scrollOnNewline = localStorage.getItem("scrollOnNewline");
+            // console.log("scrollOnNewline localstorage", scrollOnNewline)
+            switch (scrollOnNewline) {
+                case "disabled":
+                    document.querySelector("#scroll_button").style.color = "#595959";
+                    document.querySelector("#scroll_button").innerText = "⇕";
+                    break;
+                case "toBottom":
+                    document.querySelector("#scroll_button").style.color = "";
+                    document.querySelector("#scroll_button").innerText = "⇓";
+                    break;
+                case "toTop":
+                    document.querySelector("#scroll_button").style.color = "";
+                    document.querySelector("#scroll_button").innerText = "⇑";
+                    break;
+                default:
+                    scrollOnNewline = "toBottom";
+                    break;
+            }
+
+            if (document.location.protocol.indexOf("http") == -1) {
+                document.title = document.title += " (Local)";
+            } else {
+                document.title = document.title += " (Online)";
+            }
+
+            //Check if #largemode
+            if (document.location.hash == "#largemode") {
+                scroll_fix_alignment = -16;
+                document.querySelector("#smallcss").disabled = true;
+            }
+
+            myMutationObserver = new MutationObserver(function(records) {
+                // console.log("Mutationobserver");
+                records.forEach(function(mutation) {
+                    Array.prototype.forEach.call(mutation.addedNodes, function(node) {
+                        // console.log("node", node)
+                        // console.log("node in mutationobserver");
+                        try {
+                            var isNewLine = false;
+                            //return if the inserted node is not in #textlines
+                            var relatedId = "";
+                            try {
+                                if ((node.parentNode.attributes.id.value == "textlines") && (node.tagName == "PRE")) {
+                                    isNewLine = true;
+                                    // console.log("isNewLine", isNewLine);
+                                }
+                            } catch (error) {}
+                            if (!isNewLine) {
+                                return
+                            }
+
+                            // console.log("forgiveHistoryTimes", forgiveHistoryTimes);
+                            //push history (delete forward history)
+                            if (forgiveHistoryTimes == 0) {
+                                historyPush(true, true);
+                                // console.log("historyPush", historyPush);
+                            } else {
+                                --forgiveHistoryTimes;
+                            }
+
+                            //update counter
+                            updateCounter();
+
+                            //put the added pre text into another pre so we can modify it later on.
+                            node.innerHTML = "<pre>" + node.innerHTML + "</pre>";
+
+                            //add hover buttons to every line
+                            createhoverButtons(node);
+
+                            //Scroll to item depending on setting
+                            switch (scrollOnNewline) {
+                                case "disabled":
+                                    break;
+                                case "toBottom":
+                                    scrollToLast(1);
+                                    break;
+                                case "toTop":
+                                    scrollToLast(0);
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                        } catch (e) {
+                            // console.log("e", e)
+                        }
+
+                    });
+                });
+            });
+
+            //undo_button
+            document.getElementById("undo_button").addEventListener("click", function() {
+                historyPop();
+            });
+
+            //redo_button
+            document.getElementById("redo_button").addEventListener("click", function() {
+                historyPop_forward();
+            });
+
+            //scroll_button
+            document.getElementById("scroll_button").addEventListener("click", function() {
+                switch (scrollOnNewline) {
+                    case "disabled":
+                        document.querySelector("#scroll_button").style.color = "";
+                        document.querySelector("#scroll_button").innerText = "⇓";
+                        scrollOnNewline = "toBottom";
+                        break;
+                    case "toBottom":
+                        document.querySelector("#scroll_button").style.color = "";
+                        document.querySelector("#scroll_button").innerText = "⇑";
+                        scrollOnNewline = "toTop";
+                        break;
+                    case "toTop":
+                        document.querySelector("#scroll_button").style.color = "#595959";
+                        document.querySelector("#scroll_button").innerText = "⇕";
+                        scrollOnNewline = "disabled";
+                        break;
+                    default:
+                        scrollOnNewline = "toBottom";
+                        break;
+                }
+                // console.log("scrollOnNewline", scrollOnNewline)
+                localStorage.setItem("scrollOnNewline", scrollOnNewline);
+            });
+
+            //Beginning of "remove last line" script.
+            //Listen for click.
+            document.getElementById("remove_button").addEventListener("click", function() {
+                historyPush();
+
+                //Check whether there are any lines.
+                var remove_lines = document.querySelectorAll('#textlines > pre').length;
+                if (remove_lines > 0) {
+
+                    //Remove the last line.
+                    document.querySelector("#textlines > pre:last-of-type").remove();
+
+                    updateCounter();
+                };
+            });
+            //End of "remove last line" script.
+
+            document.getElementById("clear_button").addEventListener("click", function() {
+                historyPush();
+
+                document.querySelectorAll('#textlines')[0].innerHTML = "";
+                //Update the counter.
+                updateCounter();
+            });
+
+            document.getElementById("go_to_last_button").addEventListener("click", function() {
+                //document.querySelector("#textlines > pre:last-of-type").scrollIntoView();
+                window.scroll(0, findPos(document.querySelector("#textlines > pre:last-of-type"))[1] - 200);
+            });
+
+
+            document.getElementById("go_bottom_button").addEventListener("click", function() {
+                document.querySelectorAll("html")[0].scrollIntoView(false);
+            });
+
+            /*
+            debugtest = true;
+            if (debugtest) {
+                pre = document.createElement("pre");
+                pre.innerHTML = "loremipsum\n\nloremipsumloremipsumloremipsum\n\n\n\nloremipsumloremipsum";
+                document.querySelector("#textlines").append(pre);
+            }
+            */
+
+            //start mutation observer for new lines
+            myMutationObserver.observe(document.querySelectorAll('#textlines')[0], {
+                subtree: true,
+                childList: true
+            });
+
+        });
+        //---DOMContentLoaded end---
+        //---DOMContentLoaded end---
+        //---DOMContentLoaded end---
+        //---DOMContentLoaded end---
+        //---DOMContentLoaded end---
+
+        //---functions---
+        //start undo/redo buttons
+        function historyPush(resetforward = true, dontpushlast = false) {
+            /* 
+            // console.log("historyPush", document.querySelector("#textlines").innerHTML.replace((<pre><div class=\"hoverButtonsContainer.*?"Scroll up one line">🡹<\div>.*?<\div>.*?<\div>)(.*?)<\pre>sg, "$2"));
+            */
+            var textlinesNode = document.querySelector("#textlines");
+            if (dontpushlast) {
+                textlinesNode = document.querySelector("#textlines").cloneNode(true);
+                textlinesNode.childNodes.forEach(element => {
+                // console.log("historyPush -> element", element)
+                    try {
+                        if (element.firstChild.nodeName == "#text") {
+                            element.remove();
+                        }
+                    } catch {}
+                });
+            }
+            var historydict = {
+                state: textlinesNode.innerHTML.replace(/(<pre><div class=\"hoverButtonsContainer.*?"Scroll up one line">🡹<\/div>.*?<\/div>.*?<\/div>)(.*?)<\/pre>/sg, "$2"),
+                linecount: textlinesNode.childNodes.length,
+            }
+            // console.log("historyPush -> historydict", historydict);
+            var historylength = historystack.push(historydict);
+            if (historylength > 200) {
+                historystack.shift();
+            }
+            if (resetforward) {
+                //reset forward history
+                historystack_forward = [];
+            }
+
+            sethistoryButtons();
+        }
+
+        function historyPop() {
+
+            historyPush_forward();
+            popDict = historystack.pop();
+            forgiveHistoryTimes = popDict.linecount;
+            document.querySelector("#textlines").innerHTML = popDict.state;
+
+            sethistoryButtons();
+        }
+
+        function historyPush_forward() {
+
+            var historydict = {
+                state: document.querySelector("#textlines").innerHTML.replace(/(<pre><div class=\"hoverButtonsContainer.*?"Scroll up one line">🡹<\/div>.*?<\/div>.*?<\/div>)(.*?)<\/pre>/sg, "$2"),
+                linecount: document.querySelectorAll("#textlines>pre").length,
+            }
+            var historylength_forward = historystack_forward.push(historydict);
+            if (historylength_forward > 200) {
+                historystack_forward.shift();
+            }
+        }
+
+        function historyPop_forward() {
+
+            historyPush(false);
+            popDict = historystack_forward.pop();
+            forgiveHistoryTimes = popDict.linecount;
+            document.querySelector("#textlines").innerHTML = popDict.state;
+
+            sethistoryButtons();
+        }
+
+        function sethistoryButtons() {
+            // console.log("sethistoryButtons -> historystack.length", historystack.length)
+            // console.log("sethistoryButtons -> historystack_forward.length", historystack_forward.length)
+            if (historystack.length >= 1) {
+                document.querySelector("#undo_button").removeAttribute("disabled");
+            } else {
+                document.querySelector("#undo_button").setAttribute("disabled", "");
+            }
+            if (historystack_forward.length >= 1) {
+                document.querySelector("#redo_button").removeAttribute("disabled");
+            } else {
+                document.querySelector("#redo_button").setAttribute("disabled", "");
+            }
+        }
+        //end undo/redo buttons
+
+        function scrollToLast(tolast) {
+            if (tolast) {
+                window.scroll(0, findPos(document.querySelector("#textlines > pre:last-of-type"))[1] - 280);
+            } else {
+                window.scroll(0, 0);
+            }
+        }
+
+        function scrollUpDown(element, clientY, scrollUp) {
+            //get the pre
+            element = element.parentNode.parentNode.parentNode;
+            var scrollto = null;
+            try {
+                if (scrollUp) {
+                    scrollto = element.previousElementSibling;
+                } else {
+                    scrollto = element.nextElementSibling;
+                }
+                if (scrollto == null) {
+                    if (scrollUp) {
+                        document.querySelectorAll("html")[0].scrollIntoView(true);
+                    } else {
+                        document.querySelectorAll("html")[0].scrollIntoView(false);
+                    }
+                } else {
+                    //fix scroll difference from reality
+                    window.scroll(0, findPos(scrollto)[1] - clientY - scroll_fix_alignment);
+                    //scrollto.scrollIntoView();
+                }
+                return;
+            } catch (error) {
+                // console.log("scrollUpDown -> error", error)
+            }
+        }
+
+        //find an element's position in the whole page
+        function findPos(obj) {
+            var curleft = curtop = 0;
+            if (obj.offsetParent) {
+                do {
+                    curleft += obj.offsetLeft;
+                    curtop += obj.offsetTop;
+                } while (obj = obj.offsetParent);
+                values = [curleft, curtop];
+                return values;
+            }
+        }
+
+        function removeLine(element) {
+            element = element.parentNode.parentNode.parentNode;
+            element.remove();
+            updateCounter();
+        }
+
+        function reduceNewlines(element) {
+            element = element.parentNode.parentNode.parentNode;
+            var modifystring = element.querySelector("pre").innerText;
+            //trim newline at the start (once)
+            modifystring = modifystring.replace(/^[\r\t\f\v 　\u00a0]*\n/, "");
+            //trim newline at the end (once)
+            modifystring = modifystring.replace(/[\r\t\f\v 　\u00a0]*\n$/, "");
+            //clean spaces
+            modifystring = modifystring.replace(/\n[\r\t\f\v 　\u00a0]*/gm, "\n");
+            //reduce newlines (2->1, 1->0 etc...)
+            modifystring = modifystring.replace(/(\n(\n+?))|(\n+?)/gm, "$2$3");
+            element.querySelector("pre").innerText = modifystring;
+        }
+
+        function updateCounter() {
+            var charlength = 0;
+            var linecount = 0;
+            try {
+                document.querySelectorAll("#textlines > pre").forEach(element => {
+                    charlength += element.innerText.length;
+                    linecount++;
+                });
+            } catch (error) {
+
+            }
+            document.querySelector("#counter").textContent = charlength + ' / ' + linecount;
+            return;
+        }
+
+        function createhoverButtons(element) {
+
+            var hoverButtons = document.createElement("div");
+            element.prepend(hoverButtons);
+            hoverButtons.outerHTML = `<div class="hoverButtonsContainer">
+<div class="hoverButtonsBackground">
+<div class="hoverButtons hoverButtonDelete" title="Remove line">✖</div>
+<div class="hoverButtons hoverButtonReduceNewlines" title="Reduce newlines and spaces">≡</div>
+<div class="hoverButtons hoverButtonCopy" title="Copy to clipboard">📋</div>
+<div class="hoverButtons hoverButtonDown" title="Scroll down one line">🡻</div>
+<div class="hoverButtons hoverButtonUp" title="Scroll up one line">🡹</div>
+</div>
+</div>`;
+            element.querySelector(".hoverButtonDelete").addEventListener("click", function(event) {
+                historyPush();
+
+                removeLine(event.target);
+            });
+            element.querySelector(".hoverButtonReduceNewlines").addEventListener("click", function(event) {
+                historyPush();
+
+                reduceNewlines(event.target);
+            });
+            element.querySelector(".hoverButtonUp").addEventListener("click", function(event) {
+                scrollUpDown(event.target, event.clientY, true);
+            });
+            element.querySelector(".hoverButtonDown").addEventListener("click", function(event) {
+                scrollUpDown(event.target, event.clientY, false);
+            });
+            element.querySelector(".hoverButtonCopy").addEventListener("click", function(event) {
+                var range = document.createRange();
+                range.selectNode(event.target.parentNode.parentNode.parentNode.querySelector("pre"));
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+                document.execCommand("copy");
+                window.getSelection().removeAllRanges();
+            });
+        }
+
+    </script>
+
+    <!-- inserted pre tags go here -->
+    <div id="textlines"></div>
+
+    <div id="go_to_last_button" title="Scroll to the start of the last item">🡹</div>
+</body>
+
+</html>
