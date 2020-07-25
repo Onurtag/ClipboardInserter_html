@@ -23,6 +23,11 @@ Original page was from: https://pastebin.com/raw/HxjV6YrB, which was found here:
 ///////////////////////////////////////////////////////////////////// 
 -->
     <style id="maincss" type="text/css">
+        /* prevent top right buttons from moving */
+        html {
+            overflow-y: scroll;
+        }
+
         body {
             background-color: #202020;
             color: #BCBCBC;
@@ -69,7 +74,7 @@ Original page was from: https://pastebin.com/raw/HxjV6YrB, which was found here:
         .countercontainer {
             right: 0px;
         }
-        
+
         .buttoncontainer>div:not(#counter):hover {
             filter: brightness(130%);
             background-color: rgba(20, 20, 20, 0.5);
@@ -292,7 +297,7 @@ Original page was from: https://pastebin.com/raw/HxjV6YrB, which was found here:
         .countercontainer {
             right: -14px !important;
         }
-        
+
         #counter {
             padding-bottom: 5px !important;
         }
@@ -592,7 +597,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             if (dontpushlast) {
                 textlinesNode = document.querySelector("#textlines").cloneNode(true);
                 textlinesNode.childNodes.forEach(element => {
-                // console.log("historyPush -> element", element)
+                    // console.log("historyPush -> element", element)
                     try {
                         if (element.firstChild.nodeName == "#text") {
                             element.remove();
