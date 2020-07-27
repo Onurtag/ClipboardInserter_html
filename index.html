@@ -6,17 +6,20 @@
     <link href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAC90lEQVQ4jU2SW2tVRxTH19z23uca05zEJEZzDpEmNbXeQCoqIiheCkUE8+IX8M2nfoJ+gD4UCnkqtEie+tiAlQZFRMUgCW3qJTHectMk5mSffc6evWdmTdnHfQ4ZWDDMrPn91//PkL6Fhw4A8LREWiwpPXH7JD0yPEdHylUAMACgAUCllew1TZuTxwnIBYAMAOTMH1Nn1aPZcf3rn9N2cbkXALIA4KU9LVFGdyg76eMsNyYPq5un5NpagRAi3P4SaZ59hrQAzUl5OkFL3dO/T45B1os5pwmsudzFpXL13swFcv74BN2/dyk9tomtneqe/m3ymrz/5AfqOHbXoeHbLcDWrb9+ri3Md+dW1k87P94YAwBMM1FtC24Ue7QeDip/O0OFAEGI1wJQziL1YRVMrdYHkw9Ocq3bwbdDdJRycWX9TNLIvGyWgXVbgP6Dlan86DdhY2E+Z2ZejDGDIgVQ2hTQmmfrYcYqrEAcAWekym3TWnMNVPreusUi6pX3gNvhCfF6+QsAIEmlAEODv5+c0X415L390NlVeEWtpS2AUIqXSh3PRHkIwtUlG01Nf5+REWvaS9JkxpDw1fK5xrs3mUJlSO4r9z4l1tp2Bmj14GD3dLE8JOW7N0IurV8WSiX3TRXLHv87IP3GsWREJhzc1dPx1qJVLYAlpNHVVVwkwuG48REQYaj0YYN5MrK0ENStnX8/jEGA2a8P656O7AxDbFjEHQDwAcAveWyu+7ur6uLonuu7N6s2IyPkRT/AL78auDe7tnn/U6N46sRI/0QDMQSDcduCMQlAXTqw56dEUKPaWNn2sVALNO+s+ti55eOVctcvFHFii0B05+4/N2tSfxvNzUK+sh+E1gEQCJFSh6IFrk09Vw+VGyvDPRlpL4ripMkwZg3jkjG6UXv5H9BSz+evLON6UMxXg3wO3FgRS6AmPbeeTMUNY7F0XZ9pQ5FSP3IFHq30jEfB8CgHYB2CPM+HYfCp1Lm9trsUK8EtsVZGjhNGjtD/Awy3cVQ9IGG0AAAAAElFTkSuQmCC" rel="icon" type="image/png" />
     <!-- 
 /////////////////////////////////////////////////////////////////////
-/////////// Downloadable HTML for Clipboard Inserter ////////////////
+//////// Downloadable HTML for Clipboard Inserter (Enhanced) ////////
 /////////////////////////////////////////////////////////////////////
 
-❗❗❗ Non-default Clipboard Inserter settings are required:
+❗❗❗❗❗ Non-default Clipboard Inserter settings are required:
 - element name: pre
 - container selector: #textlines
 
 ❗ If you append #largemode to the url of this page (bookmark it if you want), it will switch to large mode with bigger margins and buttons.
 
 
-Original page was from: https://pastebin.com/raw/HxjV6YrB, which was found here: https://pastebin.com/gNJfqpmN
+
+Original page was inspired/borrowed from: https://pastebin.com/raw/HxjV6YrB
+Which was found here: https://pastebin.com/gNJfqpmN
+(Only a few lines of borrowed code left from there. The rest are new.) 
 
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
@@ -366,7 +369,6 @@ Original page was from: https://pastebin.com/raw/HxjV6YrB, which was found here:
 
     <!------------------------
 
-
 To change background color or text color, just replace the style values above with the hex values for the colors you want.
 If you want the background of the counter to remain semi-transparent, you must use rgb values like above. The last number (where I've put 0.8) is the opacity level (1.0 = completely opaque).
 To change font size, just change the em value to what works for you (the standard size is 1, I like it at 1.5).
@@ -428,7 +430,6 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             //2: scroll up
             //0: disabled
             var scrollOnNewline = localStorage.getItem("scrollOnNewline");
-            // console.log("scrollOnNewline localstorage", scrollOnNewline)
             switch (scrollOnNewline) {
                 case "disabled":
                     document.querySelector("#scroll_button").style.color = "#595959";
@@ -460,11 +461,8 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             }
 
             const myMutationObserver = new MutationObserver(function(records) {
-                // console.log("Mutationobserver");
                 records.forEach(function(mutation) {
                     Array.prototype.forEach.call(mutation.addedNodes, function(node) {
-                        // console.log("node", node)
-                        // console.log("node in mutationobserver");
                         try {
                             var isNewLine = false;
                             //return if the inserted node is not in #textlines
@@ -472,18 +470,15 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                             try {
                                 if ((node.parentNode.attributes.id.value == "textlines") && (node.tagName == "PRE")) {
                                     isNewLine = true;
-                                    // console.log("isNewLine", isNewLine);
                                 }
                             } catch (error) {}
                             if (!isNewLine) {
                                 return
                             }
 
-                            // console.log("forgiveHistoryTimes", forgiveHistoryTimes);
                             //push history (delete forward history)
                             if (forgiveHistoryTimes == 0) {
                                 historyPush();
-                                // console.log("historyPush", historyPush);
                             } else {
                                 --forgiveHistoryTimes;
                             }
@@ -514,7 +509,6 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                             }
 
                         } catch (e) {
-                            // console.log("e", e)
                         }
 
                     });
@@ -558,7 +552,6 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                         scrollOnNewline = "toBottom";
                         break;
                 }
-                // console.log("scrollOnNewline", scrollOnNewline)
                 localStorage.setItem("scrollOnNewline", scrollOnNewline);
             });
 
@@ -695,8 +688,6 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         }
 
         function sethistoryButtons() {
-            // console.log("sethistoryButtons -> historystack.length", historystack.length)
-            // console.log("sethistoryButtons -> historystack_forward.length", historystack_forward.length)
             if (historystack.length >= 1) {
                 document.querySelector("#undo_button").removeAttribute("disabled");
             } else {
@@ -759,7 +750,6 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                 }
                 return;
             } catch (error) {
-                // console.log("scrollUpDown -> error", error)
             }
         }
 
