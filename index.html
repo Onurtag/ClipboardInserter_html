@@ -155,6 +155,25 @@ Original page was from: https://pastebin.com/raw/HxjV6YrB, which was found here:
             cursor: pointer;
         }
 
+        #edit_button {
+            background-color: rgba(25, 25, 25, 0.5);
+            color: #9d9d9d;
+            font-size: 18px;
+            line-height: 100%;
+            float: left;
+            margin-right: 8px;
+            padding-left: 5px;
+            padding-right: 6px;
+            padding-top: 6px;
+            padding-bottom: 6px;
+            cursor: pointer;
+        }
+
+        .edit_button_on {
+            box-shadow: inset 0px 0px 6px 2px rgba(73, 196, 47, 0.5);
+            color: rgb(73, 196, 47) !important;
+        }
+
         #remove_button {
             background-color: rgba(25, 25, 25, 0.5);
             color: #9d9d9d;
@@ -375,6 +394,8 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         <div id="clear_button" title="Clear all lines">🗑️</div>
         <!-- This is the div used for the "Toggle scroll to bottom a when new line is added" button. -->
         <div id="scroll_button" title="Scroll to bottom(⇓)/top(⇑)/nowhere(⇕) when a new line is added.">⇓</div>
+        <!-- This is the div used for the "Enable editing" button. -->
+        <div id="edit_button" title="Enable editing &#013;History is only saved when you enable this (not when you edit a line), &#013;so disable it when you are done.">🖉</div>
         <!-- This is the div used for the "Undo/Redo" buttons. -->
         <div id="undo_button" class="undoredoButtons" disabled="" title="Undo">
             <div style="transform: scale(1, -1);top: 2px;position: relative;">⤾</div>
@@ -396,11 +417,10 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
 
     <script>
         //javascript (native)
-        var domdebug = "";
-        var scroll_fix_alignment = 10;
-        var historystack = [];
+        const historystack = [];
         var historystack_forward = [];
-        var myMutationObserver = null;
+        var editingEnabled = false;
+        var scroll_fix_alignment = 10;
         var forgiveHistoryTimes = 0;
 
         document.addEventListener("DOMContentLoaded", function(event) {
@@ -439,7 +459,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                 document.querySelector("#smallcss").disabled = true;
             }
 
-            myMutationObserver = new MutationObserver(function(records) {
+            const myMutationObserver = new MutationObserver(function(records) {
                 // console.log("Mutationobserver");
                 records.forEach(function(mutation) {
                     Array.prototype.forEach.call(mutation.addedNodes, function(node) {
@@ -462,7 +482,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                             // console.log("forgiveHistoryTimes", forgiveHistoryTimes);
                             //push history (delete forward history)
                             if (forgiveHistoryTimes == 0) {
-                                historyPush(true, true);
+                                historyPush();
                                 // console.log("historyPush", historyPush);
                             } else {
                                 --forgiveHistoryTimes;
@@ -471,8 +491,10 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                             //update counter
                             updateCounter();
 
+                            //check if editing is enabled
+                            var preNodeOpen = editingEnabled ? "<pre contenteditable=\"true\">" : "<pre>";
                             //put the added pre text into another pre so we can modify it later on.
-                            node.innerHTML = "<pre>" + node.innerHTML + "</pre>";
+                            node.innerHTML = preNodeOpen + node.innerHTML + "</pre>";
 
                             //add hover buttons to every line
                             createhoverButtons(node);
@@ -507,6 +529,11 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             //redo_button
             document.getElementById("redo_button").addEventListener("click", function() {
                 historyPop_forward();
+            });
+
+            //edit_button
+            document.getElementById("edit_button").addEventListener("click", function() {
+                toggleEditing();
             });
 
             //scroll_button
@@ -594,28 +621,23 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
 
         //---functions---
         //start undo/redo buttons
-        function historyPush(resetforward = true, dontpushlast = false) {
-            /* 
-            // console.log("historyPush", document.querySelector("#textlines").innerHTML.replace((<pre><div class=\"hoverButtonsContainer.*?"Scroll up one line">🡹<\div>.*?<\div>.*?<\div>)(.*?)<\pre>sg, "$2"));
-            */
-            var textlinesNode = document.querySelector("#textlines");
-            if (dontpushlast) {
-                textlinesNode = document.querySelector("#textlines").cloneNode(true);
-                textlinesNode.childNodes.forEach(element => {
-                    // console.log("historyPush -> element", element)
-                    try {
-                        if (element.firstChild.nodeName == "#text") {
-                            element.remove();
-                        }
-                    } catch {}
-                });
+        function historyPush(resetforward = true) {
+            var textlinesNode = document.querySelector("#textlines").cloneNode(true);
+            var dummyDiv = document.createElement("div");
+            for (const element of textlinesNode.childNodes) {
+                try {
+                    if (element.firstChild.nodeName != "#text") {
+                        let textPre = element.querySelector("pre");
+                        //clean up contenteditable
+                        textPre.removeAttribute("contenteditable");
+                        dummyDiv.append(textPre);
+                    }
+                } catch {}
             }
-            //could have used above method here as well (remove each hoverButtonsContainer)
             var historydict = {
-                state: textlinesNode.innerHTML.replace(/(<pre><div class=\"hoverButtonsContainer.*?"Scroll up one line">🡹<\/div>.*?<\/div>.*?<\/div>)(.*?)<\/pre>/sg, "$2"),
+                state: dummyDiv.innerHTML,
                 linecount: textlinesNode.childNodes.length,
             }
-            // console.log("historyPush -> historydict", historydict);
             var historylength = historystack.push(historydict);
             if (historylength > 200) {
                 historystack.shift();
@@ -639,10 +661,22 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         }
 
         function historyPush_forward() {
-
+            var textlinesNode = document.querySelector("#textlines").cloneNode(true);
+            var dummyDiv = document.createElement("div");
+            for (const element of textlinesNode.childNodes) {
+                try {
+                    //ignore text only nodes (that were just inserted)
+                    if (element.firstChild.nodeName != "#text") {
+                        let textPre = element.querySelector("pre");
+                        //clean up contenteditable
+                        textPre.removeAttribute("contenteditable");
+                        dummyDiv.append(textPre);
+                    }
+                } catch {}
+            }
             var historydict = {
-                state: document.querySelector("#textlines").innerHTML.replace(/(<pre><div class=\"hoverButtonsContainer.*?"Scroll up one line">🡹<\/div>.*?<\/div>.*?<\/div>)(.*?)<\/pre>/sg, "$2"),
-                linecount: document.querySelectorAll("#textlines>pre").length,
+                state: dummyDiv.innerHTML,
+                linecount: textlinesNode.childNodes.length,
             }
             var historylength_forward = historystack_forward.push(historydict);
             if (historylength_forward > 200) {
@@ -675,6 +709,24 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             }
         }
         //end undo/redo buttons
+
+        function toggleEditing() {
+            if (editingEnabled) {
+                //disable editing, set button style
+                const linesArray = document.querySelectorAll("#textlines>pre>pre").forEach(element => {
+                    element.removeAttribute("contenteditable");
+                });
+                document.querySelector("#edit_button").classList.remove("edit_button_on");
+            } else {
+                //push to history, enable editing, set button style
+                historyPush();
+                const linesArray = document.querySelectorAll("#textlines>pre>pre").forEach(element => {
+                    element.setAttribute("contenteditable", "true");
+                });
+                document.querySelector("#edit_button").classList.add("edit_button_on");
+            }
+            editingEnabled = !editingEnabled;
+        }
 
         function scrollToLast(tolast) {
             if (tolast) {
