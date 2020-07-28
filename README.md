@@ -1,6 +1,6 @@
 # ClipboardInserter_html
 
-A downloadable compact HTML page for the clipboard-inserter browser add-on.  
+A downloadable compact HTML page for the clipboard-inserter browser add-on. Mainly for personal use so don't expect any support.  
 
 **Requires the following Clipboard Inserter settings:**  
 - element name: **pre**
