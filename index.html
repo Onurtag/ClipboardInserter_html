@@ -14,7 +14,7 @@
 - element name: pre
 - container selector: #textlines
 
-❗ If you append #largemode to the url of this page (bookmark it if you want), it will switch to large mode with bigger margins and buttons.
+If you append #largemode to the url of this page (bookmark it if you want), it will switch to large mode with bigger margins and buttons.
 
 Hover the buttons to read their descriptions.
 Both appending and prepending should work for all buttons/functions. (if you have a modified ClipboardInserter)
@@ -90,15 +90,20 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             margin-bottom: 0.46em;
         }
 
+        /* Top right button css are a bit of a mess right now: #toprightbuttons, .buttoncontainer, #counter, .countercontainer */
         .buttoncontainer {
             /* Set this to position: absolute; if you want to disable the fixed buttons on top right */
             position: fixed;
             top: 0px;
-            right: 125px;
+            right: 10px;
             display: inline-block;
             font-size: 1.4em;
             font-family: "VL Gothic";
             user-select: none;
+        }
+
+        #toprightbuttons {
+            right: 150px;
         }
 
         body.verticalmode {
@@ -114,20 +119,39 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         #toprightbuttons.verticalmode>div {
             padding-left: 8px !important;
             padding-right: 8px !important;
+            margin-bottom: 6px !important;
         }
+
+        #toprightbuttons.verticalmode>#clear_button {
+            line-height: 136%;
+        }
+
+        #toprightbuttons.verticalmode>#edit_button {
+            line-height: 130%;
+        }
+
         #toprightbuttons.verticalmode>#undo_button,
         #toprightbuttons.verticalmode>#redo_button {
             border-radius: 6px !important;
             font-size: 26px;
             padding-right: 9px !important;
+            margin-bottom: 0px !important;
         }
+
         #toprightbuttons.verticalmode>#scroll_button {
             font-size: 20px;
+            padding-right: 7px !important;
+            line-height: 115%;
         }
 
 
         .countercontainer {
-            right: 0px;
+            position: fixed;
+            top: 0px;
+            right: 46px;
+            display: inline-block;
+            font-size: 1.4em;
+            user-select: none;
         }
 
         .buttoncontainer>div:not(#counter):hover {
@@ -135,7 +159,8 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             background-color: rgba(20, 20, 20, 0.5);
         }
 
-        .buttoncontainer>div {
+        .buttoncontainer>div,
+        .countercontainer>div {
             border-radius: 6px !important;
         }
 
@@ -188,12 +213,13 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
 
         #undo_button {
             margin-right: 0px;
-            padding-right: 4px;
+            padding-right: 8px;
             border-radius: 6px 0px 0px 6px !important;
         }
 
         #redo_button {
             border-radius: 0px 6px 6px 0px !important;
+            padding-left: 4px;
             padding-right: 9px;
         }
 
@@ -233,14 +259,13 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         #remove_button {
             background-color: rgba(25, 25, 25, 0.5);
             color: #9d9d9d;
-            font-size: 24px;
             line-height: 100%;
             float: right;
-            margin-right: 10px;
-            padding-left: 5px;
-            padding-right: 5px;
-            padding-top: 5px;
-            padding-bottom: 5px;
+            font-size: 26px;
+            padding-left: 4px;
+            padding-right: 4px;
+            padding-top: 4px;
+            padding-bottom: 4px;
             cursor: pointer;
         }
 
@@ -367,34 +392,42 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
 
         .buttoncontainer {
             scale: 70%;
-            right: 80px;
+            right: -3px;
             top: 0px;
             margin-top: -5px !important;
         }
 
+        #toprightbuttons {
+            right: 78px;
+        }
+
         #toprightbuttons.verticalmode {
-            right: -16px ;
-            top: 10px;
+            right: -16px;
+            top: 14px;
             width: 50px;
         }
 
         .countercontainer {
-            right: -20px !important;
+            right: 26px !important;
+            top: 5px;
+            margin-top: -5px !important;
         }
 
         #counter {
-            padding-bottom: 8px !important;
+            font-size: 11px;
+            padding-bottom: 5px !important;
+            padding-top: 5px !important;
         }
 
         #go_bottom_button {
             scale: 44%;
             top: -4px !important;
-            margin-left: 72px;
+            margin-left: 75px;
         }
 
         #go_to_last_button {
             scale: 44%;
-            margin-left: 72px;
+            margin-left: 75px;
         }
 
         .hoverButtonsContainer {
@@ -442,13 +475,14 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             <div style="transform: scale(1, -1);top: 2px;position: relative;">⤿</div>
         </div>
     </div>
-    <div class="buttoncontainer countercontainer">
+    <div class="buttoncontainer">
         <!-- This is the div used for the "remove last line" button. -->
         <div id="remove_button" title="Remove first/last line &#013;(removes first line instead when auto scroll is set to 'Scroll to top')">✖</div>
+    </div>
+    <div class="countercontainer">
         <!-- This is the div used for the counter. -->
         <div id="counter" title="No. of characters / No. of lines">0 / 0</div>
     </div>
-
     <div style="display:none;">
         <!-- Dummy div for buttons-->
     </div>
@@ -884,7 +918,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         }
 
         function checkWindowWidth() {
-            let maxWidth = 386;
+            let maxWidth = 390;
             let currentlyVertical = document.querySelectorAll(".verticalmode").length != 0;
             if (window.outerWidth < maxWidth && !currentlyVertical) {
                 document.querySelector("#toprightbuttons").classList.add("verticalmode");
@@ -903,8 +937,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                     charlength += element.innerText.length;
                     linecount++;
                 });
-            } catch (error) {
-            }
+            } catch (error) {}
             document.querySelector("#counter").textContent = charlength + ' / ' + linecount;
             return;
         }
