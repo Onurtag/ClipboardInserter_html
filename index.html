@@ -13,18 +13,43 @@
 - element name: pre
 - container selector: #textlines
 
+Appending and prepending both work. (if you have modified ClipboardInserter)
+
+
 ❗ If you append #largemode to the url of this page (bookmark it if you want), it will switch to large mode with bigger margins and buttons.
 
 
 
-Original page was inspired/borrowed from: https://pastebin.com/raw/HxjV6YrB
+Original page was inspired/borrowed from: https://pastebin.com/raw/HxjV6YrB (Only a few lines of the old code left) 
 Which was found here: https://pastebin.com/gNJfqpmN
-(Only a few lines of borrowed code left from there. The rest are new.) 
 
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////// 
 -->
+
+
+    <!------------------------
+(Old readme, should be useful if you are new and want to modify stuff.)
+
+To change background color or text color, just replace the style values above with the hex values for the colors you want.
+If you want the background of the counter to remain semi-transparent, you must use rgb values like above. The last number (where I've put 0.8) is the opacity level (1.0 = completely opaque).
+To change font size, just change the em value to what works for you (the standard size is 1, I like it at 1.5).
+To change font weight (boldness), just edit the value above.  100 is quite thin, 400 is default, 900 is quite thick.  You may want it higher than default for Mincho fonts.
+The line-height value changes the spacing between lines.
+
+To use the font of your choice, remove the list of fonts above and put the ENGLISH name of your font in quotation marks (some JP font names are in Japanese).
+Be sure to leave a semi-colon at the end of the line.
+To find the English name of a given font, first install it, then open Firefox.
+Go to about:preferences#content in the address bar, then click on the 'Default font' drop-down menu.
+The "correct" name of your font will be listed here - just copy that down and paste it up above.
+
+Note that if you would like to use your browser default font, replace the font-family line with font-family:""; or delete it altogether.
+Your default is probably Gothic - if you want to try out a good Mincho font, try Aozora Mincho at http://www.freejapanesefont.com/aozora-mincho-download/
+For various other free Japanese fonts, visit http://www.freejapanesefont.com/
+For more font attribute information visit http://www.w3schools.com/css/css_font.asp
+
+------------------------>
     <style id="maincss" type="text/css">
         /* prevent top right buttons from moving */
         html {
@@ -40,9 +65,6 @@ Which was found here: https://pastebin.com/gNJfqpmN
             margin-top: 5%;
             margin-left: 15%;
             margin-right: 15%;
-            /*margin-left: 640px;
-            margin-right: 8%;
-            margin-bottom: 15%;*/
             margin-bottom: 420px;
             font-family: "MS Gothic", "Meiryo";
             /* font-family: "IPAGothic", "Sazanami Gothic", "Kochi Gothic", "VL Gothic", "Ume Gothic", "Pro W3", "Hiragino Kaku Gothic Pro", "Osaka Mono", "Osaka", "MS Gothic", "Meiryo", "M+ 1m"; */
@@ -50,10 +72,11 @@ Which was found here: https://pastebin.com/gNJfqpmN
 
         /* Main text style is here */
         pre {
-            /*white-space: pre;*/
+            /* You can pick some other fonts from below as well. Most fonts use MS Gothic for Japanese text (like Segoe UI here) which is the default japanese font for many games and other media. */
             /*font-family: "IPAGothic", "Sazanami Gothic", "Kochi Gothic", "VL Gothic", "Ume Gothic", "Pro W3", "Hiragino Kaku Gothic Pro", "Osaka Mono", "Osaka", "MS Gothic", "Meiryo", "M+ 1m";*/
             font-family: "Segoe UI";
             white-space: pre-wrap;
+            word-wrap: break-word;
             margin: 0em 0em 0em 0em;
             padding-bottom: 0px;
         }
@@ -236,11 +259,9 @@ Which was found here: https://pastebin.com/gNJfqpmN
             flex-direction: row;
             justify-content: space-evenly;
             background-color: #1D1D1D;
-            /* background-color: rgba(0, 0, 0, .3); */
             padding: 2px 5px 5px 10px;
             border-radius: 10px;
             z-index: 555;
-            /* filter: opacity(45%); */
             font-size: 14px;
             margin-left: -6px;
             margin-top: -2px;
@@ -305,7 +326,7 @@ Which was found here: https://pastebin.com/gNJfqpmN
     </style>
 
 
-    <!-- CSS FOR SMALL PAGE (enabled by default) -->
+    <!-- CSS FOR SMALL PAGE (enabled by default, disabled by appending #largemode to url) -->
     <style id="smallcss" type="text/css">
         body {
             margin-top: 24px;
@@ -367,26 +388,6 @@ Which was found here: https://pastebin.com/gNJfqpmN
 
     </style>
 
-    <!------------------------
-
-To change background color or text color, just replace the style values above with the hex values for the colors you want.
-If you want the background of the counter to remain semi-transparent, you must use rgb values like above. The last number (where I've put 0.8) is the opacity level (1.0 = completely opaque).
-To change font size, just change the em value to what works for you (the standard size is 1, I like it at 1.5).
-To change font weight (boldness), just edit the value above.  100 is quite thin, 400 is default, 900 is quite thick.  You may want it higher than default for Mincho fonts.
-The line-height value changes the spacing between lines.
-
-To use the font of your choice, remove the list of fonts above and put the ENGLISH name of your font in quotation marks (some JP font names are in Japanese, such as "ä¸‰æ¬¡å…ƒåˆ‡çµµå­—").
-Be sure to leave a semi-colon at the end of the line.
-To find the English name of a given font, first install it, then open Firefox.
-Go to about:preferences#content in the address bar, then click on the 'Default font' drop-down menu.
-The "correct" name of your font will be listed here - just copy that down and paste it up above.
-
-Note that if you would like to use your browser default font, replace the font-family line with font-family:""; or delete it altogether.
-Your default is probably Gothic - if you want to try out a good Mincho font, try Aozora Mincho at http://www.freejapanesefont.com/aozora-mincho-download/
-For various other free Japanese fonts, visit http://www.freejapanesefont.com/
-For more font attribute information visit http://www.w3schools.com/css/css_font.asp
-
------------------------->
 </head>
 
 <body>
@@ -398,7 +399,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         <div id="scroll_button" title="Scroll to bottom(⇓)/top(⇑)/nowhere(⇕) when a new line is added.">⇓</div>
         <!-- This is the div used for the "Enable editing" button. -->
         <div id="edit_button" title="Enable editing &#013;History is only saved when you enable this (not when you edit a line), &#013;so disable it when you are done.">🖉</div>
-        <!-- This is the div used for the "Undo/Redo" buttons. -->
+        <!-- These are the divs used for the "Undo/Redo" buttons. -->
         <div id="undo_button" class="undoredoButtons" disabled="" title="Undo">
             <div style="transform: scale(1, -1);top: 2px;position: relative;">⤾</div>
         </div>
@@ -418,13 +419,15 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
     </div>
 
     <script>
-        //javascript (native)
+        //javascript stuff
         const historystack = [];
         var historystack_forward = [];
         var editingEnabled = false;
         var scroll_fix_alignment = 10;
         var forgiveHistoryTimes = 0;
 
+
+        //DOMContentLoaded Start
         document.addEventListener("DOMContentLoaded", function(event) {
             //1: scroll down on newline
             //2: scroll up
@@ -508,8 +511,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                                     break;
                             }
 
-                        } catch (e) {
-                        }
+                        } catch (e) {}
 
                     });
                 });
@@ -591,12 +593,9 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             });
 
             /*
-            debugtest = true;
-            if (debugtest) {
-                pre = document.createElement("pre");
-                pre.innerHTML = "loremipsum\n\nloremipsumloremipsumloremipsum\n\n\n\nloremipsumloremipsum";
-                document.querySelector("#textlines").append(pre);
-            }
+            pre = document.createElement("pre");
+            pre.innerHTML = "loremipsum\n\nloremipsumloremipsumloremipsum\n\n\n\nloremipsumloremipsum";
+            document.querySelector("#textlines").append(pre);
             */
 
             //start mutation observer for new lines
@@ -609,10 +608,52 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         //---DOMContentLoaded end---
         //---DOMContentLoaded end---
         //---DOMContentLoaded end---
-        //---DOMContentLoaded end---
-        //---DOMContentLoaded end---
 
-        //---functions---
+
+
+        //----------functions----------
+
+        //add hover buttons to every line
+        function createhoverButtons(element) {
+
+            var hoverButtons = document.createElement("div");
+            element.prepend(hoverButtons);
+            hoverButtons.outerHTML = `<div class="hoverButtonsContainer">
+<div class="hoverButtonsBackground">
+<div class="hoverButtons hoverButtonDelete" title="Remove line">✖</div>
+<div class="hoverButtons hoverButtonReduceNewlines" title="Reduce newlines and spaces">≡</div>
+<div class="hoverButtons hoverButtonCopy" title="Copy to clipboard">📋</div>
+<div class="hoverButtons hoverButtonDown" title="Scroll down one line">🡻</div>
+<div class="hoverButtons hoverButtonUp" title="Scroll up one line">🡹</div>
+</div>
+</div>`;
+            element.querySelector(".hoverButtonDelete").addEventListener("click", function(event) {
+                historyPush();
+
+                removeLine(event.target);
+            });
+            element.querySelector(".hoverButtonReduceNewlines").addEventListener("click", function(event) {
+                historyPush();
+
+                reduceNewlines(event.target);
+            });
+            element.querySelector(".hoverButtonUp").addEventListener("click", function(event) {
+                scrollUpDown(event.target, event.clientY, true);
+            });
+            element.querySelector(".hoverButtonDown").addEventListener("click", function(event) {
+                scrollUpDown(event.target, event.clientY, false);
+            });
+            element.querySelector(".hoverButtonCopy").addEventListener("click", function(event) {
+                var range = document.createRange();
+                range.selectNode(event.target.parentNode.parentNode.parentNode.querySelector("pre"));
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+                document.execCommand("copy");
+                window.getSelection().removeAllRanges();
+            });
+        }
+
+
         //start undo/redo buttons
         function historyPush(resetforward = true) {
             var textlinesNode = document.querySelector("#textlines").cloneNode(true);
@@ -701,6 +742,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         }
         //end undo/redo buttons
 
+        //toggle editing
         function toggleEditing() {
             if (editingEnabled) {
                 //disable editing, set button style
@@ -719,6 +761,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             editingEnabled = !editingEnabled;
         }
 
+        //scrolling
         function scrollToLast(tolast) {
             if (tolast) {
                 window.scroll(0, findPos(document.querySelector("#textlines > pre:last-of-type"))[1] - 280);
@@ -749,8 +792,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                     //scrollto.scrollIntoView();
                 }
                 return;
-            } catch (error) {
-            }
+            } catch (error) {}
         }
 
         //find an element's position in the whole page
@@ -775,9 +817,9 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         function reduceNewlines(element) {
             element = element.parentNode.parentNode.parentNode;
             var modifystring = element.querySelector("pre").innerText;
-            //trim newline at the start (once)
+            //trim newline+spaces at the start (once)
             modifystring = modifystring.replace(/^[\r\t\f\v 　\u00a0]*\n/, "");
-            //trim newline at the end (once)
+            //trim spaces+newline at the end (once)
             modifystring = modifystring.replace(/[\r\t\f\v 　\u00a0]*\n$/, "");
             //clean spaces
             modifystring = modifystring.replace(/\n[\r\t\f\v 　\u00a0]*/gm, "\n");
@@ -799,45 +841,6 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             }
             document.querySelector("#counter").textContent = charlength + ' / ' + linecount;
             return;
-        }
-
-        function createhoverButtons(element) {
-
-            var hoverButtons = document.createElement("div");
-            element.prepend(hoverButtons);
-            hoverButtons.outerHTML = `<div class="hoverButtonsContainer">
-<div class="hoverButtonsBackground">
-<div class="hoverButtons hoverButtonDelete" title="Remove line">✖</div>
-<div class="hoverButtons hoverButtonReduceNewlines" title="Reduce newlines and spaces">≡</div>
-<div class="hoverButtons hoverButtonCopy" title="Copy to clipboard">📋</div>
-<div class="hoverButtons hoverButtonDown" title="Scroll down one line">🡻</div>
-<div class="hoverButtons hoverButtonUp" title="Scroll up one line">🡹</div>
-</div>
-</div>`;
-            element.querySelector(".hoverButtonDelete").addEventListener("click", function(event) {
-                historyPush();
-
-                removeLine(event.target);
-            });
-            element.querySelector(".hoverButtonReduceNewlines").addEventListener("click", function(event) {
-                historyPush();
-
-                reduceNewlines(event.target);
-            });
-            element.querySelector(".hoverButtonUp").addEventListener("click", function(event) {
-                scrollUpDown(event.target, event.clientY, true);
-            });
-            element.querySelector(".hoverButtonDown").addEventListener("click", function(event) {
-                scrollUpDown(event.target, event.clientY, false);
-            });
-            element.querySelector(".hoverButtonCopy").addEventListener("click", function(event) {
-                var range = document.createRange();
-                range.selectNode(event.target.parentNode.parentNode.parentNode.querySelector("pre"));
-                window.getSelection().removeAllRanges();
-                window.getSelection().addRange(range);
-                document.execCommand("copy");
-                window.getSelection().removeAllRanges();
-            });
         }
 
     </script>
