@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>Clipboard Inserter HTML Enhanced</title>
+    <!-- scary base64 encoded favicon (小)-->
     <link href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAC90lEQVQ4jU2SW2tVRxTH19z23uca05zEJEZzDpEmNbXeQCoqIiheCkUE8+IX8M2nfoJ+gD4UCnkqtEie+tiAlQZFRMUgCW3qJTHectMk5mSffc6evWdmTdnHfQ4ZWDDMrPn91//PkL6Fhw4A8LREWiwpPXH7JD0yPEdHylUAMACgAUCllew1TZuTxwnIBYAMAOTMH1Nn1aPZcf3rn9N2cbkXALIA4KU9LVFGdyg76eMsNyYPq5un5NpagRAi3P4SaZ59hrQAzUl5OkFL3dO/T45B1os5pwmsudzFpXL13swFcv74BN2/dyk9tomtneqe/m3ymrz/5AfqOHbXoeHbLcDWrb9+ri3Md+dW1k87P94YAwBMM1FtC24Ue7QeDip/O0OFAEGI1wJQziL1YRVMrdYHkw9Ocq3bwbdDdJRycWX9TNLIvGyWgXVbgP6Dlan86DdhY2E+Z2ZejDGDIgVQ2hTQmmfrYcYqrEAcAWekym3TWnMNVPreusUi6pX3gNvhCfF6+QsAIEmlAEODv5+c0X415L390NlVeEWtpS2AUIqXSh3PRHkIwtUlG01Nf5+REWvaS9JkxpDw1fK5xrs3mUJlSO4r9z4l1tp2Bmj14GD3dLE8JOW7N0IurV8WSiX3TRXLHv87IP3GsWREJhzc1dPx1qJVLYAlpNHVVVwkwuG48REQYaj0YYN5MrK0ENStnX8/jEGA2a8P656O7AxDbFjEHQDwAcAveWyu+7ur6uLonuu7N6s2IyPkRT/AL78auDe7tnn/U6N46sRI/0QDMQSDcduCMQlAXTqw56dEUKPaWNn2sVALNO+s+ti55eOVctcvFHFii0B05+4/N2tSfxvNzUK+sh+E1gEQCJFSh6IFrk09Vw+VGyvDPRlpL4ripMkwZg3jkjG6UXv5H9BSz+evLON6UMxXg3wO3FgRS6AmPbeeTMUNY7F0XZ9pQ5FSP3IFHq30jEfB8CgHYB2CPM+HYfCp1Lm9trsUK8EtsVZGjhNGjtD/Awy3cVQ9IGG0AAAAAElFTkSuQmCC" rel="icon" type="image/png" />
     <!-- 
 /////////////////////////////////////////////////////////////////////
@@ -707,6 +708,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             document.querySelector("#textlines").innerHTML = popDict.state;
 
             sethistoryButtons();
+            updateCounter();
         }
 
         function historyPush_forward() {
@@ -741,6 +743,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             document.querySelector("#textlines").innerHTML = popDict.state;
 
             sethistoryButtons();
+            updateCounter();
         }
 
         function sethistoryButtons() {
@@ -852,7 +855,6 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                     linecount++;
                 });
             } catch (error) {
-
             }
             document.querySelector("#counter").textContent = charlength + ' / ' + linecount;
             return;
