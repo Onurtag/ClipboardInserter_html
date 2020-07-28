@@ -89,7 +89,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             padding-bottom: 1.3em;
             margin-bottom: 0.46em;
         }
-        
+
         .buttoncontainer {
             /* Set this to position: absolute; if you want to disable the fixed buttons on top right */
             position: fixed;
@@ -100,6 +100,27 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             font-family: "VL Gothic";
             user-select: none;
         }
+
+        #toprightbuttons.verticalmode {
+            right: -5px;
+            top: 40px;
+            width: 50px;
+        }
+
+        .verticalmode>div {
+            padding-left: 8px !important;
+            padding-right: 8px !important;
+        }
+        .verticalmode>#undo_button,
+        .verticalmode>#redo_button {
+            border-radius: 6px !important;
+            font-size: 26px;
+            padding-right: 9px !important;
+        }
+        .verticalmode>#scroll_button {
+            font-size: 20px;
+        }
+
 
         .countercontainer {
             right: 0px;
@@ -169,6 +190,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
 
         #redo_button {
             border-radius: 0px 6px 6px 0px !important;
+            padding-right: 9px;
         }
 
         #scroll_button {
@@ -341,13 +363,19 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
 
         .buttoncontainer {
             scale: 70%;
-            right: 80px !important;
-            top: 0px !important;
+            right: 80px;
+            top: 0px;
             margin-top: -5px !important;
         }
 
+        #toprightbuttons.verticalmode {
+            right: -16px ;
+            top: 10px;
+            width: 50px;
+        }
+
         .countercontainer {
-            right: -14px !important;
+            right: -20px !important;
         }
 
         #counter {
@@ -395,7 +423,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
 
 <body>
     <div id="go_bottom_button" title="Scroll to the bottom">🡻</div>
-    <div class="buttoncontainer">
+    <div id="toprightbuttons" class="buttoncontainer">
         <!-- This is the div used for the "Clear all lines" button. -->
         <div id="clear_button" title="Clear all lines">🗑️</div>
         <!-- This is the div used for the "Toggle scroll to bottom a when new line is added" button. -->
@@ -607,6 +635,11 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             document.getElementById("go_bottom_button").addEventListener("click", function() {
                 document.querySelectorAll("html")[0].scrollIntoView(false);
             });
+
+            //detect if the window width is low and make buttons vertical if it is
+            window.addEventListener("resize", checkWindowWidth);
+            //check on page load as well.
+            checkWindowWidth();
 
             /*
             pre = document.createElement("pre");
@@ -844,6 +877,15 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             //reduce newlines (2->1, 1->0 etc...)
             modifystring = modifystring.replace(/(\n(\n+?))|(\n+?)/gm, "$2$3");
             element.querySelector("pre").innerText = modifystring;
+        }
+
+        function checkWindowWidth() {
+            let currentlyVertical = document.querySelectorAll(".verticalmode").length != 0;
+            if (window.outerWidth < 355 && !currentlyVertical) {
+                document.querySelector("#toprightbuttons").classList.add("verticalmode");
+            } else if (currentlyVertical && window.outerWidth >= 355) {
+                document.querySelector("#toprightbuttons").classList.remove("verticalmode");
+            }
         }
 
         function updateCounter() {
