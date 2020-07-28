@@ -101,23 +101,27 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             user-select: none;
         }
 
+        body.verticalmode {
+            margin-right: 28px;
+        }
+
         #toprightbuttons.verticalmode {
             right: -5px;
             top: 40px;
             width: 50px;
         }
 
-        .verticalmode>div {
+        #toprightbuttons.verticalmode>div {
             padding-left: 8px !important;
             padding-right: 8px !important;
         }
-        .verticalmode>#undo_button,
-        .verticalmode>#redo_button {
+        #toprightbuttons.verticalmode>#undo_button,
+        #toprightbuttons.verticalmode>#redo_button {
             border-radius: 6px !important;
             font-size: 26px;
             padding-right: 9px !important;
         }
-        .verticalmode>#scroll_button {
+        #toprightbuttons.verticalmode>#scroll_button {
             font-size: 20px;
         }
 
@@ -385,12 +389,12 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         #go_bottom_button {
             scale: 44%;
             top: -4px !important;
-            margin-left: 100px;
+            margin-left: 72px;
         }
 
         #go_to_last_button {
             scale: 44%;
-            margin-left: 100px;
+            margin-left: 72px;
         }
 
         .hoverButtonsContainer {
@@ -880,12 +884,14 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         }
 
         function checkWindowWidth() {
-            let maxWidth = 405;
+            let maxWidth = 386;
             let currentlyVertical = document.querySelectorAll(".verticalmode").length != 0;
             if (window.outerWidth < maxWidth && !currentlyVertical) {
                 document.querySelector("#toprightbuttons").classList.add("verticalmode");
+                document.querySelector("body").classList.add("verticalmode");
             } else if (currentlyVertical && window.outerWidth >= maxWidth) {
                 document.querySelector("#toprightbuttons").classList.remove("verticalmode");
+                document.querySelector("body").classList.remove("verticalmode");
             }
         }
 
