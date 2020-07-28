@@ -13,12 +13,13 @@
 - element name: pre
 - container selector: #textlines
 
-Appending and prepending both work. (if you have modified ClipboardInserter)
-
-
 ❗ If you append #largemode to the url of this page (bookmark it if you want), it will switch to large mode with bigger margins and buttons.
 
+Hover the buttons to read their descriptions.
+Both appending and prepending should work for all buttons/functions. (if you have a modified ClipboardInserter)
 
+
+Don't expect any support. Mod it yourself if you need small changes.
 
 Original page was inspired/borrowed from: https://pastebin.com/raw/HxjV6YrB (Only a few lines of the old code left) 
 Which was found here: https://pastebin.com/gNJfqpmN
@@ -30,7 +31,8 @@ Which was found here: https://pastebin.com/gNJfqpmN
 
 
     <!------------------------
-(Old readme, should be useful if you are new and want to modify stuff.)
+    (Old readme, 
+     should be useful if you are new and want to modify the css.)
 
 To change background color or text color, just replace the style values above with the hex values for the colors you want.
 If you want the background of the counter to remain semi-transparent, you must use rgb values like above. The last number (where I've put 0.8) is the opacity level (1.0 = completely opaque).
@@ -86,9 +88,10 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             padding-bottom: 1.3em;
             margin-bottom: 0.46em;
         }
-
+        
         .buttoncontainer {
-            position: absolute;
+            /* Set this to position: absolute; if you want to disable fixed buttons on top right */
+            position: fixed;
             top: 0px;
             right: 125px;
             display: inline-block;
@@ -409,7 +412,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
     </div>
     <div class="buttoncontainer countercontainer">
         <!-- This is the div used for the "remove last line" button. -->
-        <div id="remove_button" title="Remove last line">✖</div>
+        <div id="remove_button" title="Remove first/last line &#013;(removes first line when AUTOSCROLL is set to top)">✖</div>
         <!-- This is the div used for the counter. -->
         <div id="counter" title="No. of characters / No. of lines">0 / 0</div>
     </div>
@@ -566,13 +569,26 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                 var remove_lines = document.querySelectorAll('#textlines > pre').length;
                 if (remove_lines > 0) {
 
-                    //Remove the last line.
-                    document.querySelector("#textlines > pre:last-of-type").remove();
+                    //Remove the first/last line.
+                    switch (scrollOnNewline) {
+                        case "disabled":
+                            document.querySelector("#textlines > pre:last-of-type").remove();
+                            break;
+                        case "toBottom":
+                            document.querySelector("#textlines > pre:last-of-type").remove();
+                            break;
+                        case "toTop":
+                            document.querySelector("#textlines > pre:first-of-type").remove();
+                            break;
+                        default:
+                            break;
+                    }
 
                     updateCounter();
                 };
             });
-            //End of "remove last line" script.
+
+            //End of "remove last line"
 
             document.getElementById("clear_button").addEventListener("click", function() {
                 historyPush();
