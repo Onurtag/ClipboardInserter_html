@@ -880,10 +880,11 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         }
 
         function checkWindowWidth() {
+            let maxWidth = 405;
             let currentlyVertical = document.querySelectorAll(".verticalmode").length != 0;
-            if (window.outerWidth < 355 && !currentlyVertical) {
+            if (window.outerWidth < maxWidth && !currentlyVertical) {
                 document.querySelector("#toprightbuttons").classList.add("verticalmode");
-            } else if (currentlyVertical && window.outerWidth >= 355) {
+            } else if (currentlyVertical && window.outerWidth >= maxWidth) {
                 document.querySelector("#toprightbuttons").classList.remove("verticalmode");
             }
         }
