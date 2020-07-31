@@ -54,6 +54,9 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
 
 ------------------------>
     <style id="maincss" type="text/css">
+
+        /* TODO: clean up css, refactor old rules to use correct methods, don't use scale and maybe add chrome compatibility but probably not. */
+
         /* prevent top right buttons from moving */
         html {
             overflow-y: scroll;
@@ -492,6 +495,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
     <script>
         //javascript stuff
         const historystack = [];
+        const MAX_HISTORY_LENGTH = 1000;
         var historystack_forward = [];
         var editingEnabled = false;
         var scroll_fix_alignment = 10;
@@ -762,7 +766,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                 linecount: textlinesNode.childNodes.length,
             }
             var historylength = historystack.push(historydict);
-            if (historylength > 200) {
+            if (historylength > MAX_HISTORY_LENGTH) {
                 historystack.shift();
             }
             if (resetforward) {
@@ -803,7 +807,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                 linecount: textlinesNode.childNodes.length,
             }
             var historylength_forward = historystack_forward.push(historydict);
-            if (historylength_forward > 200) {
+            if (historylength_forward > MAX_HISTORY_LENGTH) {
                 historystack_forward.shift();
             }
         }
