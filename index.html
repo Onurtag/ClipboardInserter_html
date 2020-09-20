@@ -107,7 +107,8 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             z-index: 1;
         }
 
-        #toprightbuttons:hover, #menucontainer:hover ~ #toprightbuttons {
+        #toprightbuttons:hover,
+        #menucontainer:hover~#toprightbuttons {
             display: inline-block !important;
         }
 
@@ -202,7 +203,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             line-height: 100%;
             float: left;
             margin-right: 8px;
-            padding-left: 6px;
+            padding-left: 8px;
             padding-right: 7px;
             padding-top: 6px;
             padding-bottom: 7px;
@@ -213,14 +214,14 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         #pin_button {
             background-color: rgb(29, 29, 29);
             color: #9d9d9d;
-            font-size: 16px;
+            font-size: 15px;
             line-height: 100%;
             float: left;
             padding-left: 6px;
             padding-right: 4px;
             padding-top: 5px;
-            padding-bottom: 9px;
-            margin-right: 8px;
+            padding-bottom: 10px;
+            margin-right: 9px;
             cursor: pointer;
             filter: grayscale(100%);
             font-family: "Noto Sans JP Light", "Arial";
@@ -255,17 +256,17 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         #redo_button {
             border-radius: 0px 6px 6px 0px !important;
             padding-left: 4px;
-            padding-right: 9px;
+            padding-right: 7px;
         }
 
         #scroll_button {
             background-color: rgb(29, 29, 29);
             color: #a6a6a6;
-            font-size: 17px;
+            font-size: 18px;
             line-height: 100%;
             float: left;
             margin-right: 8px;
-            padding-left: 7px;
+            padding-left: 6px;
             padding-right: 6px;
             padding-top: 6px;
             padding-bottom: 7px;
@@ -292,9 +293,17 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             color: rgb(73, 196, 47) !important;
         }
 
+        /* 
         .pin_button_on {
             box-shadow: inset 0px 0px 6px 2px rgba(73, 196, 47, 0.5);
             color: rgb(73, 196, 47) !important;
+        } 
+        */
+
+        .pin_button_on>#pintext {
+            transform: rotate(-45deg) !important;
+            margin-right: 2px;
+            margin-left: -2px;
         }
 
         #menu_button {
@@ -524,11 +533,11 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         <!-- This is the div used for the "show menu menu" button. -->
         <div id="menu_button" title="Menu">⚙</div>
     </div>
-    <div id="toprightbuttons" class="buttoncontainer">
-        <!-- This is the div used for the "remove last line" button. -->
-        <div id="remove_button" title="Remove first/last line &#013;(removes first line instead when auto scroll is set to 'Scroll to top')">✖</div>
+    <div id="toprightbuttons" class="buttoncontainer" style="display: inline-block !important;">
         <!-- This is the div used for the "Pin menu" button. -->
-        <div id="pin_button" title="Pin the menu">📌</div>
+        <div id="pin_button" class="pin_button_on" title="Pin/Unpin the menu">
+            <div id="pintext">📌</div>
+        </div>
         <!-- This is the div used for the "Clear all lines" button. -->
         <div id="clear_button" title="Clear all lines">∅</div>
         <!-- This is the div used for the "Toggle scroll to bottom a when new line is added" button. -->
@@ -542,6 +551,8 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         <div id="redo_button" class="undoredoButtons" disabled="" title="Redo">
             <div style="transform: scale(1, -1);top: 2px;position: relative;">⤿</div>
         </div>
+        <!-- This is the div used for the "remove last line" button. -->
+        <div id="remove_button" title="Remove first/last line &#013;(removes first line instead when auto scroll is set to 'Scroll to top')">✖</div>
     </div>
     <div class="countercontainer">
         <!-- This is the div used for the counter. -->
@@ -557,7 +568,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         const maxhistorylength = 1000;
         var historystack_forward = [];
         var editingEnabled = false;
-        var pinningEnabled = false;
+        var pinningEnabled = true;
         var editPinnedButtons = false;
         var scroll_fix_alignment = 10;
         var forgiveHistoryTimes = 0;
