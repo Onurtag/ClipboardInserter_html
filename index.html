@@ -104,10 +104,17 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             font-size: 1.4em;
             font-family: "VL Gothic";
             user-select: none;
+            z-index: -1;
+        }
+
+        #toprightbuttons:hover, #menucontainer:hover ~ #toprightbuttons {
+            display: inline-block !important;
         }
 
         #toprightbuttons {
             right: 150px;
+            display: none;
+            background: #202020;
         }
 
         body.verticalmode {
@@ -160,8 +167,14 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         }
 
         .buttoncontainer>div:not(#counter):hover {
-            filter: brightness(130%);
-            background-color: rgba(20, 20, 20, 0.5);
+            /* filter: brightness(130%);
+            background-color: rgba(22, 22, 22, 1.0); */
+            color: #d7d7d7;
+        }
+
+        .buttoncontainer>#pin_button:hover {
+            filter: brightness(130%) grayscale(100%);
+            background-color: rgba(22, 22, 22, 1.0);
         }
 
         .buttoncontainer>div,
@@ -170,7 +183,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         }
 
         #counter {
-            background-color: rgba(25, 25, 25, 0.5);
+            background-color: rgb(29, 29, 29);
             color: #9d9d9d;
             font-size: 16px;
             line-height: 100%;
@@ -183,7 +196,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         }
 
         #clear_button {
-            background-color: rgba(25, 25, 25, 0.5);
+            background-color: rgb(29, 29, 29);
             color: #9d9d9d;
             font-size: 17px;
             line-height: 100%;
@@ -197,8 +210,24 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             font-family: "Noto Sans JP Light", "Arial";
         }
 
+        #pin_button {
+            background-color: rgb(29, 29, 29);
+            color: #9d9d9d;
+            font-size: 16px;
+            line-height: 100%;
+            float: left;
+            padding-left: 6px;
+            padding-right: 4px;
+            padding-top: 5px;
+            padding-bottom: 9px;
+            margin-right: 8px;
+            cursor: pointer;
+            filter: grayscale(100%);
+            font-family: "Noto Sans JP Light", "Arial";
+        }
+
         .undoredoButtons {
-            background-color: rgba(25, 25, 25, 0.5);
+            background-color: rgb(29, 29, 29);
             color: #9d9d9d;
             font-size: 22px;
             line-height: 100%;
@@ -230,7 +259,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         }
 
         #scroll_button {
-            background-color: rgba(25, 25, 25, 0.5);
+            background-color: rgb(29, 29, 29);
             color: #a6a6a6;
             font-size: 17px;
             line-height: 100%;
@@ -245,7 +274,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         }
 
         #edit_button {
-            background-color: rgba(25, 25, 25, 0.5);
+            background-color: rgb(29, 29, 29);
             color: #9d9d9d;
             font-size: 18px;
             line-height: 100%;
@@ -263,14 +292,32 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             color: rgb(73, 196, 47) !important;
         }
 
-        #remove_button {
-            background-color: rgba(25, 25, 25, 0.5);
+        .pin_button_on {
+            box-shadow: inset 0px 0px 6px 2px rgba(73, 196, 47, 0.5);
+            color: rgb(73, 196, 47) !important;
+        }
+
+        #menu_button {
+            background-color: rgb(29, 29, 29);
             color: #9d9d9d;
             line-height: 100%;
             float: right;
-            font-size: 26px;
+            font-size: 23px;
+            padding-left: 6px;
+            padding-right: 6px;
+            padding-top: 3px;
+            padding-bottom: 4px;
+            cursor: pointer;
+        }
+
+        #remove_button {
+            background-color: rgb(29, 29, 29);
+            color: #9d9d9d;
+            line-height: 100%;
+            float: right;
+            font-size: 22px;
             padding-left: 4px;
-            padding-right: 4px;
+            padding-right: 5px;
             padding-top: 4px;
             padding-bottom: 4px;
             cursor: pointer;
@@ -406,7 +453,8 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         }
 
         #toprightbuttons {
-            right: 78px;
+            right: -37px;
+            z-index: 3;
         }
 
         #toprightbuttons.verticalmode {
@@ -416,7 +464,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         }
 
         .countercontainer {
-            right: 26px !important;
+            right: 30px !important;
             top: 5px;
             margin-top: -5px !important;
         }
@@ -425,8 +473,9 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             font-size: 11px;
             padding-bottom: 5px !important;
             padding-top: 5px !important;
-            padding-left: 6px !important;
-            padding-right: 5px !important;
+            padding-left: 8px !important;
+            padding-right: 7px !important;
+            border-radius: 5px !important;
         }
 
         #go_bottom_button {
@@ -471,7 +520,15 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
 
 <body>
     <div id="go_bottom_button" title="Scroll to the bottom">🡻</div>
+    <div id="menucontainer" class="buttoncontainer">
+        <!-- This is the div used for the "show menu menu" button. -->
+        <div id="menu_button" title="Menu">⚙</div>
+    </div>
     <div id="toprightbuttons" class="buttoncontainer">
+        <!-- This is the div used for the "remove last line" button. -->
+        <div id="remove_button" title="Remove first/last line &#013;(removes first line instead when auto scroll is set to 'Scroll to top')">✖</div>
+        <!-- This is the div used for the "Pin menu" button. -->
+        <div id="pin_button" title="Pin the menu">📌</div>
         <!-- This is the div used for the "Clear all lines" button. -->
         <div id="clear_button" title="Clear all lines">∅</div>
         <!-- This is the div used for the "Toggle scroll to bottom a when new line is added" button. -->
@@ -485,10 +542,6 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         <div id="redo_button" class="undoredoButtons" disabled="" title="Redo">
             <div style="transform: scale(1, -1);top: 2px;position: relative;">⤿</div>
         </div>
-    </div>
-    <div class="buttoncontainer">
-        <!-- This is the div used for the "remove last line" button. -->
-        <div id="remove_button" title="Remove first/last line &#013;(removes first line instead when auto scroll is set to 'Scroll to top')">✖</div>
     </div>
     <div class="countercontainer">
         <!-- This is the div used for the counter. -->
@@ -504,6 +557,8 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         const maxhistorylength = 1000;
         var historystack_forward = [];
         var editingEnabled = false;
+        var pinningEnabled = false;
+        var editPinnedButtons = false;
         var scroll_fix_alignment = 10;
         var forgiveHistoryTimes = 0;
 
@@ -613,6 +668,11 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                 toggleEditing();
             });
 
+            //pin_button
+            document.getElementById("pin_button").addEventListener("click", function() {
+                togglePinning();
+            });
+
             //scroll_button
             document.getElementById("scroll_button").addEventListener("click", function() {
                 switch (scrollOnNewline) {
@@ -686,10 +746,11 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                 document.querySelectorAll("html")[0].scrollIntoView(false);
             });
 
+            //VERTICAL MODE IS DISABLED
             //detect if the window width is low and make buttons vertical if it is
-            window.addEventListener("resize", checkWindowWidth);
+            //window.addEventListener("resize", checkWindowWidth);
             //check on page load as well.
-            checkWindowWidth();
+            //checkWindowWidth();
 
             /*
             pre = document.createElement("pre");
@@ -851,6 +912,10 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                     element.removeAttribute("contenteditable");
                 });
                 document.querySelector("#edit_button").classList.remove("edit_button_on");
+                //also unpin if we pinned it
+                if (editPinnedButtons) {
+                    togglePinning();
+                }
             } else {
                 //push to history, enable editing, set button style
                 historyPush();
@@ -858,8 +923,26 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                     element.setAttribute("contenteditable", "true");
                 });
                 document.querySelector("#edit_button").classList.add("edit_button_on");
+                //also pin the buttons as well
+                if (document.querySelectorAll(".pin_button_on").length != 1) {
+                    togglePinning();
+                    editPinnedButtons = true;
+                }
             }
             editingEnabled = !editingEnabled;
+        }
+
+        //toggle pinning
+        function togglePinning() {
+            if (pinningEnabled) {
+                document.querySelector("#toprightbuttons").removeAttribute("style");
+                document.querySelector("#pin_button").classList.remove("pin_button_on");
+                editPinnedButtons = false;
+            } else {
+                document.querySelector("#toprightbuttons").setAttribute("style", "display:inline-block;");
+                document.querySelector("#pin_button").classList.add("pin_button_on");
+            }
+            pinningEnabled = !pinningEnabled;
         }
 
         //scrolling
@@ -930,6 +1013,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         }
 
         function checkWindowWidth() {
+            //VERTICAL MODE IS DISABLED
             let maxWidth = 390;
             let currentlyVertical = document.querySelectorAll(".verticalmode").length != 0;
             if (window.outerWidth < maxWidth && !currentlyVertical) {
