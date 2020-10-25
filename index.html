@@ -6,21 +6,19 @@
     <!-- scary base64 encoded favicon (小)-->
     <link href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAC90lEQVQ4jU2SW2tVRxTH19z23uca05zEJEZzDpEmNbXeQCoqIiheCkUE8+IX8M2nfoJ+gD4UCnkqtEie+tiAlQZFRMUgCW3qJTHectMk5mSffc6evWdmTdnHfQ4ZWDDMrPn91//PkL6Fhw4A8LREWiwpPXH7JD0yPEdHylUAMACgAUCllew1TZuTxwnIBYAMAOTMH1Nn1aPZcf3rn9N2cbkXALIA4KU9LVFGdyg76eMsNyYPq5un5NpagRAi3P4SaZ59hrQAzUl5OkFL3dO/T45B1os5pwmsudzFpXL13swFcv74BN2/dyk9tomtneqe/m3ymrz/5AfqOHbXoeHbLcDWrb9+ri3Md+dW1k87P94YAwBMM1FtC24Ue7QeDip/O0OFAEGI1wJQziL1YRVMrdYHkw9Ocq3bwbdDdJRycWX9TNLIvGyWgXVbgP6Dlan86DdhY2E+Z2ZejDGDIgVQ2hTQmmfrYcYqrEAcAWekym3TWnMNVPreusUi6pX3gNvhCfF6+QsAIEmlAEODv5+c0X415L390NlVeEWtpS2AUIqXSh3PRHkIwtUlG01Nf5+REWvaS9JkxpDw1fK5xrs3mUJlSO4r9z4l1tp2Bmj14GD3dLE8JOW7N0IurV8WSiX3TRXLHv87IP3GsWREJhzc1dPx1qJVLYAlpNHVVVwkwuG48REQYaj0YYN5MrK0ENStnX8/jEGA2a8P656O7AxDbFjEHQDwAcAveWyu+7ur6uLonuu7N6s2IyPkRT/AL78auDe7tnn/U6N46sRI/0QDMQSDcduCMQlAXTqw56dEUKPaWNn2sVALNO+s+ti55eOVctcvFHFii0B05+4/N2tSfxvNzUK+sh+E1gEQCJFSh6IFrk09Vw+VGyvDPRlpL4ripMkwZg3jkjG6UXv5H9BSz+evLON6UMxXg3wO3FgRS6AmPbeeTMUNY7F0XZ9pQ5FSP3IFHq30jEfB8CgHYB2CPM+HYfCp1Lm9trsUK8EtsVZGjhNGjtD/Awy3cVQ9IGG0AAAAAElFTkSuQmCC" rel="icon" type="image/png" />
     <!-- 
-/////////////////////////////////////////////////////////////////////
-//////// Downloadable HTML for Clipboard Inserter (Enhanced) ////////
-/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
+/////// Downloadable HTML for Clipboard Inserter (Enhanced) v2.0  ///////
+/////////////////////////////////////////////////////////////////////////
 
 ❗❗❗❗❗ Non-default Clipboard Inserter settings are required:
 - element name: pre
 - container selector: #textlines
 
-If you append #largemode to the url of this page (bookmark it if you want), it will switch to large mode with bigger margins and buttons.
-
 Hover the buttons to read their descriptions.
 Both appending and prepending should work for all buttons/functions. (if you have a modified ClipboardInserter)
 
-
-Don't expect any support unless its a bug. Mod it yourself if you need small changes.
+Keyboard shortcuts:
+- Alt + E: Toggle Editing
 
 Original page was inspired/borrowed from: https://pastebin.com/raw/HxjV6YrB (Only a few lines of the old code left) 
 Which was found here: https://pastebin.com/gNJfqpmN
@@ -54,29 +52,25 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
 
 ------------------------>
     <style id="maincss" type="text/css">
-        /* TODO: clean up css, refactor old rules to use correct methods, don't use scale, check for chrome compatibility after the previous points are done */
-
-        /* prevent top right buttons from moving */
         html {
             overflow-y: scroll;
             scrollbar-width: thin;
         }
 
         body {
+            margin-top: 24px;
+            margin-left: 2%;
+            margin-right: 2%;
+            margin-bottom: 420px;
             background-color: #202020;
             color: #BCBCBC;
             font-size: 1.3em;
             font-weight: 400;
-            line-height: 150%;
-            margin-top: 5%;
-            margin-left: 15%;
-            margin-right: 15%;
-            margin-bottom: 420px;
             font-family: "MS Gothic", "Meiryo";
             /* font-family: "IPAGothic", "Sazanami Gothic", "Kochi Gothic", "VL Gothic", "Ume Gothic", "Pro W3", "Hiragino Kaku Gothic Pro", "Osaka Mono", "Osaka", "MS Gothic", "Meiryo", "M+ 1m"; */
         }
 
-        /* Main text style is here */
+        /* Main text style */
         pre {
             /* You can pick some other fonts from below as well. Most fonts use MS Gothic for Japanese text (like Segoe UI here) which is the default japanese font for many games and other media. */
             /*font-family: "IPAGothic", "Sazanami Gothic", "Kochi Gothic", "VL Gothic", "Ume Gothic", "Pro W3", "Hiragino Kaku Gothic Pro", "Osaka Mono", "Osaka", "MS Gothic", "Meiryo", "M+ 1m";*/
@@ -94,14 +88,34 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             margin-bottom: 0.46em;
         }
 
-        /* Top right button css are a bit of a mess right now: #toprightbuttons, .buttoncontainer, #counter, .countercontainer */
-        .buttoncontainer {
-            /* Set this to position: absolute; if you want to disable the fixed buttons on top right */
+        /* Top right buttons & counter css */
+        .countercontainer {
+            bottom: 1px;
+            right: 1px;
             position: fixed;
-            top: 0px;
-            right: 10px;
             display: inline-block;
             font-size: 1.4em;
+            user-select: none;
+        }
+
+        #counter {
+            font-size: 11px;
+            padding: 5px 7px 5px 8px !important;
+            margin-right: 0px;
+            border-radius: 5px !important;
+            background-color: rgba(25, 25, 25, 0.6);
+            color: #9d9d9d;
+            line-height: 100%;
+            float: left;
+            font-family: "Calibri";
+        }
+
+        .buttoncontainer {
+            right: 1px;
+            top: 1px;
+
+            position: fixed;
+            display: inline-block;
             font-family: "VL Gothic";
             user-select: none;
             z-index: 1;
@@ -113,64 +127,13 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         }
 
         #toprightbuttons {
-            right: 150px;
+            z-index: 3;
             display: none;
-            /* background: #202020; */
-        }
-
-        body.verticalmode {
-            margin-right: 28px;
-        }
-
-        #toprightbuttons.verticalmode {
-            right: -5px;
-            top: 40px;
-            width: 50px;
-        }
-
-        #toprightbuttons.verticalmode>div {
-            padding-left: 8px !important;
-            padding-right: 8px !important;
-            margin-bottom: 6px !important;
-        }
-
-        #toprightbuttons.verticalmode>#clear_button {
-            line-height: 136%;
-            padding-right: 9px !important;
-            padding-left: 9px !important;
-        }
-
-        #toprightbuttons.verticalmode>#edit_button {
-            line-height: 130%;
-        }
-
-        #toprightbuttons.verticalmode>#undo_button,
-        #toprightbuttons.verticalmode>#redo_button {
-            border-radius: 6px !important;
-            font-size: 26px;
-            padding-right: 9px !important;
-            margin-bottom: 0px !important;
-        }
-
-        #toprightbuttons.verticalmode>#scroll_button {
-            font-size: 20px;
-            padding-right: 7px !important;
-            line-height: 115%;
-        }
-
-        .countercontainer {
-            position: fixed;
-            bottom: 1px;
-            right: 1px;
-            display: inline-block;
-            font-size: 1.4em;
-            user-select: none;
         }
 
         .buttoncontainer>div:not(#counter):hover {
-            /* filter: brightness(130%);
-            background-color: rgba(22, 22, 22, 1.0); */
             color: #d7d7d7;
+            fill: #d7d7d7;
         }
 
         .buttoncontainer>#pin_button:hover {
@@ -180,66 +143,86 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
 
         .buttoncontainer>div,
         .countercontainer>div {
-            border-radius: 6px !important;
-        }
-
-        #counter {
-            background-color: rgba(25, 25, 25, 0.6);
-            color: #9d9d9d;
-            font-size: 16px;
-            line-height: 100%;
-            float: left;
-            padding-left: 8px;
-            padding-right: 8px;
-            padding-top: 6px;
-            padding-bottom: 7px;
-            font-family: "Calibri";
-        }
-
-        #clear_button {
-            background-color: rgba(25, 25, 25, 0.6);
-            color: #9d9d9d;
-            font-size: 17px;
-            line-height: 100%;
-            float: left;
-            margin-right: 8px;
-            padding-left: 8px;
-            padding-right: 7px;
-            padding-top: 6px;
-            padding-bottom: 7px;
-            cursor: pointer;
-            font-family: "Noto Sans JP Light", "Arial";
+            border-radius: 4px !important;
+            margin-right: 5px;
         }
 
         #pin_button {
+            padding: 2px 3px 5px 4px;
+            font-size: 10px;
+
             background-color: rgba(25, 25, 25, 0.6);
             color: #9d9d9d;
-            font-size: 15px;
-            line-height: 100%;
             float: left;
-            padding-left: 6px;
-            padding-right: 4px;
-            padding-top: 5px;
-            padding-bottom: 10px;
-            margin-right: 9px;
             cursor: pointer;
             filter: grayscale(100%);
+            font-family: "Segoe UI", "Noto Sans JP Light", "Arial";
+        }
+
+        .pin_button_on>#pintext {
+            transform: rotate(-45deg) !important;
+            margin-right: 1px;
+            margin-left: -1px;
+        }
+
+        #clear_button {
+            font-size: 13px;
+            padding: 0px 4px 2px 4px;
+
+            background-color: rgba(25, 25, 25, 0.6);
+            color: #9d9d9d;
+            float: left;
+            cursor: pointer;
             font-family: "Noto Sans JP Light", "Arial";
+        }
+
+        #scroll_button {
+            font-size: 14px;
+            padding: 1px 3px 2px 4px;
+            background-color: rgba(25, 25, 25, 0.6);
+            color: #a6a6a6;
+            float: left;
+            cursor: pointer;
+            /*font-family: "Lucida Sans Unicode";*/
+        }
+
+        #edit_button {
+            font-size: 13px;
+            padding: 1px 4px 2px 4px;
+            background-color: rgba(25, 25, 25, 0.6);
+            color: #9d9d9d;
+            float: left;
+            cursor: pointer;
+        }
+
+        .edit_button_on {
+            box-shadow: inset 0px 0px 6px 2px rgba(73, 196, 47, 0.5);
+            color: rgb(73, 196, 47) !important;
+        }
+
+        #add_line_button {
+            background-color: rgba(25, 25, 25, 0.6);
+            float: left;
+            cursor: pointer;
+            padding: 3px 4px 4px 4px;
+            width: 14px;
+            fill: #9f9f9f;
         }
 
         .undoredoButtons {
             background-color: rgba(25, 25, 25, 0.6);
-            color: #9d9d9d;
-            font-size: 22px;
-            line-height: 100%;
+            color: #848484;
+            font-size: 15px;
+            height: 10px;
+            width: 10px;
             float: left;
-            margin-right: 8px;
-            padding-left: 8px;
-            padding-right: 8px;
-            padding-top: 5px;
-            padding-bottom: 3px;
+            padding: 5px 0px 6px 6px;
             cursor: pointer;
             pointer-events: initial;
+        }
+
+        .undoredoButtons > div:hover, #remove_button:hover {
+            color: #ccc !important;
         }
 
         .undoredoButtons[disabled] {
@@ -249,96 +232,46 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
 
         #undo_button {
             margin-right: 0px;
-            padding-right: 8px;
-            border-radius: 6px 0px 0px 6px !important;
+            padding-right: 3px;
+            border-radius: 4px 0px 0px 4px !important;
         }
 
         #redo_button {
-            border-radius: 0px 6px 6px 0px !important;
-            padding-left: 4px;
-            padding-right: 7px;
-        }
-
-        #scroll_button {
-            background-color: rgba(25, 25, 25, 0.6);
-            color: #a6a6a6;
-            font-size: 18px;
-            line-height: 100%;
-            float: left;
-            margin-right: 8px;
-            padding-left: 6px;
+            border-radius: 0px 4px 4px 0px !important;
+            padding-left: 3px;
             padding-right: 6px;
-            padding-top: 6px;
-            padding-bottom: 7px;
-            cursor: pointer;
-            /*font-family: "Lucida Sans Unicode";*/
-        }
-
-        #edit_button {
-            background-color: rgba(25, 25, 25, 0.6);
-            color: #9d9d9d;
-            font-size: 18px;
-            line-height: 100%;
-            float: left;
-            margin-right: 8px;
-            padding-left: 6px;
-            padding-right: 6px;
-            padding-top: 6px;
-            padding-bottom: 6px;
-            cursor: pointer;
-        }
-
-        .edit_button_on {
-            box-shadow: inset 0px 0px 6px 2px rgba(73, 196, 47, 0.5);
-            color: rgb(73, 196, 47) !important;
-        }
-
-        /* 
-        .pin_button_on {
-            box-shadow: inset 0px 0px 6px 2px rgba(73, 196, 47, 0.5);
-            color: rgb(73, 196, 47) !important;
-        } 
-        */
-
-        .pin_button_on>#pintext {
-            transform: rotate(-45deg) !important;
-            margin-right: 2px;
-            margin-left: -2px;
         }
 
         #menu_button {
             background-color: rgba(25, 25, 25, 0.6);
             color: #9d9d9d;
-            line-height: 100%;
             float: right;
-            font-size: 23px;
-            padding-left: 6px;
-            padding-right: 6px;
-            padding-top: 3px;
-            padding-bottom: 4px;
+            font-size: 16px;
+            padding: 0px 4px 1px 5px;
+            margin-right: 0px;
             cursor: pointer;
+            line-height: 20px;
         }
 
         #remove_button {
+            padding: 1px 3px 1px 3px;
             background-color: rgba(29, 29, 29, 1);
-            color: #9d9d9d;
-            line-height: 100%;
+            color: #868686;
             float: right;
-            font-size: 22px;
-            padding-left: 4px;
-            padding-right: 5px;
-            padding-top: 4px;
-            padding-bottom: 4px;
+            font-size: 15px;
+            margin-right: 0px;
             cursor: pointer;
         }
 
+        /* Top/Bottom buttons css */
         #go_to_last_button {
-            position: relative;
+            margin-left: 88px;
             bottom: -20px;
-            width: 50px;
+
+            position: relative;
             cursor: pointer;
             user-select: none;
-            font-size: 50px;
+            font-size: 22px;
             filter: opacity(20%);
         }
 
@@ -347,12 +280,13 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         }
 
         #go_bottom_button {
+            margin-left: 88px;
+            top: -6px !important;
+
             position: absolute;
-            top: 9px;
-            width: 50px;
             cursor: pointer;
             user-select: none;
-            font-size: 50px;
+            font-size: 22px;
             filter: opacity(20%);
         }
 
@@ -360,7 +294,18 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             filter: opacity(40%);
         }
 
-        /* Hover CSS */
+        /* Hover buttons CSS */
+        .hoverButtonsContainer {
+            width: 88px !important;
+            margin-top: -21px;
+            height: 18px;
+
+            position: absolute;
+            display: flex;
+            background-color: transparent;
+            user-select: none;
+        }
+
         .hoverButtonsContainer:hover,
         pre:hover>.hoverButtonsContainer>.hoverButtonsBackground {
             display: flex !important;
@@ -372,30 +317,18 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         }
 
         .hoverButtonsBackground {
+            height: 15px;
+            padding: 2px 4px 5px 10px;
+            border-radius: 5px;
             position: absolute;
             display: flex;
             flex-direction: row;
             justify-content: space-evenly;
             background-color: #1D1D1D;
-            padding: 2px 5px 5px 10px;
-            border-radius: 10px;
             z-index: 555;
             font-size: 14px;
-            margin-left: -6px;
-            margin-top: -2px;
             user-select: none;
             display: none;
-        }
-
-        .hoverButtonsContainer {
-            position: absolute;
-            width: 138px;
-            height: 30vh;
-            display: flex;
-            background-color: transparent;
-            margin-left: -138px;
-            margin-top: 0px;
-            user-select: none;
         }
 
         .hoverButtons {
@@ -410,24 +343,18 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         }
 
         .hoverButtonDelete {
-            font-size: 25px;
-            line-height: 28px;
-            margin-right: 4px;
-            margin-top: -1px;
-        }
-
-        .hoverButtonDown,
-        .hoverButtonUp {
-            font-size: 22px;
-            font-family: "Lucida Sans Unicode";
+            font-size: 17px;
+            margin-right: 3px;
+            margin-top: -5px;
+            margin-left: -4px;
         }
 
         .hoverButtonReduceNewlines {
-            font-size: 33px;
-            line-height: 22px;
-            font-family: Arial;
-            margin-top: 4px;
+            margin-top: -5px;
             margin-right: 2px;
+
+            font-size: 22px;
+            font-family: Arial;
         }
 
         .hoverButtonCopy:hover {
@@ -435,95 +362,27 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         }
 
         .hoverButtonCopy {
-            font-size: 20px;
-            line-height: 22px;
+            margin-top: -1px;
+            margin-right: 1px;
+
+            font-size: 13px;
             font-family: Arial;
-            margin-top: 4px;
             filter: contrast(90%);
         }
 
-    </style>
-
-
-    <!-- CSS FOR SMALL PAGE (enabled by default, disabled by appending #largemode to url) -->
-    <style id="smallcss" type="text/css">
-        body {
-            margin-top: 24px;
-            margin-left: 2%;
-            margin-right: 2%;
-            margin-bottom: 420px;
+        .hoverButtonDown,
+        .hoverButtonUp {
+            font-size: 14px;
+            margin-top: -2px;
         }
 
-        .buttoncontainer {
-            scale: 70%;
-            right: -3px;
-            top: 0px;
-            margin-top: -5px !important;
-        }
-
-        #toprightbuttons {
-            right: -37px;
-            z-index: 3;
-        }
-
-        #toprightbuttons.verticalmode {
-            right: -16px;
-            top: 14px;
-            width: 50px;
-        }
-
-        .countercontainer {
-            /* 
-            right: 30px !important;
-            top: 5px;
-            margin-top: -5px !important;
-             */
-        }
-
-        #counter {
-            font-size: 11px;
-            padding-bottom: 5px !important;
-            padding-top: 5px !important;
-            padding-left: 8px !important;
-            padding-right: 7px !important;
-            border-radius: 5px !important;
-        }
-
-        #go_bottom_button {
-            scale: 44%;
-            top: -4px !important;
-            margin-left: 70px;
-        }
-
-        #go_to_last_button {
-            scale: 44%;
-            margin-left: 70px;
-        }
-
-        .hoverButtonsContainer {
-            width: 96px !important;
-            margin-left: 0px !important;
-            margin-top: -20px;
-            height: 20px;
-        }
-
+        /* Lighter background colors for buttons */
+        /* 
+        .buttoncontainer>div,
         .hoverButtonsBackground {
-            scale: 63%;
-            margin-left: -26px !important;
-            margin-top: -8px;
-            border-radius: 10px;
-            height: 145%;
+            background-color: rgb(60, 60, 60) !important;
         }
-
-        .hoverButtonReduceNewlines {
-            font-size: 36px;
-            margin-top: 4px;
-        }
-
-        .hoverButtonDelete {
-            font-size: 27px;
-            margin-top: 0px;
-        }
+        */
 
     </style>
 
@@ -540,18 +399,40 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         <div id="pin_button" class="pin_button_on" title="Pin/Unpin the menu">
             <div id="pintext">📌</div>
         </div>
-        <!-- This is the div used for the "Clear all lines" button. -->
-        <div id="clear_button" title="Clear all lines">∅</div>
+        <!-- This is the div used for the "Clear all lines" button. 🛇⊘∅ -->
+        <div id="clear_button" title="Clear all lines.
+Clears the history as well when clicked while holding Shift.">⊘</div>
         <!-- This is the div used for the "Toggle scroll to bottom a when new line is added" button. -->
         <div id="scroll_button" title="Scroll to bottom(⇓)/top(⇑)/nowhere(⇕) when a new line is added.">⇓</div>
         <!-- This is the div used for the "Enable editing" button. -->
-        <div id="edit_button" title="Enable editing &#013;History is saved right when you enable this, &#013;so disable it if you want when you are done.">🖉</div>
+        <div id="edit_button" title="Enables editable lines.
+History is saved right when you enable this,
+so disable it if you want when you are done.
+Toggle Shortcut: Alt + E">🖉</div>
+        <!-- This is the div used for the "Add a new line" button. -->
+        <div id="add_line_button" title="Adds a new line and enables editing.
+Saves history when pressed.">
+            <!-- Octicons v11.0.0, License: MIT, Copyright (c) 2020 GitHub Inc. -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M8 2a.75.75 0 01.75.75v4.5h4.5a.75.75 0 010 1.5h-4.5v4.5a.75.75 0 01-1.5 0v-4.5h-4.5a.75.75 0 010-1.5h4.5v-4.5A.75.75 0 018 2z"></path>
+            </svg>
+        </div>
         <!-- These are the divs used for the "Undo/Redo" buttons. -->
         <div id="undo_button" class="undoredoButtons" disabled="" title="Undo">
-            <div style="transform: scale(1, -1);top: 2px;position: relative;">⤾</div>
+            <div>
+                <!-- Font Awesome Icons, CC BY 4.0 License, https://fontawesome.com/license/free -->
+                <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="undo-alt" class="svg-inline--fa fa-undo-alt fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                    <path fill="currentColor" d="M255.545 8c-66.269.119-126.438 26.233-170.86 68.685L48.971 40.971C33.851 25.851 8 36.559 8 57.941V192c0 13.255 10.745 24 24 24h134.059c21.382 0 32.09-25.851 16.971-40.971l-41.75-41.75c30.864-28.899 70.801-44.907 113.23-45.273 92.398-.798 170.283 73.977 169.484 169.442C423.236 348.009 349.816 424 256 424c-41.127 0-79.997-14.678-110.63-41.556-4.743-4.161-11.906-3.908-16.368.553L89.34 422.659c-4.872 4.872-4.631 12.815.482 17.433C133.798 479.813 192.074 504 256 504c136.966 0 247.999-111.033 248-247.998C504.001 119.193 392.354 7.755 255.545 8z"></path>
+                </svg>
+            </div>
         </div>
         <div id="redo_button" class="undoredoButtons" disabled="" title="Redo">
-            <div style="transform: scale(1, -1);top: 2px;position: relative;">⤿</div>
+            <div>
+                <!-- Font Awesome Icons, CC BY 4.0 License, https://fontawesome.com/license/free -->
+                <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="redo-alt" class="svg-inline--fa fa-redo-alt fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                    <path fill="currentColor" d="M256.455 8c66.269.119 126.437 26.233 170.859 68.685l35.715-35.715C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.75c-30.864-28.899-70.801-44.907-113.23-45.273-92.398-.798-170.283 73.977-169.484 169.442C88.764 348.009 162.184 424 256 424c41.127 0 79.997-14.678 110.629-41.556 4.743-4.161 11.906-3.908 16.368.553l39.662 39.662c4.872 4.872 4.631 12.815-.482 17.433C378.202 479.813 319.926 504 256 504 119.034 504 8.001 392.967 8 256.002 7.999 119.193 119.646 7.755 256.455 8z"></path>
+                </svg>
+            </div>
         </div>
         <!-- This is the div used for the "remove last line" button. -->
         <div id="remove_button" title="Remove first/last line &#013;(removes first line instead when auto scroll is set to 'Scroll to top')">✖</div>
@@ -565,23 +446,21 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
     </div>
 
     <script>
-        //javascript stuff
+        //globals and toggles
         const historystack = [];
+        const historystack_forward = [];
         const maxhistorylength = 1000;
-        var historystack_forward = [];
-        var editingEnabled = false;
-        var pinningEnabled = true;
-        var editPinnedButtons = false;
-        var scroll_fix_alignment = 10;
-        var forgiveHistoryTimes = 0;
-
+        let editingEnabled = false;
+        let pinningEnabled = true;
+        let editPinnedButtons = false;
+        let scroll_fix_alignment = 10;
+        let forgiveHistoryTimes = 0;
+        let scrollOnNewline = "";
+        let linecount = 0;
 
         //DOMContentLoaded Start
         document.addEventListener("DOMContentLoaded", function(event) {
-            //1: scroll down on newline
-            //2: scroll up
-            //0: disabled
-            var scrollOnNewline = localStorage.getItem("scrollOnNewline");
+            scrollOnNewline = localStorage.getItem("scrollOnNewline");
             switch (scrollOnNewline) {
                 case "disabled":
                     document.querySelector("#scroll_button").style.color = "#595959";
@@ -606,19 +485,13 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                 document.title = document.title += " (Online)";
             }
 
-            //Check if #largemode
-            if (document.location.hash == "#largemode") {
-                scroll_fix_alignment = -16;
-                document.querySelector("#smallcss").disabled = true;
-            }
-
             const myMutationObserver = new MutationObserver(function(records) {
                 records.forEach(function(mutation) {
                     Array.prototype.forEach.call(mutation.addedNodes, function(node) {
                         try {
-                            var isNewLine = false;
+                            let isNewLine = false;
                             //return if the inserted node is not in #textlines
-                            var relatedId = "";
+                            let relatedId = "";
                             try {
                                 if ((node.parentNode.attributes.id.value == "textlines") && (node.tagName == "PRE")) {
                                     isNewLine = true;
@@ -639,7 +512,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                             updateCounter();
 
                             //check if editing is enabled
-                            var preNodeOpen = editingEnabled ? "<pre contenteditable=\"true\">" : "<pre>";
+                            let preNodeOpen = editingEnabled ? "<pre contenteditable=\"true\">" : "<pre>";
                             //put the added pre text into another pre so we can modify it later on.
                             node.innerHTML = preNodeOpen + node.innerHTML + "</pre>";
 
@@ -666,6 +539,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                 });
             });
 
+            //add button events
             //undo_button
             document.getElementById("undo_button").addEventListener("click", function() {
                 historyPop();
@@ -679,6 +553,11 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             //edit_button
             document.getElementById("edit_button").addEventListener("click", function() {
                 toggleEditing();
+            });
+
+            //add_line_button
+            document.getElementById("add_line_button").addEventListener("click", function() {
+                addNewLine();
             });
 
             //pin_button
@@ -711,14 +590,12 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                 localStorage.setItem("scrollOnNewline", scrollOnNewline);
             });
 
-            //Beginning of "remove last line" script.
-            //Listen for click.
             document.getElementById("remove_button").addEventListener("click", function() {
                 historyPush();
 
                 //Check whether there are any lines.
-                var remove_lines = document.querySelectorAll('#textlines > pre').length;
-                if (remove_lines > 0) {
+                //let linecount = document.querySelectorAll('#textlines > pre').length;
+                if (linecount > 0) {
 
                     //Remove the first/last line.
                     switch (scrollOnNewline) {
@@ -739,10 +616,16 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                 };
             });
 
-            //End of "remove last line"
+            document.getElementById("clear_button").addEventListener("click", function(e) {
 
-            document.getElementById("clear_button").addEventListener("click", function() {
-                historyPush();
+                //If shift is held, clear history as well.
+                if (e.shiftKey) {
+                    historystack.length = 0;
+                    historystack_forward.length = 0;
+                    sethistoryButtons();
+                } else {
+                    historyPush();
+                }
 
                 document.querySelectorAll('#textlines')[0].innerHTML = "";
                 //Update the counter.
@@ -751,45 +634,50 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
 
             document.getElementById("go_to_last_button").addEventListener("click", function() {
                 //document.querySelector("#textlines > pre:last-of-type").scrollIntoView();
-                window.scroll(0, findPos(document.querySelector("#textlines > pre:last-of-type"))[1] - 200);
+                if (linecount > 0) {
+                    window.scroll(0, findPos(document.querySelector("#textlines > pre:last-of-type"))[1] - 200);
+                }
             });
-
 
             document.getElementById("go_bottom_button").addEventListener("click", function() {
-                document.querySelectorAll("html")[0].scrollIntoView(false);
+                if (linecount > 0) {
+                    document.querySelectorAll("html")[0].scrollIntoView(false);
+                }
             });
 
-            //VERTICAL MODE IS DISABLED
-            //detect if the window width is low and make buttons vertical if it is
-            //window.addEventListener("resize", checkWindowWidth);
-            //check on page load as well.
-            //checkWindowWidth();
-
-            /*
-            pre = document.createElement("pre");
-            pre.innerHTML = "loremipsum\n\nloremipsumloremipsumloremipsum\n\n\n\nloremipsumloremipsum";
-            document.querySelector("#textlines").append(pre);
-            */
-
-            //start mutation observer for new lines
+            //start mutation observer for any new lines
             myMutationObserver.observe(document.querySelectorAll('#textlines')[0], {
                 subtree: true,
                 childList: true
             });
+
+            
+            /*
+            pre = document.createElement("pre");
+            pre.innerHTML = "loremipsum\n\nloremipsumloremipsumloremipsum\n\n\n\nloremipsumloremipsum";
+            document.querySelector("#textlines").prepend(pre);
+            */
 
         });
         //---DOMContentLoaded end---
         //---DOMContentLoaded end---
         //---DOMContentLoaded end---
 
-
+        //Keyboard shortcuts
+        document.addEventListener("keydown", function(e) {
+            //Alt + E: Toggle Editing
+            if (e.altKey && e.which == 69) {
+                toggleEditing();
+                e.preventDefault();
+            }
+        });
 
         //----------functions----------
 
         //add hover buttons to every line
         function createhoverButtons(element) {
 
-            var hoverButtons = document.createElement("div");
+            let hoverButtons = document.createElement("div");
             element.prepend(hoverButtons);
             hoverButtons.outerHTML = `<div class="hoverButtonsContainer">
 <div class="hoverButtonsBackground">
@@ -817,7 +705,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                 scrollUpDown(event.target, event.clientY, false);
             });
             element.querySelector(".hoverButtonCopy").addEventListener("click", function(event) {
-                var range = document.createRange();
+                let range = document.createRange();
                 range.selectNode(event.target.parentNode.parentNode.parentNode.querySelector("pre"));
                 window.getSelection().removeAllRanges();
                 window.getSelection().addRange(range);
@@ -826,11 +714,10 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             });
         }
 
-
         //start undo/redo buttons
         function historyPush(resetforward = true) {
-            var textlinesNode = document.querySelector("#textlines").cloneNode(true);
-            var dummyDiv = document.createElement("div");
+            let textlinesNode = document.querySelector("#textlines").cloneNode(true);
+            let dummyDiv = document.createElement("div");
             for (const element of textlinesNode.childNodes) {
                 try {
                     if (element.firstChild.nodeName != "#text") {
@@ -841,17 +728,17 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                     }
                 } catch {}
             }
-            var historydict = {
+            let historydict = {
                 state: dummyDiv.innerHTML,
                 linecount: textlinesNode.childNodes.length,
             }
-            var historylength = historystack.push(historydict);
+            let historylength = historystack.push(historydict);
             if (historylength > maxhistorylength) {
                 historystack.shift();
             }
             if (resetforward) {
                 //reset forward history
-                historystack_forward = [];
+                historystack_forward.length = 0;
             }
 
             sethistoryButtons();
@@ -869,8 +756,8 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         }
 
         function historyPush_forward() {
-            var textlinesNode = document.querySelector("#textlines").cloneNode(true);
-            var dummyDiv = document.createElement("div");
+            let textlinesNode = document.querySelector("#textlines").cloneNode(true);
+            let dummyDiv = document.createElement("div");
             for (const element of textlinesNode.childNodes) {
                 try {
                     //ignore text only nodes (that were just inserted)
@@ -882,11 +769,11 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                     }
                 } catch {}
             }
-            var historydict = {
+            let historydict = {
                 state: dummyDiv.innerHTML,
                 linecount: textlinesNode.childNodes.length,
             }
-            var historylength_forward = historystack_forward.push(historydict);
+            let historylength_forward = historystack_forward.push(historydict);
             if (historylength_forward > maxhistorylength) {
                 historystack_forward.shift();
             }
@@ -945,6 +832,36 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             editingEnabled = !editingEnabled;
         }
 
+        //add new line
+        function addNewLine() {
+            if (!editingEnabled) {
+                toggleEditing();
+            }
+
+            newpre = document.createElement("pre");
+            newpre.innerHTML = "";
+            //append or prepend the new line based on the current setting, prepend is default.
+            switch (scrollOnNewline) {
+                case "disabled":
+                    document.querySelector("#textlines").prepend(newpre);
+                    break;
+                case "toBottom":
+                    document.querySelector("#textlines").append(newpre);
+                    break;
+                case "toTop":
+                    document.querySelector("#textlines").prepend(newpre);
+                    break;
+                default:
+                    document.querySelector("#textlines").prepend(newpre);
+                    break;
+            }
+            //Workaround for focusing contenteditable (https://stackoverflow.com/a/37162116/5050478)
+            setTimeout(function() {
+                newpre.querySelector("pre").focus();
+            }, 0);
+
+        }
+
         //toggle pinning
         function togglePinning() {
             if (pinningEnabled) {
@@ -970,7 +887,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         function scrollUpDown(element, clientY, scrollUp) {
             //get the pre
             element = element.parentNode.parentNode.parentNode;
-            var scrollto = null;
+            let scrollto = null;
             try {
                 if (scrollUp) {
                     scrollto = element.previousElementSibling;
@@ -994,7 +911,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
 
         //find an element's position in the whole page
         function findPos(obj) {
-            var curleft = curtop = 0;
+            let curleft = curtop = 0;
             if (obj.offsetParent) {
                 do {
                     curleft += obj.offsetLeft;
@@ -1013,7 +930,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
 
         function reduceNewlines(element) {
             element = element.parentNode.parentNode.parentNode;
-            var modifystring = element.querySelector("pre").innerText;
+            let modifystring = element.querySelector("pre").innerText;
             //trim newline+spaces at the start (once)
             modifystring = modifystring.replace(/^[\r\t\f\v 　\u00a0]*\n/, "");
             //trim spaces+newline at the end (once)
@@ -1025,22 +942,9 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             element.querySelector("pre").innerText = modifystring;
         }
 
-        function checkWindowWidth() {
-            //VERTICAL MODE IS DISABLED
-            let maxWidth = 390;
-            let currentlyVertical = document.querySelectorAll(".verticalmode").length != 0;
-            if (window.outerWidth < maxWidth && !currentlyVertical) {
-                document.querySelector("#toprightbuttons").classList.add("verticalmode");
-                document.querySelector("body").classList.add("verticalmode");
-            } else if (currentlyVertical && window.outerWidth >= maxWidth) {
-                document.querySelector("#toprightbuttons").classList.remove("verticalmode");
-                document.querySelector("body").classList.remove("verticalmode");
-            }
-        }
-
         function updateCounter() {
-            var charlength = 0;
-            var linecount = 0;
+            let charlength = 0;
+            linecount = 0;
             try {
                 document.querySelectorAll("#textlines > pre").forEach(element => {
                     charlength += element.innerText.length;
