@@ -137,7 +137,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         }
 
         .buttoncontainer>#pin_button:hover {
-            filter: brightness(130%) grayscale(100%);
+            filter: brightness(140%) grayscale(100%);
             background-color: rgba(22, 22, 22, 1.0);
         }
 
@@ -221,7 +221,8 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             pointer-events: initial;
         }
 
-        .undoredoButtons > div:hover, #remove_button:hover {
+        .undoredoButtons>div:hover,
+        #remove_button:hover {
             color: #ccc !important;
         }
 
@@ -296,9 +297,9 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
 
         /* Hover buttons CSS */
         .hoverButtonsContainer {
-            width: 88px !important;
-            margin-top: -21px;
-            height: 18px;
+            width: 88px;
+            margin-top: -20px;
+            height: 20px;
 
             position: absolute;
             display: flex;
@@ -319,7 +320,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         .hoverButtonsBackground {
             height: 15px;
             padding: 2px 4px 5px 10px;
-            border-radius: 5px;
+            border-radius: 6px;
             position: absolute;
             display: flex;
             flex-direction: row;
@@ -346,15 +347,15 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             font-size: 17px;
             margin-right: 3px;
             margin-top: -5px;
-            margin-left: -4px;
+            margin-left: -5px;
         }
 
         .hoverButtonReduceNewlines {
-            margin-top: -5px;
-            margin-right: 2px;
-
+            margin-top: -9px;
+            margin-right: 1px;
             font-size: 22px;
-            font-family: Arial;
+            font-family: Segoe UI;
+            font-weight: bold;
         }
 
         .hoverButtonCopy:hover {
@@ -405,7 +406,7 @@ Clears the history as well when clicked while holding Shift.">⊘</div>
         <!-- This is the div used for the "Toggle scroll to bottom a when new line is added" button. -->
         <div id="scroll_button" title="Scroll to bottom(⇓)/top(⇑)/nowhere(⇕) when a new line is added.">⇓</div>
         <!-- This is the div used for the "Enable editing" button. -->
-        <div id="edit_button" title="Enables editable lines.
+        <div id="edit_button" title="Enables line editing.
 History is saved right when you enable this,
 so disable it if you want when you are done.
 Toggle Shortcut: Alt + E">🖉</div>
@@ -651,7 +652,7 @@ Saves history when pressed.">
                 childList: true
             });
 
-            
+
             /*
             pre = document.createElement("pre");
             pre.innerHTML = "loremipsum\n\nloremipsumloremipsumloremipsum\n\n\n\nloremipsumloremipsum";
