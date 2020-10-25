@@ -7,5 +7,13 @@ Tested on Firefox and Chrome.
 - element name: **pre**
 - container selector: **#textlines**
 
+**Usage:**  
 
-### Preview the hosted version: **https://onurtag.github.io/ClipboardInserter_html/**  
+- Hover the buttons to read their descriptions.  
+  Appending and prepending works for all buttons and functions. (if you have a modified ClipboardInserter extension)  
+
+**Keyboard shortcuts:**
+- Alt + E: Toggle Editing
+
+___
+### Preview the hosted version here: **https://onurtag.github.io/ClipboardInserter_html/**  
