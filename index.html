@@ -377,6 +377,19 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             margin-top: -2px;
         }
 
+        /* Webkit compatibility: Thinner Scrollbar (similar to Firefox) */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #7a7a7b !important;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #232327;
+        }
+
         /* Lighter background colors for buttons */
         /* 
         .buttoncontainer>div,
