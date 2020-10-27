@@ -684,17 +684,19 @@ Saves history when pressed.">
 
         //Non-css hover method for the menu
         document.getElementById("menucontainer").addEventListener("mouseenter", function(e) {
-            document.querySelector("#menucontainer").setAttribute("style", "display:none;");
+            //document.querySelector("#menucontainer").setAttribute("style", "display:none;");
+            handleMenuState();
         });
 
         document.getElementById("toprightbuttons").addEventListener("mouseleave", function(e) {
             if (!pinningEnabled) {
-                document.querySelector("#menucontainer").removeAttribute("style");
+                //document.querySelector("#menucontainer").removeAttribute("style");
+                handleMenuState();
             }
         });
 
         //handle the above hover state manually (required for keybindings and transparency)
-        function handleMenuState() {
+        function handleMenuState(doConfirm = true) {
             var menuStyles = window.getComputedStyle(document.querySelector("#menucontainer"));
             var buttonsStyles = window.getComputedStyle(document.querySelector("#toprightbuttons"));
             var menuDisplay = menuStyles.getPropertyValue("display");
@@ -704,6 +706,10 @@ Saves history when pressed.">
             } else if ((menuDisplay == "none") && (buttonsDisplay == "none")) {
                 document.querySelector("#menucontainer").removeAttribute("style");
             }
+            //firefox hover bug workaround
+            setTimeout(() => {
+                handleMenuState(false);
+            }, 50);
         }
 
         //Keyboard shortcuts
