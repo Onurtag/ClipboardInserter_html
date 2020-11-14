@@ -271,6 +271,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             cursor: pointer;
             user-select: none;
             font-size: 22px;
+            width: 24px;
             filter: opacity(20%);
         }
 
@@ -285,6 +286,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             cursor: pointer;
             user-select: none;
             font-size: 22px;
+            width: 24px;
             filter: opacity(20%);
         }
 
@@ -455,8 +457,21 @@ Saves history when pressed.">
         <!-- Dummy div for buttons-->
     </div>
 
+    <!-- inserted pre tags go here -->
+    <div id="textlines"></div>
+
+    <div id="go_to_last_button" title="Scroll to the start of the last item">🡹</div>
+
     <script>
-        //globals
+        //---default options---
+        //true: pinning is enabled by default, false: disabled
+        let pinningEnabled = false;
+        //true: editing is enabled by default, false: disabled
+        let editingEnabled = false;
+        //true: Allows you to auto-hide the yomichan popup when your mouse is out of the window, false: disabled
+        let autoHideYomichan = true;
+        //---------------------
+
         const historystack = [];
         const historystack_forward = [];
         const maxhistorylength = 1000;
@@ -465,9 +480,6 @@ Saves history when pressed.">
         let forgiveHistoryTimes = 0;
         let linecount = 0;
         let editPinnedButtons = false;
-        //defaults
-        let pinningEnabled = true;
-        let editingEnabled = false;
 
         //DOMContentLoaded Start (first load)
         document.addEventListener("DOMContentLoaded", function(event) {
@@ -663,6 +675,55 @@ Saves history when pressed.">
                     document.querySelectorAll("html")[0].scrollIntoView(false);
                 }
             });
+
+            //Modified from https://stackoverflow.com/a/24989958/5050478
+            //Mouse in/out check for yomichan (with shadow dom disabled in settings)
+            function checkMouseInOut() {
+                var theTimer;
+                var wasHidden = false;
+
+                window.onmouseout = resetTimer;
+                window.onmouseover = clearTimer;
+
+                function doAction() {
+                    try {
+                        //hide yomichan if it exists.
+                        let yomichanFrame = document.querySelector("iframe.yomichan-float");
+                        if (yomichanFrame.style.getPropertyValue("visibility") == "visible") {
+                            yomichanFrame.style.setProperty("visibility", "hidden", "important");
+                            wasHidden = true;
+                        }
+                    } catch (error) {}
+                }
+
+                function clearTimer(e) {
+                    //Mouse entered window or any element
+                    clearTimeout(theTimer);
+                    if (wasHidden) {
+                        wasHidden = false;
+                        let yomichanFrame = document.querySelector("iframe.yomichan-float");
+                        //transition is used to prevent flashing
+                        yomichanFrame.style.setProperty("transition", "visibility 0.5s linear 0.5s");
+                        yomichanFrame.style.setProperty("visibility", "visible", "important");
+                        setTimeout(() => {
+                            yomichanFrame.style.removeProperty("transition");
+                        }, 1);
+                    }
+                }
+
+                function resetTimer(e) {
+                    clearTimeout(theTimer);
+                    let reltarget = e.relatedTarget || e.toElement;
+                    if (!reltarget || (reltarget.nodeName == "HTML" && e.target == document.firstChild)) {
+                        //Mouse left window here
+                        theTimer = setTimeout(doAction, 1000);
+                    }
+                }
+            }
+            //start checking for mouse in/out
+            if (autoHideYomichan) {
+                checkMouseInOut();
+            }
 
             //start mutation observer for any new lines
             myMutationObserver.observe(document.querySelectorAll('#textlines')[0], {
@@ -1015,10 +1076,6 @@ Saves history when pressed.">
 
     </script>
 
-    <!-- inserted pre tags go here -->
-    <div id="textlines"></div>
-
-    <div id="go_to_last_button" title="Scroll to the start of the last item">🡹</div>
 </body>
 
 </html>
