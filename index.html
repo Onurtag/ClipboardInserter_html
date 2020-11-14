@@ -51,6 +51,626 @@ For various other free Japanese fonts, visit http://www.freejapanesefont.com/
 For more font attribute information visit http://www.w3schools.com/css/css_font.asp
 
 ------------------------>
+
+
+    <script>
+        //---default options---
+        //true: pinning is enabled by default, false: disabled
+        let pinningEnabled = false;
+        //true: editing is enabled by default, false: disabled
+        let editingEnabled = false;
+        //true: Allows you to auto-hide the yomichan popup when your mouse is out of the window, false: disabled
+        //❗ This option requires "Use shadow DOM container for popup" to be unticked in yomichan's options.
+        let autoHideYomichan = true;
+        //---------------------
+
+        const historystack = [];
+        const historystack_forward = [];
+        const maxhistorylength = 1000;
+        let scroll_fix_alignment = 10;
+        let scrollOnNewline = "";
+        let forgiveHistoryTimes = 0;
+        let linecount = 0;
+        let editPinnedButtons = false;
+
+        //DOMContentLoaded Start (first load)
+        document.addEventListener("DOMContentLoaded", function(event) {
+            scrollOnNewline = localStorage.getItem("scrollOnNewline");
+            switch (scrollOnNewline) {
+                case "disabled":
+                    document.querySelector("#scroll_button").style.color = "#595959";
+                    document.querySelector("#scroll_button").innerText = "⇕";
+                    break;
+                case "toBottom":
+                    document.querySelector("#scroll_button").style.color = "";
+                    document.querySelector("#scroll_button").innerText = "⇓";
+                    break;
+                case "toTop":
+                    document.querySelector("#scroll_button").style.color = "";
+                    document.querySelector("#scroll_button").innerText = "⇑";
+                    break;
+                default:
+                    scrollOnNewline = "toBottom";
+                    break;
+            }
+
+            if (document.location.protocol.indexOf("http") == -1) {
+                document.title = document.title += " (Local)";
+            } else {
+                document.title = document.title += " (Online)";
+            }
+
+            //load first states
+            if (pinningEnabled) {
+                togglePinning(true);
+            }
+            if (editingEnabled) {
+                toggleEditing(true);
+            }
+
+            //add button events
+            //undo_button
+            document.getElementById("undo_button").addEventListener("click", function() {
+                historyPop();
+            });
+
+            //redo_button
+            document.getElementById("redo_button").addEventListener("click", function() {
+                historyPop_forward();
+            });
+
+            //edit_button
+            document.getElementById("edit_button").addEventListener("click", function() {
+                toggleEditing();
+            });
+
+            //add_line_button
+            document.getElementById("add_line_button").addEventListener("click", function() {
+                addNewLine();
+            });
+
+            //pin_button
+            document.getElementById("pin_button").addEventListener("click", function() {
+                togglePinning();
+            });
+
+            //scroll_button
+            document.getElementById("scroll_button").addEventListener("click", function() {
+                switch (scrollOnNewline) {
+                    case "disabled":
+                        document.querySelector("#scroll_button").style.color = "";
+                        document.querySelector("#scroll_button").innerText = "⇓";
+                        scrollOnNewline = "toBottom";
+                        break;
+                    case "toBottom":
+                        document.querySelector("#scroll_button").style.color = "";
+                        document.querySelector("#scroll_button").innerText = "⇑";
+                        scrollOnNewline = "toTop";
+                        break;
+                    case "toTop":
+                        document.querySelector("#scroll_button").style.color = "#595959";
+                        document.querySelector("#scroll_button").innerText = "⇕";
+                        scrollOnNewline = "disabled";
+                        break;
+                    default:
+                        scrollOnNewline = "toBottom";
+                        break;
+                }
+                localStorage.setItem("scrollOnNewline", scrollOnNewline);
+            });
+
+            document.getElementById("remove_button").addEventListener("click", function() {
+                historyPush();
+
+                //Check whether there are any lines.
+                //let linecount = document.querySelectorAll('#textlines > pre').length;
+                if (linecount > 0) {
+
+                    //Remove the first/last line.
+                    switch (scrollOnNewline) {
+                        case "disabled":
+                            document.querySelector("#textlines > pre:last-of-type").remove();
+                            break;
+                        case "toBottom":
+                            document.querySelector("#textlines > pre:last-of-type").remove();
+                            break;
+                        case "toTop":
+                            document.querySelector("#textlines > pre:first-of-type").remove();
+                            break;
+                        default:
+                            break;
+                    }
+
+                    updateCounter();
+                };
+            });
+
+            document.getElementById("clear_button").addEventListener("click", function(e) {
+
+                //If shift is held, clear history as well.
+                if (e.shiftKey) {
+                    historystack.length = 0;
+                    historystack_forward.length = 0;
+                    sethistoryButtons();
+                } else {
+                    historyPush();
+                }
+
+                document.querySelectorAll('#textlines')[0].innerHTML = "";
+                //Update the counter.
+                updateCounter();
+            });
+
+            document.getElementById("go_to_last_button").addEventListener("click", function() {
+                //document.querySelector("#textlines > pre:last-of-type").scrollIntoView();
+                if (linecount > 0) {
+                    window.scroll(0, findPos(document.querySelector("#textlines > pre:last-of-type"))[1] - 200);
+                }
+            });
+
+            document.getElementById("go_bottom_button").addEventListener("click", function() {
+                if (linecount > 0) {
+                    document.querySelectorAll("html")[0].scrollIntoView(false);
+                }
+            });
+
+            //Keyboard shortcuts
+            document.addEventListener("keydown", function(e) {
+                //Alt + E: Toggle Editing
+                if (e.altKey && e.which == 69) {
+                    toggleEditing();
+                    e.preventDefault();
+                }
+            });
+
+
+            //Non-css hover method for the menu
+            document.getElementById("menucontainer").addEventListener("mouseenter", function(e) {
+                //document.querySelector("#menucontainer").setAttribute("style", "display:none;");
+                handleMenuState();
+            });
+
+            document.getElementById("toprightbuttons").addEventListener("mouseleave", function(e) {
+                if (!pinningEnabled) {
+                    //document.querySelector("#menucontainer").removeAttribute("style");
+                    handleMenuState();
+                }
+            });
+
+            //start checking for mouse in/out
+            if (autoHideYomichan) {
+                checkMouseInOut();
+            }
+
+            //main mutation observer for new lines.
+            const myMutationObserver = new MutationObserver(function(records) {
+                records.forEach(function(mutation) {
+                    Array.prototype.forEach.call(mutation.addedNodes, function(node) {
+                        try {
+                            let isNewLine = false;
+                            //return if the inserted node is not in #textlines
+                            let relatedId = "";
+                            try {
+                                if ((node.parentNode.attributes.id.value == "textlines") && (node.tagName == "PRE")) {
+                                    isNewLine = true;
+                                }
+                            } catch (error) {}
+                            if (!isNewLine) {
+                                return
+                            }
+
+                            //push history (delete forward history)
+                            if (forgiveHistoryTimes == 0) {
+                                historyPush();
+                            } else {
+                                --forgiveHistoryTimes;
+                            }
+
+                            //update counter
+                            updateCounter();
+
+                            //check if editing is enabled
+                            let preNodeOpen = editingEnabled ? "<pre contenteditable=\"true\">" : "<pre>";
+                            //put the added pre text into another pre so we can modify it later on.
+                            node.innerHTML = preNodeOpen + node.innerHTML + "</pre>";
+
+                            //add hover buttons to every line
+                            createhoverButtons(node);
+
+                            //Scroll to item depending on setting
+                            switch (scrollOnNewline) {
+                                case "disabled":
+                                    break;
+                                case "toBottom":
+                                    scrollToLast(1);
+                                    break;
+                                case "toTop":
+                                    scrollToLast(0);
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                        } catch (e) {}
+
+                    });
+                });
+            });
+
+            //start the mutation observer
+            myMutationObserver.observe(document.querySelectorAll('#textlines')[0], {
+                subtree: true,
+                childList: true
+            });
+
+
+            /*
+            pre = document.createElement("pre");
+            pre.innerHTML = "loremipsum\n\nloremipsumloremipsumloremipsum\n\n\n\nloremipsumloremipsum";
+            document.querySelector("#textlines").prepend(pre);
+            */
+
+        });
+        //---DOMContentLoaded end---
+        //---DOMContentLoaded end---
+        //---DOMContentLoaded end---
+
+        //----------functions----------
+
+        //Modified from https://stackoverflow.com/a/24989958/5050478
+        //Mouse in/out check for yomichan (with shadow dom disabled in settings)
+        function checkMouseInOut() {
+            var theTimer;
+            var wasHidden = false;
+
+            window.onmouseout = resetTimer;
+            window.onmouseover = clearTimer;
+
+            function doAction() {
+                try {
+                    //hide yomichan if it exists.
+                    let yomichanFrame = document.querySelector("iframe.yomichan-float");
+                    if (yomichanFrame.style.getPropertyValue("visibility") == "visible") {
+                        yomichanFrame.style.setProperty("visibility", "hidden", "important");
+                        wasHidden = true;
+                    }
+                } catch (error) {}
+            }
+
+            function clearTimer(e) {
+                //Mouse entered window or any element
+                clearTimeout(theTimer);
+                if (wasHidden) {
+                    wasHidden = false;
+                    let yomichanFrame = document.querySelector("iframe.yomichan-float");
+                    //transition is used to prevent flashing
+                    yomichanFrame.style.setProperty("transition", "visibility 0.5s linear 0.5s");
+                    yomichanFrame.style.setProperty("visibility", "visible", "important");
+                    setTimeout(() => {
+                        yomichanFrame.style.removeProperty("transition");
+                    }, 1);
+                }
+            }
+
+            function resetTimer(e) {
+                clearTimeout(theTimer);
+                let reltarget = e.relatedTarget || e.toElement;
+                if (!reltarget || (reltarget.nodeName == "HTML" && e.target == document.firstChild)) {
+                    //Mouse left window here
+                    theTimer = setTimeout(doAction, 1000);
+                }
+            }
+        }
+
+        //handle hover state manually (required to support keybindings and transparency)
+        function handleMenuState(doConfirm = true) {
+            var menuStyles = window.getComputedStyle(document.querySelector("#menucontainer"));
+            var buttonsStyles = window.getComputedStyle(document.querySelector("#toprightbuttons"));
+            var menuDisplay = menuStyles.getPropertyValue("display");
+            var buttonsDisplay = buttonsStyles.getPropertyValue("display");
+            if ((menuDisplay == "block") && (buttonsDisplay == "block")) {
+                document.querySelector("#menucontainer").setAttribute("style", "display:none;");
+            } else if ((menuDisplay == "none") && (buttonsDisplay == "none")) {
+                document.querySelector("#menucontainer").removeAttribute("style");
+            }
+            //firefox hover bug workaround
+            setTimeout(() => {
+                handleMenuState(false);
+            }, 50);
+        }
+
+        //add hover buttons to every line
+        function createhoverButtons(element) {
+
+            let hoverButtons = document.createElement("div");
+            element.prepend(hoverButtons);
+            hoverButtons.outerHTML = `<div class="hoverButtonsContainer">
+<div class="hoverButtonsBackground">
+<div class="hoverButtons hoverButtonDelete" title="Remove line">✖</div>
+<div class="hoverButtons hoverButtonReduceNewlines" title="Reduce newlines and spaces">≡</div>
+<div class="hoverButtons hoverButtonCopy" title="Copy to clipboard">📋</div>
+<div class="hoverButtons hoverButtonDown" title="Scroll down one line">🡻</div>
+<div class="hoverButtons hoverButtonUp" title="Scroll up one line">🡹</div>
+</div>
+</div>`;
+            element.querySelector(".hoverButtonDelete").addEventListener("click", function(event) {
+                historyPush();
+
+                removeLine(event.target);
+            });
+            element.querySelector(".hoverButtonReduceNewlines").addEventListener("click", function(event) {
+                historyPush();
+
+                reduceNewlines(event.target);
+            });
+            element.querySelector(".hoverButtonUp").addEventListener("click", function(event) {
+                scrollUpDown(event.target, event.clientY, true);
+            });
+            element.querySelector(".hoverButtonDown").addEventListener("click", function(event) {
+                scrollUpDown(event.target, event.clientY, false);
+            });
+            element.querySelector(".hoverButtonCopy").addEventListener("click", function(event) {
+                let range = document.createRange();
+                range.selectNode(event.target.parentNode.parentNode.parentNode.querySelector("pre"));
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+                document.execCommand("copy");
+                window.getSelection().removeAllRanges();
+            });
+        }
+
+        //start undo/redo buttons
+        function historyPush(resetforward = true) {
+            let textlinesNode = document.querySelector("#textlines").cloneNode(true);
+            let dummyDiv = document.createElement("div");
+            for (const element of textlinesNode.childNodes) {
+                try {
+                    if (element.firstChild.nodeName != "#text") {
+                        let textPre = element.querySelector("pre");
+                        //clean up contenteditable
+                        textPre.removeAttribute("contenteditable");
+                        dummyDiv.append(textPre);
+                    }
+                } catch {}
+            }
+            let historydict = {
+                state: dummyDiv.innerHTML,
+                linecount: textlinesNode.childNodes.length,
+            }
+            let historylength = historystack.push(historydict);
+            if (historylength > maxhistorylength) {
+                historystack.shift();
+            }
+            if (resetforward) {
+                //reset forward history
+                historystack_forward.length = 0;
+            }
+
+            sethistoryButtons();
+        }
+
+        function historyPop() {
+
+            historyPush_forward();
+            popDict = historystack.pop();
+            forgiveHistoryTimes = popDict.linecount;
+            document.querySelector("#textlines").innerHTML = popDict.state;
+
+            sethistoryButtons();
+            updateCounter();
+        }
+
+        function historyPush_forward() {
+            let textlinesNode = document.querySelector("#textlines").cloneNode(true);
+            let dummyDiv = document.createElement("div");
+            for (const element of textlinesNode.childNodes) {
+                try {
+                    //ignore text only nodes (that were just inserted)
+                    if (element.firstChild.nodeName != "#text") {
+                        let textPre = element.querySelector("pre");
+                        //clean up contenteditable
+                        textPre.removeAttribute("contenteditable");
+                        dummyDiv.append(textPre);
+                    }
+                } catch {}
+            }
+            let historydict = {
+                state: dummyDiv.innerHTML,
+                linecount: textlinesNode.childNodes.length,
+            }
+            let historylength_forward = historystack_forward.push(historydict);
+            if (historylength_forward > maxhistorylength) {
+                historystack_forward.shift();
+            }
+        }
+
+        function historyPop_forward() {
+
+            historyPush(false);
+            popDict = historystack_forward.pop();
+            forgiveHistoryTimes = popDict.linecount;
+            document.querySelector("#textlines").innerHTML = popDict.state;
+
+            sethistoryButtons();
+            updateCounter();
+        }
+
+        function sethistoryButtons() {
+            if (historystack.length >= 1) {
+                document.querySelector("#undo_button").removeAttribute("disabled");
+            } else {
+                document.querySelector("#undo_button").setAttribute("disabled", "");
+            }
+            if (historystack_forward.length >= 1) {
+                document.querySelector("#redo_button").removeAttribute("disabled");
+            } else {
+                document.querySelector("#redo_button").setAttribute("disabled", "");
+            }
+        }
+        //end undo/redo buttons
+
+        //toggle editing
+        function toggleEditing(firstload = false) {
+            if (firstload) {
+                editingEnabled = !editingEnabled;
+            }
+            if (editingEnabled) {
+                //disable editing, set button style
+                const linesArray = document.querySelectorAll("#textlines>pre>pre").forEach(element => {
+                    element.removeAttribute("contenteditable");
+                });
+                document.querySelector("#edit_button").classList.remove("edit_button_on");
+                //also unpin if we pinned it
+                if (editPinnedButtons) {
+                    togglePinning();
+                }
+            } else {
+                //push to history, enable editing, set button style
+                historyPush();
+                const linesArray = document.querySelectorAll("#textlines>pre>pre").forEach(element => {
+                    element.setAttribute("contenteditable", "true");
+                });
+                document.querySelector("#edit_button").classList.add("edit_button_on");
+                //also pin the buttons as well
+                if (document.querySelectorAll(".pin_button_on").length != 1) {
+                    togglePinning();
+                    editPinnedButtons = true;
+                }
+            }
+            editingEnabled = !editingEnabled;
+        }
+
+        //add new line
+        function addNewLine() {
+            if (!editingEnabled) {
+                toggleEditing();
+            }
+
+            newpre = document.createElement("pre");
+            newpre.innerHTML = "";
+            //append or prepend the new line based on the current setting, prepend is default.
+            switch (scrollOnNewline) {
+                case "disabled":
+                    document.querySelector("#textlines").prepend(newpre);
+                    break;
+                case "toBottom":
+                    document.querySelector("#textlines").append(newpre);
+                    break;
+                case "toTop":
+                    document.querySelector("#textlines").prepend(newpre);
+                    break;
+                default:
+                    document.querySelector("#textlines").prepend(newpre);
+                    break;
+            }
+            //Workaround for focusing contenteditable (https://stackoverflow.com/a/37162116/5050478)
+            setTimeout(function() {
+                newpre.querySelector("pre").focus();
+            }, 0);
+
+        }
+
+        //toggle pinning
+        function togglePinning(firstload = false) {
+            if (firstload) {
+                pinningEnabled = !pinningEnabled;
+            }
+            if (pinningEnabled) {
+                document.querySelector("#toprightbuttons").removeAttribute("style");
+                document.querySelector("#pin_button").classList.remove("pin_button_on");
+                editPinnedButtons = false;
+            } else {
+                document.querySelector("#toprightbuttons").setAttribute("style", "display:inline-block;");
+                document.querySelector("#pin_button").classList.add("pin_button_on");
+            }
+            //handle menu button visibility for edge cases
+            handleMenuState();
+            pinningEnabled = !pinningEnabled;
+
+        }
+
+        //scrolling
+        function scrollToLast(tolast) {
+            if (tolast) {
+                window.scroll(0, findPos(document.querySelector("#textlines > pre:last-of-type"))[1] - 280);
+            } else {
+                window.scroll(0, 0);
+            }
+        }
+
+        function scrollUpDown(element, clientY, scrollUp) {
+            //get the pre
+            element = element.parentNode.parentNode.parentNode;
+            let scrollto = null;
+            try {
+                if (scrollUp) {
+                    scrollto = element.previousElementSibling;
+                } else {
+                    scrollto = element.nextElementSibling;
+                }
+                if (scrollto == null) {
+                    if (scrollUp) {
+                        document.querySelectorAll("html")[0].scrollIntoView(true);
+                    } else {
+                        document.querySelectorAll("html")[0].scrollIntoView(false);
+                    }
+                } else {
+                    //fix scroll difference from reality
+                    window.scroll(0, findPos(scrollto)[1] - clientY - scroll_fix_alignment);
+                    //scrollto.scrollIntoView();
+                }
+                return;
+            } catch (error) {}
+        }
+
+        //find an element's position in the whole page
+        function findPos(obj) {
+            let curleft = curtop = 0;
+            if (obj.offsetParent) {
+                do {
+                    curleft += obj.offsetLeft;
+                    curtop += obj.offsetTop;
+                } while (obj = obj.offsetParent);
+                values = [curleft, curtop];
+                return values;
+            }
+        }
+
+        function removeLine(element) {
+            element = element.parentNode.parentNode.parentNode;
+            element.remove();
+            updateCounter();
+        }
+
+        function reduceNewlines(element) {
+            element = element.parentNode.parentNode.parentNode;
+            let modifystring = element.querySelector("pre").innerText;
+            //trim newline+spaces at the start (once)
+            modifystring = modifystring.replace(/^[\r\t\f\v 　\u00a0]*\n/, "");
+            //trim spaces+newline at the end (once)
+            modifystring = modifystring.replace(/[\r\t\f\v 　\u00a0]*\n$/, "");
+            //clean spaces
+            modifystring = modifystring.replace(/\n[\r\t\f\v 　\u00a0]*/gm, "\n");
+            //reduce newlines (2->1, 1->0 etc...)
+            modifystring = modifystring.replace(/(\n(\n+?))|(\n+?)/gm, "$2$3");
+            element.querySelector("pre").innerText = modifystring;
+        }
+
+        function updateCounter() {
+            let charlength = 0;
+            linecount = 0;
+            try {
+                document.querySelectorAll("#textlines > pre").forEach(element => {
+                    charlength += element.innerText.length;
+                    linecount++;
+                });
+            } catch (error) {}
+            document.querySelector("#counter").textContent = charlength + ' / ' + linecount;
+            return;
+        }
+
+    </script>
+
     <style id="maincss" type="text/css">
         html {
             overflow-y: scroll;
@@ -461,621 +1081,6 @@ Saves history when pressed.">
     <div id="textlines"></div>
 
     <div id="go_to_last_button" title="Scroll to the start of the last item">🡹</div>
-
-    <script>
-        //---default options---
-        //true: pinning is enabled by default, false: disabled
-        let pinningEnabled = false;
-        //true: editing is enabled by default, false: disabled
-        let editingEnabled = false;
-        //true: Allows you to auto-hide the yomichan popup when your mouse is out of the window, false: disabled
-        //❗ This option requires "Use shadow DOM container for popup" to be unticked in yomichan's options.
-        let autoHideYomichan = true;
-        //---------------------
-
-        const historystack = [];
-        const historystack_forward = [];
-        const maxhistorylength = 1000;
-        let scroll_fix_alignment = 10;
-        let scrollOnNewline = "";
-        let forgiveHistoryTimes = 0;
-        let linecount = 0;
-        let editPinnedButtons = false;
-
-        //DOMContentLoaded Start (first load)
-        document.addEventListener("DOMContentLoaded", function(event) {
-            scrollOnNewline = localStorage.getItem("scrollOnNewline");
-            switch (scrollOnNewline) {
-                case "disabled":
-                    document.querySelector("#scroll_button").style.color = "#595959";
-                    document.querySelector("#scroll_button").innerText = "⇕";
-                    break;
-                case "toBottom":
-                    document.querySelector("#scroll_button").style.color = "";
-                    document.querySelector("#scroll_button").innerText = "⇓";
-                    break;
-                case "toTop":
-                    document.querySelector("#scroll_button").style.color = "";
-                    document.querySelector("#scroll_button").innerText = "⇑";
-                    break;
-                default:
-                    scrollOnNewline = "toBottom";
-                    break;
-            }
-
-            if (document.location.protocol.indexOf("http") == -1) {
-                document.title = document.title += " (Local)";
-            } else {
-                document.title = document.title += " (Online)";
-            }
-
-            //load first states
-            if (pinningEnabled) {
-                togglePinning(true);
-            }
-            if (editingEnabled) {
-                toggleEditing(true);
-            }
-
-            const myMutationObserver = new MutationObserver(function(records) {
-                records.forEach(function(mutation) {
-                    Array.prototype.forEach.call(mutation.addedNodes, function(node) {
-                        try {
-                            let isNewLine = false;
-                            //return if the inserted node is not in #textlines
-                            let relatedId = "";
-                            try {
-                                if ((node.parentNode.attributes.id.value == "textlines") && (node.tagName == "PRE")) {
-                                    isNewLine = true;
-                                }
-                            } catch (error) {}
-                            if (!isNewLine) {
-                                return
-                            }
-
-                            //push history (delete forward history)
-                            if (forgiveHistoryTimes == 0) {
-                                historyPush();
-                            } else {
-                                --forgiveHistoryTimes;
-                            }
-
-                            //update counter
-                            updateCounter();
-
-                            //check if editing is enabled
-                            let preNodeOpen = editingEnabled ? "<pre contenteditable=\"true\">" : "<pre>";
-                            //put the added pre text into another pre so we can modify it later on.
-                            node.innerHTML = preNodeOpen + node.innerHTML + "</pre>";
-
-                            //add hover buttons to every line
-                            createhoverButtons(node);
-
-                            //Scroll to item depending on setting
-                            switch (scrollOnNewline) {
-                                case "disabled":
-                                    break;
-                                case "toBottom":
-                                    scrollToLast(1);
-                                    break;
-                                case "toTop":
-                                    scrollToLast(0);
-                                    break;
-                                default:
-                                    break;
-                            }
-
-                        } catch (e) {}
-
-                    });
-                });
-            });
-
-            //add button events
-            //undo_button
-            document.getElementById("undo_button").addEventListener("click", function() {
-                historyPop();
-            });
-
-            //redo_button
-            document.getElementById("redo_button").addEventListener("click", function() {
-                historyPop_forward();
-            });
-
-            //edit_button
-            document.getElementById("edit_button").addEventListener("click", function() {
-                toggleEditing();
-            });
-
-            //add_line_button
-            document.getElementById("add_line_button").addEventListener("click", function() {
-                addNewLine();
-            });
-
-            //pin_button
-            document.getElementById("pin_button").addEventListener("click", function() {
-                togglePinning();
-            });
-
-            //scroll_button
-            document.getElementById("scroll_button").addEventListener("click", function() {
-                switch (scrollOnNewline) {
-                    case "disabled":
-                        document.querySelector("#scroll_button").style.color = "";
-                        document.querySelector("#scroll_button").innerText = "⇓";
-                        scrollOnNewline = "toBottom";
-                        break;
-                    case "toBottom":
-                        document.querySelector("#scroll_button").style.color = "";
-                        document.querySelector("#scroll_button").innerText = "⇑";
-                        scrollOnNewline = "toTop";
-                        break;
-                    case "toTop":
-                        document.querySelector("#scroll_button").style.color = "#595959";
-                        document.querySelector("#scroll_button").innerText = "⇕";
-                        scrollOnNewline = "disabled";
-                        break;
-                    default:
-                        scrollOnNewline = "toBottom";
-                        break;
-                }
-                localStorage.setItem("scrollOnNewline", scrollOnNewline);
-            });
-
-            document.getElementById("remove_button").addEventListener("click", function() {
-                historyPush();
-
-                //Check whether there are any lines.
-                //let linecount = document.querySelectorAll('#textlines > pre').length;
-                if (linecount > 0) {
-
-                    //Remove the first/last line.
-                    switch (scrollOnNewline) {
-                        case "disabled":
-                            document.querySelector("#textlines > pre:last-of-type").remove();
-                            break;
-                        case "toBottom":
-                            document.querySelector("#textlines > pre:last-of-type").remove();
-                            break;
-                        case "toTop":
-                            document.querySelector("#textlines > pre:first-of-type").remove();
-                            break;
-                        default:
-                            break;
-                    }
-
-                    updateCounter();
-                };
-            });
-
-            document.getElementById("clear_button").addEventListener("click", function(e) {
-
-                //If shift is held, clear history as well.
-                if (e.shiftKey) {
-                    historystack.length = 0;
-                    historystack_forward.length = 0;
-                    sethistoryButtons();
-                } else {
-                    historyPush();
-                }
-
-                document.querySelectorAll('#textlines')[0].innerHTML = "";
-                //Update the counter.
-                updateCounter();
-            });
-
-            document.getElementById("go_to_last_button").addEventListener("click", function() {
-                //document.querySelector("#textlines > pre:last-of-type").scrollIntoView();
-                if (linecount > 0) {
-                    window.scroll(0, findPos(document.querySelector("#textlines > pre:last-of-type"))[1] - 200);
-                }
-            });
-
-            document.getElementById("go_bottom_button").addEventListener("click", function() {
-                if (linecount > 0) {
-                    document.querySelectorAll("html")[0].scrollIntoView(false);
-                }
-            });
-
-            //Modified from https://stackoverflow.com/a/24989958/5050478
-            //Mouse in/out check for yomichan (with shadow dom disabled in settings)
-            function checkMouseInOut() {
-                var theTimer;
-                var wasHidden = false;
-
-                window.onmouseout = resetTimer;
-                window.onmouseover = clearTimer;
-
-                function doAction() {
-                    try {
-                        //hide yomichan if it exists.
-                        let yomichanFrame = document.querySelector("iframe.yomichan-float");
-                        if (yomichanFrame.style.getPropertyValue("visibility") == "visible") {
-                            yomichanFrame.style.setProperty("visibility", "hidden", "important");
-                            wasHidden = true;
-                        }
-                    } catch (error) {}
-                }
-
-                function clearTimer(e) {
-                    //Mouse entered window or any element
-                    clearTimeout(theTimer);
-                    if (wasHidden) {
-                        wasHidden = false;
-                        let yomichanFrame = document.querySelector("iframe.yomichan-float");
-                        //transition is used to prevent flashing
-                        yomichanFrame.style.setProperty("transition", "visibility 0.5s linear 0.5s");
-                        yomichanFrame.style.setProperty("visibility", "visible", "important");
-                        setTimeout(() => {
-                            yomichanFrame.style.removeProperty("transition");
-                        }, 1);
-                    }
-                }
-
-                function resetTimer(e) {
-                    clearTimeout(theTimer);
-                    let reltarget = e.relatedTarget || e.toElement;
-                    if (!reltarget || (reltarget.nodeName == "HTML" && e.target == document.firstChild)) {
-                        //Mouse left window here
-                        theTimer = setTimeout(doAction, 1000);
-                    }
-                }
-            }
-            //start checking for mouse in/out
-            if (autoHideYomichan) {
-                checkMouseInOut();
-            }
-
-            //start mutation observer for any new lines
-            myMutationObserver.observe(document.querySelectorAll('#textlines')[0], {
-                subtree: true,
-                childList: true
-            });
-
-
-            /*
-            pre = document.createElement("pre");
-            pre.innerHTML = "loremipsum\n\nloremipsumloremipsumloremipsum\n\n\n\nloremipsumloremipsum";
-            document.querySelector("#textlines").prepend(pre);
-            */
-
-        });
-        //---DOMContentLoaded end---
-        //---DOMContentLoaded end---
-        //---DOMContentLoaded end---
-
-        //Non-css hover method for the menu
-        document.getElementById("menucontainer").addEventListener("mouseenter", function(e) {
-            //document.querySelector("#menucontainer").setAttribute("style", "display:none;");
-            handleMenuState();
-        });
-
-        document.getElementById("toprightbuttons").addEventListener("mouseleave", function(e) {
-            if (!pinningEnabled) {
-                //document.querySelector("#menucontainer").removeAttribute("style");
-                handleMenuState();
-            }
-        });
-
-        //handle the above hover state manually (required for keybindings and transparency)
-        function handleMenuState(doConfirm = true) {
-            var menuStyles = window.getComputedStyle(document.querySelector("#menucontainer"));
-            var buttonsStyles = window.getComputedStyle(document.querySelector("#toprightbuttons"));
-            var menuDisplay = menuStyles.getPropertyValue("display");
-            var buttonsDisplay = buttonsStyles.getPropertyValue("display");
-            if ((menuDisplay == "block") && (buttonsDisplay == "block")) {
-                document.querySelector("#menucontainer").setAttribute("style", "display:none;");
-            } else if ((menuDisplay == "none") && (buttonsDisplay == "none")) {
-                document.querySelector("#menucontainer").removeAttribute("style");
-            }
-            //firefox hover bug workaround
-            setTimeout(() => {
-                handleMenuState(false);
-            }, 50);
-        }
-
-        //Keyboard shortcuts
-        document.addEventListener("keydown", function(e) {
-            //Alt + E: Toggle Editing
-            if (e.altKey && e.which == 69) {
-                toggleEditing();
-                e.preventDefault();
-            }
-        });
-
-        //----------functions----------
-
-        //add hover buttons to every line
-        function createhoverButtons(element) {
-
-            let hoverButtons = document.createElement("div");
-            element.prepend(hoverButtons);
-            hoverButtons.outerHTML = `<div class="hoverButtonsContainer">
-<div class="hoverButtonsBackground">
-<div class="hoverButtons hoverButtonDelete" title="Remove line">✖</div>
-<div class="hoverButtons hoverButtonReduceNewlines" title="Reduce newlines and spaces">≡</div>
-<div class="hoverButtons hoverButtonCopy" title="Copy to clipboard">📋</div>
-<div class="hoverButtons hoverButtonDown" title="Scroll down one line">🡻</div>
-<div class="hoverButtons hoverButtonUp" title="Scroll up one line">🡹</div>
-</div>
-</div>`;
-            element.querySelector(".hoverButtonDelete").addEventListener("click", function(event) {
-                historyPush();
-
-                removeLine(event.target);
-            });
-            element.querySelector(".hoverButtonReduceNewlines").addEventListener("click", function(event) {
-                historyPush();
-
-                reduceNewlines(event.target);
-            });
-            element.querySelector(".hoverButtonUp").addEventListener("click", function(event) {
-                scrollUpDown(event.target, event.clientY, true);
-            });
-            element.querySelector(".hoverButtonDown").addEventListener("click", function(event) {
-                scrollUpDown(event.target, event.clientY, false);
-            });
-            element.querySelector(".hoverButtonCopy").addEventListener("click", function(event) {
-                let range = document.createRange();
-                range.selectNode(event.target.parentNode.parentNode.parentNode.querySelector("pre"));
-                window.getSelection().removeAllRanges();
-                window.getSelection().addRange(range);
-                document.execCommand("copy");
-                window.getSelection().removeAllRanges();
-            });
-        }
-
-        //start undo/redo buttons
-        function historyPush(resetforward = true) {
-            let textlinesNode = document.querySelector("#textlines").cloneNode(true);
-            let dummyDiv = document.createElement("div");
-            for (const element of textlinesNode.childNodes) {
-                try {
-                    if (element.firstChild.nodeName != "#text") {
-                        let textPre = element.querySelector("pre");
-                        //clean up contenteditable
-                        textPre.removeAttribute("contenteditable");
-                        dummyDiv.append(textPre);
-                    }
-                } catch {}
-            }
-            let historydict = {
-                state: dummyDiv.innerHTML,
-                linecount: textlinesNode.childNodes.length,
-            }
-            let historylength = historystack.push(historydict);
-            if (historylength > maxhistorylength) {
-                historystack.shift();
-            }
-            if (resetforward) {
-                //reset forward history
-                historystack_forward.length = 0;
-            }
-
-            sethistoryButtons();
-        }
-
-        function historyPop() {
-
-            historyPush_forward();
-            popDict = historystack.pop();
-            forgiveHistoryTimes = popDict.linecount;
-            document.querySelector("#textlines").innerHTML = popDict.state;
-
-            sethistoryButtons();
-            updateCounter();
-        }
-
-        function historyPush_forward() {
-            let textlinesNode = document.querySelector("#textlines").cloneNode(true);
-            let dummyDiv = document.createElement("div");
-            for (const element of textlinesNode.childNodes) {
-                try {
-                    //ignore text only nodes (that were just inserted)
-                    if (element.firstChild.nodeName != "#text") {
-                        let textPre = element.querySelector("pre");
-                        //clean up contenteditable
-                        textPre.removeAttribute("contenteditable");
-                        dummyDiv.append(textPre);
-                    }
-                } catch {}
-            }
-            let historydict = {
-                state: dummyDiv.innerHTML,
-                linecount: textlinesNode.childNodes.length,
-            }
-            let historylength_forward = historystack_forward.push(historydict);
-            if (historylength_forward > maxhistorylength) {
-                historystack_forward.shift();
-            }
-        }
-
-        function historyPop_forward() {
-
-            historyPush(false);
-            popDict = historystack_forward.pop();
-            forgiveHistoryTimes = popDict.linecount;
-            document.querySelector("#textlines").innerHTML = popDict.state;
-
-            sethistoryButtons();
-            updateCounter();
-        }
-
-        function sethistoryButtons() {
-            if (historystack.length >= 1) {
-                document.querySelector("#undo_button").removeAttribute("disabled");
-            } else {
-                document.querySelector("#undo_button").setAttribute("disabled", "");
-            }
-            if (historystack_forward.length >= 1) {
-                document.querySelector("#redo_button").removeAttribute("disabled");
-            } else {
-                document.querySelector("#redo_button").setAttribute("disabled", "");
-            }
-        }
-        //end undo/redo buttons
-
-        //toggle editing
-        function toggleEditing(firstload = false) {
-            if (firstload) {
-                editingEnabled = !editingEnabled;
-            }
-            if (editingEnabled) {
-                //disable editing, set button style
-                const linesArray = document.querySelectorAll("#textlines>pre>pre").forEach(element => {
-                    element.removeAttribute("contenteditable");
-                });
-                document.querySelector("#edit_button").classList.remove("edit_button_on");
-                //also unpin if we pinned it
-                if (editPinnedButtons) {
-                    togglePinning();
-                }
-            } else {
-                //push to history, enable editing, set button style
-                historyPush();
-                const linesArray = document.querySelectorAll("#textlines>pre>pre").forEach(element => {
-                    element.setAttribute("contenteditable", "true");
-                });
-                document.querySelector("#edit_button").classList.add("edit_button_on");
-                //also pin the buttons as well
-                if (document.querySelectorAll(".pin_button_on").length != 1) {
-                    togglePinning();
-                    editPinnedButtons = true;
-                }
-            }
-            editingEnabled = !editingEnabled;
-        }
-
-        //add new line
-        function addNewLine() {
-            if (!editingEnabled) {
-                toggleEditing();
-            }
-
-            newpre = document.createElement("pre");
-            newpre.innerHTML = "";
-            //append or prepend the new line based on the current setting, prepend is default.
-            switch (scrollOnNewline) {
-                case "disabled":
-                    document.querySelector("#textlines").prepend(newpre);
-                    break;
-                case "toBottom":
-                    document.querySelector("#textlines").append(newpre);
-                    break;
-                case "toTop":
-                    document.querySelector("#textlines").prepend(newpre);
-                    break;
-                default:
-                    document.querySelector("#textlines").prepend(newpre);
-                    break;
-            }
-            //Workaround for focusing contenteditable (https://stackoverflow.com/a/37162116/5050478)
-            setTimeout(function() {
-                newpre.querySelector("pre").focus();
-            }, 0);
-
-        }
-
-        //toggle pinning
-        function togglePinning(firstload = false) {
-            if (firstload) {
-                pinningEnabled = !pinningEnabled;
-            }
-            if (pinningEnabled) {
-                document.querySelector("#toprightbuttons").removeAttribute("style");
-                document.querySelector("#pin_button").classList.remove("pin_button_on");
-                editPinnedButtons = false;
-            } else {
-                document.querySelector("#toprightbuttons").setAttribute("style", "display:inline-block;");
-                document.querySelector("#pin_button").classList.add("pin_button_on");
-            }
-            //handle menu button visibility for edge cases
-            handleMenuState();
-            pinningEnabled = !pinningEnabled;
-
-        }
-
-        //scrolling
-        function scrollToLast(tolast) {
-            if (tolast) {
-                window.scroll(0, findPos(document.querySelector("#textlines > pre:last-of-type"))[1] - 280);
-            } else {
-                window.scroll(0, 0);
-            }
-        }
-
-        function scrollUpDown(element, clientY, scrollUp) {
-            //get the pre
-            element = element.parentNode.parentNode.parentNode;
-            let scrollto = null;
-            try {
-                if (scrollUp) {
-                    scrollto = element.previousElementSibling;
-                } else {
-                    scrollto = element.nextElementSibling;
-                }
-                if (scrollto == null) {
-                    if (scrollUp) {
-                        document.querySelectorAll("html")[0].scrollIntoView(true);
-                    } else {
-                        document.querySelectorAll("html")[0].scrollIntoView(false);
-                    }
-                } else {
-                    //fix scroll difference from reality
-                    window.scroll(0, findPos(scrollto)[1] - clientY - scroll_fix_alignment);
-                    //scrollto.scrollIntoView();
-                }
-                return;
-            } catch (error) {}
-        }
-
-        //find an element's position in the whole page
-        function findPos(obj) {
-            let curleft = curtop = 0;
-            if (obj.offsetParent) {
-                do {
-                    curleft += obj.offsetLeft;
-                    curtop += obj.offsetTop;
-                } while (obj = obj.offsetParent);
-                values = [curleft, curtop];
-                return values;
-            }
-        }
-
-        function removeLine(element) {
-            element = element.parentNode.parentNode.parentNode;
-            element.remove();
-            updateCounter();
-        }
-
-        function reduceNewlines(element) {
-            element = element.parentNode.parentNode.parentNode;
-            let modifystring = element.querySelector("pre").innerText;
-            //trim newline+spaces at the start (once)
-            modifystring = modifystring.replace(/^[\r\t\f\v 　\u00a0]*\n/, "");
-            //trim spaces+newline at the end (once)
-            modifystring = modifystring.replace(/[\r\t\f\v 　\u00a0]*\n$/, "");
-            //clean spaces
-            modifystring = modifystring.replace(/\n[\r\t\f\v 　\u00a0]*/gm, "\n");
-            //reduce newlines (2->1, 1->0 etc...)
-            modifystring = modifystring.replace(/(\n(\n+?))|(\n+?)/gm, "$2$3");
-            element.querySelector("pre").innerText = modifystring;
-        }
-
-        function updateCounter() {
-            let charlength = 0;
-            linecount = 0;
-            try {
-                document.querySelectorAll("#textlines > pre").forEach(element => {
-                    charlength += element.innerText.length;
-                    linecount++;
-                });
-            } catch (error) {}
-            document.querySelector("#counter").textContent = charlength + ' / ' + linecount;
-            return;
-        }
-
-    </script>
 
 </body>
 
