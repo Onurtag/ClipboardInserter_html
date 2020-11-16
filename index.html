@@ -323,7 +323,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         //Mouse in/out check for yomichan (with shadow dom disabled in settings)
         function checkMouseInOut() {
             var theTimer;
-            var wasHidden = false;
+            var aFrameWasHidden = false;
 
             window.onmouseout = resetTimer;
             window.onmouseover = clearTimer;
@@ -331,27 +331,37 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             function doAction() {
                 try {
                     //hide yomichan if it exists.
-                    let yomichanFrame = document.querySelector("iframe.yomichan-float");
-                    if (yomichanFrame.style.getPropertyValue("visibility") == "visible") {
-                        yomichanFrame.style.setProperty("visibility", "hidden", "important");
-                        wasHidden = true;
-                    }
+                    let yomichanFrames = document.querySelectorAll("iframe.yomichan-float");
+                    yomichanFrames.forEach(currFrame => {
+                        if (currFrame.style.getPropertyValue("visibility") == "visible") {
+                            currFrame.style.setProperty("visibility", "hidden", "important");
+                            currFrame.classList.add("thisWasHidden");
+                            aFrameWasHidden = true;
+                        }
+                    });
                 } catch (error) {}
             }
 
             function clearTimer(e) {
-                //Mouse entered window or any element
+                //Mouse entered the window or any element
                 clearTimeout(theTimer);
-                if (wasHidden) {
-                    wasHidden = false;
-                    let yomichanFrame = document.querySelector("iframe.yomichan-float");
-                    //transition is used to prevent flashing
-                    yomichanFrame.style.setProperty("transition", "visibility 0.5s linear 0.5s");
-                    yomichanFrame.style.setProperty("visibility", "visible", "important");
-                    setTimeout(() => {
-                        yomichanFrame.style.removeProperty("transition");
-                    }, 1);
-                }
+                try {
+                    if (aFrameWasHidden) {
+                        let yomichanFrames = document.querySelectorAll("iframe.yomichan-float");
+                        yomichanFrames.forEach(currFrame => {
+                            if (currFrame.classList.contains("thisWasHidden")) {
+                                //transition is used to prevent flashing
+                                currFrame.style.setProperty("transition", "visibility 0.5s linear 0.5s");
+                                currFrame.style.setProperty("visibility", "visible", "important");
+                                setTimeout(() => {
+                                    currFrame.style.removeProperty("transition");
+                                }, 1);
+                                currFrame.classList.remove("thisWasHidden");
+                                aFrameWasHidden = false;
+                            }
+                        });
+                    }
+                } catch (error) {}
             }
 
             function resetTimer(e) {
