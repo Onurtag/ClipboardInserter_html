@@ -26,6 +26,9 @@ Options:
 Original page was inspired/borrowed from: https://pastebin.com/raw/HxjV6YrB (Only a few lines of the old code left) 
 Which was found here: https://pastebin.com/gNJfqpmN
 
+
+TODO: Switch to svg from font icons
+
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////// 
@@ -136,6 +139,11 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                 togglePinning();
             });
 
+            //menu_button (normally you hover this one.)
+            document.getElementById("menu_button").addEventListener("click", function() {
+                togglePinning();
+            });
+
             //scroll_button
             document.getElementById("scroll_button").addEventListener("click", function() {
                 switch (scrollOnNewline) {
@@ -228,7 +236,6 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
 
             //Non-css hover method for the menu
             document.getElementById("menucontainer").addEventListener("mouseenter", function(e) {
-                //document.querySelector("#menucontainer").setAttribute("style", "display:none;");
                 handleMenuState();
             });
 
@@ -245,21 +252,10 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             }
 
             //main mutation observer for new lines.
-            const myMutationObserver = new MutationObserver(function(records) {
+            const textlinesMutationObserver = new MutationObserver(function(records) {
                 records.forEach(function(mutation) {
                     Array.prototype.forEach.call(mutation.addedNodes, function(node) {
                         try {
-                            let isNewLine = false;
-                            //return if the inserted node is not in #textlines
-                            let relatedId = "";
-                            try {
-                                if ((node.parentNode.attributes.id.value == "textlines") && (node.tagName == "PRE")) {
-                                    isNewLine = true;
-                                }
-                            } catch (error) {}
-                            if (!isNewLine) {
-                                return
-                            }
 
                             //push history (delete forward history)
                             if (forgiveHistoryTimes == 0) {
@@ -299,12 +295,11 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                 });
             });
 
-            //start the mutation observer
-            myMutationObserver.observe(document.querySelectorAll('#textlines')[0], {
-                subtree: true,
-                childList: true
+            //start the textlines mutation observer
+            textlinesMutationObserver.observe(document.querySelectorAll('#textlines')[0], {
+                childList: true,
+                subtree: false
             });
-
 
             /*
             pre = document.createElement("pre");
@@ -375,7 +370,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         }
 
         //handle hover state manually (required to support keybindings and transparency)
-        function handleMenuState(doConfirm = true) {
+        function handleMenuState() {
             var menuStyles = window.getComputedStyle(document.querySelector("#menucontainer"));
             var buttonsStyles = window.getComputedStyle(document.querySelector("#toprightbuttons"));
             var menuDisplay = menuStyles.getPropertyValue("display");
@@ -385,11 +380,15 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             } else if ((menuDisplay == "none") && (buttonsDisplay == "none")) {
                 document.querySelector("#menucontainer").removeAttribute("style");
             }
-            //firefox hover bug workaround
-            setTimeout(() => {
-                handleMenuState(false);
-            }, 50);
         }
+
+        //Firefox hover bug workaround: Recheck the menu state when its hidden to prevent it from being hidden permanently.
+        let menustateInterval = setInterval(() => {
+            //Check when not pinned and hidden manually
+            if (!pinningEnabled && document.querySelector('#menucontainer[style="display:none;"]')) {
+                handleMenuState();
+            }
+        }, 175);
 
         //add hover buttons to every line
         function createhoverButtons(element) {
@@ -462,7 +461,6 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         }
 
         function historyPop() {
-
             historyPush_forward();
             popDict = historystack.pop();
             forgiveHistoryTimes = popDict.linecount;
@@ -595,7 +593,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                 document.querySelector("#toprightbuttons").setAttribute("style", "display:inline-block;");
                 document.querySelector("#pin_button").classList.add("pin_button_on");
             }
-            //handle menu button visibility for edge cases
+            //handle menu button visibility (for edge cases)
             handleMenuState();
             pinningEnabled = !pinningEnabled;
 
@@ -1079,7 +1077,8 @@ Saves history when pressed.">
             </div>
         </div>
         <!-- This is the div used for the "remove last line" button. -->
-        <div id="remove_button" title="Remove first/last line &#013;(removes first line instead when auto scroll is set to 'Scroll to top')">✖</div>
+        <div id="remove_button" title="Remove first/last line
+(removes first line instead when auto scroll is set to 'Scroll to top')">✖</div>
     </div>
     <div class="countercontainer">
         <!-- This is the div used for the counter. -->
