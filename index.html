@@ -61,15 +61,49 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
 
     <script>
         //------ Options ------
-        //true: pinning is enabled by default, false: disabled
+        /**
+         * pinningEnabled
+         * 
+         * true: pinning is enabled by default, false: disabled
+         * 
+         * */
         let pinningEnabled = false;
-        //true: editing is enabled by default, false: disabled
+        /**
+         * editingEnabled
+         * 
+         * true: editing is enabled by default, false: disabled
+         * 
+         * */
         let editingEnabled = false;
-        //true: Allows you to auto-hide the yomichan popup when your mouse is out of the window, false: disabled
-        //❗ This option requires "Use shadow DOM container for popup" to be unticked in yomichan's options.
+        /**
+         * autoHideYomichan
+         * 
+         * true: Allows you to auto-hide the yomichan popup when your mouse is out of the window, false: disabled
+         * ❗ This option requires "Use shadow DOM container for popup" to be unticked in yomichan's options.
+         * 
+         * */
         let autoHideYomichan = true;
+        
         //---------------------
         
+        //------ Hidden Features ------
+        /**
+         * notifyOnNewline
+         * 
+         * Entering below line in the browser console on this page will enable the notify on new lines feature. 
+         * Whenever a new line is added, This symbol ✔ will be shown on page's title for a short time
+         * To enable, type the following line onto your console (starting from localStorage and ending with ;)  
+         * 
+         * localStorage.setItem("notifyOnNewline", true);
+         * 
+         * You only have to enter this once unless you clear your browser cache/history/etc.
+         * 
+         * To disable, type this into your console: 
+         * localStorage.setItem("notifyOnNewline", false);
+         * 
+         * */
+        //-----------------------------
+
         const historystack = [];
         const historystack_forward = [];
         const maxhistorylength = 1000;
@@ -331,6 +365,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             var theTimer;
             var aFrameWasHidden = false;
 
+            //reset or clear the timer on mouse in/out
             window.onmouseout = resetTimer;
             window.onmouseover = clearTimer;
 
@@ -374,13 +409,13 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                 clearTimeout(theTimer);
                 let reltarget = e.relatedTarget || e.toElement;
                 if (!reltarget || (reltarget.nodeName == "HTML" && e.target == document.firstChild)) {
-                    //Mouse left window here
+                    //Mouse left window here, do action 1000 miliseconds after the mouse leaves the window
                     theTimer = setTimeout(doAction, 1000);
                 }
             }
         }
 
-        //handle hover state manually (required to support keybindings and transparency)
+        //handle top right menu container hover state manually (required to support keybindings and transparency)
         function handleMenuState() {
             var menuStyles = window.getComputedStyle(document.querySelector("#menucontainer"));
             var buttonsStyles = window.getComputedStyle(document.querySelector("#toprightbuttons"));
@@ -615,7 +650,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             document.title = "✔ " + pageTitle;
             setTimeout(() => {
                 document.title = pageTitle;
-            }, 300);
+            }, 500);
         }
 
         //scrolling
