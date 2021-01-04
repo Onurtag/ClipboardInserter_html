@@ -74,6 +74,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         const maxhistorylength = 1000;
         let scroll_fix_alignment = 10;
         let scrollOnNewline = "";
+        let notifyOnNewline = "";
         let forgiveHistoryTimes = 0;
         let linecount = 0;
         let editPinnedButtons = false;
@@ -81,6 +82,7 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
         //DOMContentLoaded Start (first load)
         document.addEventListener("DOMContentLoaded", function(event) {
             scrollOnNewline = localStorage.getItem("scrollOnNewline");
+            notifyOnNewline = localStorage.getItem("notifyOnNewline");
             switch (scrollOnNewline) {
                 case "disabled":
                     document.querySelector("#scroll_button").style.color = "#595959";
@@ -274,6 +276,11 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
 
                             //add hover buttons to every line
                             createhoverButtons(node);
+
+                            //Notify on new line (using document.title)
+                            if (notifyOnNewline) {
+                                notifyUsingTitle();
+                            }
 
                             //Scroll to item depending on setting
                             switch (scrollOnNewline) {
@@ -597,6 +604,15 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
             handleMenuState();
             pinningEnabled = !pinningEnabled;
 
+        }
+
+        //notify new lines with a document.title change
+        function notifyUsingTitle() {
+            let oldTitle = document.title;
+            document.title = "✔ " + document.title;
+            setTimeout(() => {
+                document.title = oldTitle;
+            }, 300);
         }
 
         //scrolling
