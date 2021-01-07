@@ -6,61 +6,62 @@
     <title>Clipboard Inserter HTML Enhanced</title>
     <!-- scary base64 encoded favicon (小)-->
     <link href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAC90lEQVQ4jU2SW2tVRxTH19z23uca05zEJEZzDpEmNbXeQCoqIiheCkUE8+IX8M2nfoJ+gD4UCnkqtEie+tiAlQZFRMUgCW3qJTHectMk5mSffc6evWdmTdnHfQ4ZWDDMrPn91//PkL6Fhw4A8LREWiwpPXH7JD0yPEdHylUAMACgAUCllew1TZuTxwnIBYAMAOTMH1Nn1aPZcf3rn9N2cbkXALIA4KU9LVFGdyg76eMsNyYPq5un5NpagRAi3P4SaZ59hrQAzUl5OkFL3dO/T45B1os5pwmsudzFpXL13swFcv74BN2/dyk9tomtneqe/m3ymrz/5AfqOHbXoeHbLcDWrb9+ri3Md+dW1k87P94YAwBMM1FtC24Ue7QeDip/O0OFAEGI1wJQziL1YRVMrdYHkw9Ocq3bwbdDdJRycWX9TNLIvGyWgXVbgP6Dlan86DdhY2E+Z2ZejDGDIgVQ2hTQmmfrYcYqrEAcAWekym3TWnMNVPreusUi6pX3gNvhCfF6+QsAIEmlAEODv5+c0X415L390NlVeEWtpS2AUIqXSh3PRHkIwtUlG01Nf5+REWvaS9JkxpDw1fK5xrs3mUJlSO4r9z4l1tp2Bmj14GD3dLE8JOW7N0IurV8WSiX3TRXLHv87IP3GsWREJhzc1dPx1qJVLYAlpNHVVVwkwuG48REQYaj0YYN5MrK0ENStnX8/jEGA2a8P656O7AxDbFjEHQDwAcAveWyu+7ur6uLonuu7N6s2IyPkRT/AL78auDe7tnn/U6N46sRI/0QDMQSDcduCMQlAXTqw56dEUKPaWNn2sVALNO+s+ti55eOVctcvFHFii0B05+4/N2tSfxvNzUK+sh+E1gEQCJFSh6IFrk09Vw+VGyvDPRlpL4ripMkwZg3jkjG6UXv5H9BSz+evLON6UMxXg3wO3FgRS6AmPbeeTMUNY7F0XZ9pQ5FSP3IFHq30jEfB8CgHYB2CPM+HYfCp1Lm9trsUK8EtsVZGjhNGjtD/Awy3cVQ9IGG0AAAAAElFTkSuQmCC" rel="icon" type="image/png" />
-    <!-- 
-/////////////////////////////////////////////////////////////////////////
-/////// Downloadable HTML for Clipboard Inserter (Enhanced) v2.0  ///////
-/////////////////////////////////////////////////////////////////////////
-
-❗❗❗❗❗ Non-default Clipboard Inserter settings are required:
-- element name: pre
-- container selector: #textlines
-
-Hover the buttons to read their descriptions.
-Both appending and prepending should work for all buttons/functions. (if you have a modified ClipboardInserter)
-
-Keyboard shortcuts:
-- Alt + E: Toggle Editing
-
-Options:
-- You can set a few options right after this comment block.
-
-Original page was inspired/borrowed from: https://pastebin.com/raw/HxjV6YrB (Only a few lines of the old code left) 
-Which was found here: https://pastebin.com/gNJfqpmN
-
-
-TODO: Switch to svg from font icons
-
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////// 
--->
-
-
-    <!------------------------
-    (Old readme, 
-     should be useful if you are new and want to modify the css.)
-
-To change background color or text color, just replace the style values above with the hex values for the colors you want.
-If you want the background of the counter to remain semi-transparent, you must use rgb values like above. The last number (where I've put 0.8) is the opacity level (1.0 = completely opaque).
-To change font size, just change the em value to what works for you (the standard size is 1, I like it at 1.5).
-To change font weight (boldness), just edit the value above.  100 is quite thin, 400 is default, 900 is quite thick.  You may want it higher than default for Mincho fonts.
-The line-height value changes the spacing between lines.
-
-To use the font of your choice, remove the list of fonts above and put the ENGLISH name of your font in quotation marks (some JP font names are in Japanese).
-Be sure to leave a semi-colon at the end of the line.
-To find the English name of a given font, first install it, then open Firefox.
-Go to about:preferences#content in the address bar, then click on the 'Default font' drop-down menu.
-The "correct" name of your font will be listed here - just copy that down and paste it up above.
-
-Note that if you would like to use your browser default font, replace the font-family line with font-family:""; or delete it altogether.
-Your default is probably Gothic - if you want to try out a good Mincho font, try Aozora Mincho at http://www.freejapanesefont.com/aozora-mincho-download/
-For various other free Japanese fonts, visit http://www.freejapanesefont.com/
-For more font attribute information visit http://www.w3schools.com/css/css_font.asp
-
------------------------->
-
     <script>
-        //------ Options ------
+        /*
+        /////////////////////////////////////////////////////////////////////////
+        /////// Downloadable HTML for Clipboard Inserter (Enhanced) v2.0  ///////
+        /////////////////////////////////////////////////////////////////////////
+
+            ------ General Info ------
+            ------ General Info ------
+
+        ❗❗❗❗❗ Non-default Clipboard Inserter settings are required:
+        - element name: pre
+        - container selector: #textlines
+
+        Hover the buttons to read their descriptions.
+        Both appending and prepending should work for all buttons/functions. (if you have a modified ClipboardInserter)
+
+        Keyboard shortcuts:
+        - Alt + E: Toggle Editing
+
+        Options:
+        - You can set a few options right after the "old readme" below.
+
+        Original page was inspired/borrowed from: https://pastebin.com/raw/HxjV6YrB (Only a few lines of the old code left) 
+        Which was found here: https://pastebin.com/gNJfqpmN
+
+
+        TODO: Switch to svg from font icons, Use closest()
+              
+
+            ------old readme------
+            ------old readme------
+
+            should be useful if you are new and want to modify the css.
+
+        To change background color or text color, just replace the style values above with the hex values for the colors you want.
+        If you want the background of the counter to remain semi-transparent, you must use rgb values like above. The last number (where I've put 0.8) is the opacity level (1.0 = completely opaque).
+        To change font size, just change the em value to what works for you (the standard size is 1, I like it at 1.5).
+        To change font weight (boldness), just edit the value above.  100 is quite thin, 400 is default, 900 is quite thick.  You may want it higher than default for Mincho fonts.
+        The line-height value changes the spacing between lines.
+
+        To use the font of your choice, remove the list of fonts above and put the ENGLISH name of your font in quotation marks (some JP font names are in Japanese).
+        Be sure to leave a semi-colon at the end of the line.
+        To find the English name of a given font, first install it, then open Firefox.
+        Go to about:preferences#content in the address bar, then click on the 'Default font' drop-down menu.
+        The "correct" name of your font will be listed here - just copy that down and paste it up above.
+
+        Note that if you would like to use your browser default font, replace the font-family line with font-family:""; or delete it altogether.
+        Your default is probably Gothic - if you want to try out a good Mincho font, try Aozora Mincho at http://www.freejapanesefont.com/aozora-mincho-download/
+        For various other free Japanese fonts, visit http://www.freejapanesefont.com/
+        For more font attribute information visit http://www.w3schools.com/css/css_font.asp
+
+            ----------------------
+
+        */
+        //  ------ Options ------
+        //  ------ Options ------
         /**
          * pinningEnabled
          * 
@@ -83,9 +84,9 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
          * 
          * */
         let autoHideYomichan = true;
-        
+
         //---------------------
-        
+
         //------ Hidden Features ------
         /**
          * notifyOnNewline
@@ -316,7 +317,8 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
                             createhoverButtons(node);
 
                             //Notify on new line (using document.title)
-                            if (notifyOnNewline) {
+                            if ((notifyOnNewline) && (document.querySelector('html:hover') == null)) {
+                                console.log(document.querySelector('div:hover'));
                                 notifyUsingTitle();
                             }
 
@@ -647,10 +649,30 @@ For more font attribute information visit http://www.w3schools.com/css/css_font.
 
         //notify new lines with a document.title change
         function notifyUsingTitle() {
+            //Add notification icon
             document.title = "✔ " + pageTitle;
+
+            //Blink
+            setTimeout(() => {
+                document.title = "☑ " + pageTitle;
+            }, 150);
+            setTimeout(() => {
+                document.title = "✔ " + pageTitle;
+            }, 300);
+            setTimeout(() => {
+                document.title = "☑ " + pageTitle;
+            }, 450);
+            setTimeout(() => {
+                document.title = "✔ " + pageTitle;
+            }, 600);
+            setTimeout(() => {
+                document.title = "☑ " + pageTitle;
+            }, 750);
+
+            //Go back to title
             setTimeout(() => {
                 document.title = pageTitle;
-            }, 500);
+            }, 900);
         }
 
         //scrolling
