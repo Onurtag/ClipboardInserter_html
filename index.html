@@ -91,14 +91,15 @@
         /**
          * notifyOnNewline
          * 
+         * Entering below line in the browser console on this page will enable the notify on new lines feature. 
          * Whenever a new line is added, This symbol ✔ will be shown on page's title for a short time
-         * To enable, type the following line into the console (starting from localStorage and ending with ;)  
+         * To enable, type the following line into your console (starting from localStorage and ending with ;)  
          * 
          * localStorage.setItem("notifyOnNewline", true);
          * 
          * You only have to enter this once unless you clear your browser cache/history/etc.
          * 
-         * To disable, type this into the console: 
+         * To disable, type this into your console: 
          * localStorage.setItem("notifyOnNewline", false);
          * 
          * */
@@ -317,7 +318,7 @@
 
                             //Notify on new line (using document.title)
                             if ((notifyOnNewline) && (document.querySelector('html:hover') == null)) {
-                                console.log(document.querySelector('div:hover'));
+                                //console.log(document.querySelector('div:hover'));
                                 notifyUsingTitle();
                             }
 
@@ -651,7 +652,7 @@
             //Add notification icon
             document.title = "✔ " + pageTitle;
 
-            //Blink
+            //Blink the icon
             setTimeout(() => {
                 document.title = "☑ " + pageTitle;
             }, 150);
@@ -668,7 +669,7 @@
                 document.title = "☑ " + pageTitle;
             }, 750);
 
-            //Go back to title
+            //Go back to the original title
             setTimeout(() => {
                 document.title = pageTitle;
             }, 900);
