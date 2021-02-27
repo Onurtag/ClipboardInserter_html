@@ -8,13 +8,19 @@ Tested on Firefox and Chrome.
 
 ## 📝 Readme  
 
-**The following Clipboard Inserter settings are NOT required but suggested:**  
-- element name: **pre**  
-- container selector: **#textlines**  
+**Clipboard Inserter addon settings:**  
+- The following Clipboard Inserter settings are not required but highly suggested:  
+  - element name: **pre**  
+  - container selector: **#textlines**  
 
 **Prepending mode:**  
 - You can switch to prepending mode by setting the "Scroll" button to top (⇑)  
 (Or you can just use a modified Clipboard Inserter addon)
+
+**Auto hide Yomichan popups feature:**  
+- For this feature to work, you need to configure the following yomichan setting:  
+  - Set the security option **"Use a secure container around popups"** to **off**  
+- This feature is enabled by default.  
 
 **General Usage Help:**  
 
@@ -22,7 +28,7 @@ Tested on Firefox and Chrome.
 - Both appending and prepending should work for all buttons and functionality. (Even if you don't have a modified Clipboard Inserter)
 
 **Keyboard shortcuts:**  
-- Alt + E: Toggle Editing
+- Alt + E: Toggle Editing  
 
-**More Detailed Readme and Hidden Options:**  
-- [If you are interested](https://github.com/Onurtag/ClipboardInserter_html/blob/3542abb161170c44c6fea6f2d0c5e71d5d515f9b/index.html#L11)
+**More detailed readme and hidden features:**  
+- [Here](https://github.com/Onurtag/ClipboardInserter_html/blob/master/index.html#L11)
