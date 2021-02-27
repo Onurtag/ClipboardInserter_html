@@ -3,11 +3,9 @@
 A downloadable single-file HTML page for the clipboard-inserter browser add-on. Mainly for personal use so don't expect much support.  
 Tested on Firefox and Chrome.
 
-___
 ## 🌐 Online version:  
 **https://onurtag.github.io/ClipboardInserter_html/**  
 
-___
 ## 📝 Readme  
 
 **The following Clipboard Inserter settings are NOT required but suggested:**  
