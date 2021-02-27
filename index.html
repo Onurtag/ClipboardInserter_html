@@ -2,43 +2,47 @@
 
 <head>
     <meta charset="utf-8">
-    <!-- Title (set in JS as well) -->
+    <!-- Title -->
     <title>Clipboard Inserter HTML Enhanced</title>
-    <!-- scary base64 encoded favicon (小)-->
+    <!-- Scary base64 encoded favicon (小) -->
     <link href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAC90lEQVQ4jU2SW2tVRxTH19z23uca05zEJEZzDpEmNbXeQCoqIiheCkUE8+IX8M2nfoJ+gD4UCnkqtEie+tiAlQZFRMUgCW3qJTHectMk5mSffc6evWdmTdnHfQ4ZWDDMrPn91//PkL6Fhw4A8LREWiwpPXH7JD0yPEdHylUAMACgAUCllew1TZuTxwnIBYAMAOTMH1Nn1aPZcf3rn9N2cbkXALIA4KU9LVFGdyg76eMsNyYPq5un5NpagRAi3P4SaZ59hrQAzUl5OkFL3dO/T45B1os5pwmsudzFpXL13swFcv74BN2/dyk9tomtneqe/m3ymrz/5AfqOHbXoeHbLcDWrb9+ri3Md+dW1k87P94YAwBMM1FtC24Ue7QeDip/O0OFAEGI1wJQziL1YRVMrdYHkw9Ocq3bwbdDdJRycWX9TNLIvGyWgXVbgP6Dlan86DdhY2E+Z2ZejDGDIgVQ2hTQmmfrYcYqrEAcAWekym3TWnMNVPreusUi6pX3gNvhCfF6+QsAIEmlAEODv5+c0X415L390NlVeEWtpS2AUIqXSh3PRHkIwtUlG01Nf5+REWvaS9JkxpDw1fK5xrs3mUJlSO4r9z4l1tp2Bmj14GD3dLE8JOW7N0IurV8WSiX3TRXLHv87IP3GsWREJhzc1dPx1qJVLYAlpNHVVVwkwuG48REQYaj0YYN5MrK0ENStnX8/jEGA2a8P656O7AxDbFjEHQDwAcAveWyu+7ur6uLonuu7N6s2IyPkRT/AL78auDe7tnn/U6N46sRI/0QDMQSDcduCMQlAXTqw56dEUKPaWNn2sVALNO+s+ti55eOVctcvFHFii0B05+4/N2tSfxvNzUK+sh+E1gEQCJFSh6IFrk09Vw+VGyvDPRlpL4ripMkwZg3jkjG6UXv5H9BSz+evLON6UMxXg3wO3FgRS6AmPbeeTMUNY7F0XZ9pQ5FSP3IFHq30jEfB8CgHYB2CPM+HYfCp1Lm9trsUK8EtsVZGjhNGjtD/Awy3cVQ9IGG0AAAAAElFTkSuQmCC" rel="icon" type="image/png" />
     <script>
         /*
         /////////////////////////////////////////////////////////////////////////
-        /////// Downloadable HTML for Clipboard Inserter (Enhanced) v2.0  ///////
+        /////// Downloadable HTML for Clipboard Inserter (Enhanced) v2.1  ///////
         /////////////////////////////////////////////////////////////////////////
 
             ------ General Info ------
             ------ General Info ------
 
-        ❗❗❗❗❗ Non-default Clipboard Inserter settings are required:
+        ❗ Non-default Clipboard Inserter settings are NOT required but highly suggested:
         - element name: pre
         - container selector: #textlines
 
+        You can switch to prepending mode by setting the "Scroll" button to top (Up arrow: ⇑)
+        (Or you can just use a modified Clipboard Inserter addon)
+
         Hover the buttons to read their descriptions.
-        Both appending and prepending should work for all buttons/functions. (if you have a modified ClipboardInserter)
+        Both appending and prepending should work for all buttons and functionality. (Even if you don't have a modified Clipboard Inserter)
 
         Keyboard shortcuts:
         - Alt + E: Toggle Editing
 
-        Options:
-        - You can set a few options right after the "old readme" below.
+        Default Options:
+        - You can set a few default options right after the "old readme" below.  
+          - You don't have to change these options unless you are using private browsing mode (or clearing history/cache/localstorage etc.)
+            - Except for the "auto hide yomichan popups" option. (Which requires the setting "Use shadow DOM container for popup" to be unticked in yomichan's options.)
 
-        Original page was inspired/borrowed from: https://pastebin.com/raw/HxjV6YrB (Only a few lines of the old code left) 
+        Original page was inspired/borrowed from: https://pastebin.com/raw/HxjV6YrB (Only a few lines of the code left) 
         Which was found here: https://pastebin.com/gNJfqpmN
 
 
-        TODO: Switch to svg from font icons, Use closest()
-              
+        TODO: Switch to svg from shitty font icons, Switch to using closest() for some functionality.
 
             ------old readme------
+            ------Might be useful if you are new and want to change the fonts.------
             ------old readme------
 
-            should be useful if you are new and want to modify the css.
 
         To change background color or text color, just replace the style values above with the hex values for the colors you want.
         If you want the background of the counter to remain semi-transparent, you must use rgb values like above. The last number (where I've put 0.8) is the opacity level (1.0 = completely opaque).
@@ -58,32 +62,46 @@
         For more font attribute information visit http://www.w3schools.com/css/css_font.asp
 
             ----------------------
+            ----------------------
+            ----------------------
 
         */
-        //  ------ Options ------
-        //  ------ Options ------
+
+        //------ Default Options (Useful) ------
+        /**
+         * autoHideYomichan
+         * 
+         * true: Allows you to auto-hide the yomichan popup when your mouse is out of the window, false: disabled
+         * ❗ This option requires the setting "Use shadow DOM container for popup" to be unticked in yomichan's options.
+         * 
+         * Console command to permanently disable this without editing the line below: 
+         * localStorage.setItem("notifyOnNewline", false);
+         * 
+         * */
+        let autoHideYomichan = true;
+
+        //------ Default Options (Useless) ------
         /**
          * pinningEnabled
          * 
          * true: pinning is enabled by default, false: disabled
          * 
+         * This option is saved to your localstorage every time you toggle it in the menu.
+         * Therefore, you don't have to set this option unless you are or clearing history/cache/localstorage etc. (e.g: Using private browsing mode)
+         * 
          * */
         let pinningEnabled = false;
+
         /**
          * editingEnabled
          * 
          * true: editing is enabled by default, false: disabled
          * 
+         * This option is saved to your localstorage every time you toggle it in the menu.
+         * Therefore, you don't have to set this option unless you are or clearing history/cache/localstorage etc. (e.g: Using private browsing mode)
+         * 
          * */
         let editingEnabled = false;
-        /**
-         * autoHideYomichan
-         * 
-         * true: Allows you to auto-hide the yomichan popup when your mouse is out of the window, false: disabled
-         * ❗ This option requires "Use shadow DOM container for popup" to be unticked in yomichan's options.
-         * 
-         * */
-        let autoHideYomichan = true;
 
         //---------------------
 
@@ -91,13 +109,14 @@
         /**
          * notifyOnNewline
          * 
-         * Entering below line in the browser console on this page will enable the notify on new lines feature. 
-         * Whenever a new line is added, This symbol ✔ will be shown on page's title for a short time
-         * To enable, type the following line into your console (starting from localStorage and ending with ;)  
+         * Entering below line in the browser console on this page will enable the notify on new lines hidden feature. 
+         * Whenever a new line is added, This symbol ✔ will be flashed on page's title for a short time
+         * 
+         * To enable it, enter the following line into your console on this page:
          * 
          * localStorage.setItem("notifyOnNewline", true);
          * 
-         * You only have to enter this once unless you clear your browser cache/history/etc.
+         * You only have to enter this once unless you clear your browser cache/history/etc. or are using private browsing.
          * 
          * To disable, type this into your console: 
          * localStorage.setItem("notifyOnNewline", false);
@@ -108,18 +127,22 @@
         const historystack = [];
         const historystack_forward = [];
         const maxhistorylength = 1000;
-        let pageTitle = "Clipboard Inserter HTML Enhanced";
+        let pageTitle = document.title;
         let scroll_fix_alignment = 10;
-        let scrollOnNewline = "";
-        let notifyOnNewline = "";
+        let scrollOnNewline = "toBottom";
+        let notifyOnNewline = false;
         let forgiveHistoryTimes = 0;
         let linecount = 0;
         let editPinnedButtons = false;
 
         //DOMContentLoaded Start (first load)
         document.addEventListener("DOMContentLoaded", function(event) {
-            scrollOnNewline = localStorage.getItem("scrollOnNewline");
-            notifyOnNewline = localStorage.getItem("notifyOnNewline");
+            scrollOnNewline = getIfInLocalStorage("scrollOnNewline", scrollOnNewline);
+            notifyOnNewline = getIfInLocalStorage("notifyOnNewline", notifyOnNewline);
+            pinningEnabled = getIfInLocalStorage("pinningEnabled", pinningEnabled);
+            editingEnabled = getIfInLocalStorage("editingEnabled", editingEnabled);
+            autoHideYomichan = getIfInLocalStorage("autoHideYomichan", autoHideYomichan);
+
             switch (scrollOnNewline) {
                 case "disabled":
                     document.querySelector("#scroll_button").style.color = "#595959";
@@ -298,6 +321,18 @@
                     Array.prototype.forEach.call(mutation.addedNodes, function(node) {
                         try {
 
+                            //Compatibility for prepending because some can't be bothered to switch to a modified clipboard inserter that allows prepending.
+                            switch (scrollOnNewline) {
+                                case "toTop":
+                                    let prevSib = node.previousElementSibling;
+                                    if (prevSib != null) {
+                                        document.querySelector("#textlines").prepend(node);
+                                        return;
+                                    }
+                                    default:
+                                        break;
+                            }
+
                             //push history (delete forward history)
                             if (forgiveHistoryTimes == 0) {
                                 historyPush();
@@ -342,16 +377,64 @@
                 });
             });
 
+            //mutation observer for compatibility. Because its hard to change the options. (read the readme above)
+            const compatibilityMutationObserver = new MutationObserver(function(records) {
+                records.forEach(function(mutation) {
+                    Array.prototype.forEach.call(mutation.addedNodes, function(node) {
+                        try {
+
+                            //Everything other than "body > p" is ignored.
+                            if ((node.tagName == "P") && (node.parentNode.tagName != "BODY")) {
+                                return;
+                            }
+
+                            //Get new text
+                            let newNode = document.createElement("pre");
+                            newNode.innerHTML = node.innerText;
+
+                            //Remove the node
+                            node.remove();
+
+                            //Append or prepend the new node depending on the current setting
+                            switch (scrollOnNewline) {
+                                case "disabled":
+                                    document.querySelector("#textlines").append(newNode);
+                                    break;
+                                case "toBottom":
+                                    document.querySelector("#textlines").append(newNode);
+                                    break;
+                                case "toTop":
+                                    document.querySelector("#textlines").prepend(newNode);
+                                    break;
+                                default:
+                                    document.querySelector("#textlines").append(newNode);
+                                    break;
+                            }
+
+
+                        } catch (e) {}
+
+                    });
+                });
+            });
+
             //start the textlines mutation observer
-            textlinesMutationObserver.observe(document.querySelectorAll('#textlines')[0], {
+            textlinesMutationObserver.observe(document.querySelector('#textlines'), {
+                childList: true,
+                subtree: false
+            });
+
+            //start the default options compatibility mutation observer
+            compatibilityMutationObserver.observe(document.querySelector('body'), {
                 childList: true,
                 subtree: false
             });
 
             /*
-            pre = document.createElement("pre");
-            pre.innerHTML = "loremipsum\n\nloremipsumloremipsumloremipsum\n\n\n\nloremipsumloremipsum";
-            document.querySelector("#textlines").prepend(pre);
+            //Test
+            newpree = document.createElement("pre");
+            newpree.innerHTML = "loremipsum\n\nloremipsumloremipsumloremipsum\n\n\n\nloremipsumloremipsum";
+            document.querySelector("#textlines").prepend(newpree);
             */
 
         });
@@ -414,6 +497,25 @@
                     //Mouse left window here, do action 1000 miliseconds after the mouse leaves the window
                     theTimer = setTimeout(doAction, 1000);
                 }
+            }
+        }
+
+        //Get from localstorage if it exists, otherwise keep current value.
+        function getIfInLocalStorage(itemName, currentVal) {
+            let storedVal = localStorage.getItem(itemName);
+            if (storedVal != null) {
+                //If the stored value is true or false return those.
+                switch (storedVal.toLowerCase()) {
+                    case "true":
+                        return true;
+                    case "false":
+                        return false;
+                    default:
+                        return storedVal;
+                }
+            } else {
+                //No stored value
+                return currentVal;
             }
         }
 
@@ -596,6 +698,7 @@
                 }
             }
             editingEnabled = !editingEnabled;
+            localStorage.setItem("editingEnabled", editingEnabled);
         }
 
         //add new line
@@ -644,7 +747,7 @@
             //handle menu button visibility (for edge cases)
             handleMenuState();
             pinningEnabled = !pinningEnabled;
-
+            localStorage.setItem("pinningEnabled", pinningEnabled);
         }
 
         //notify new lines with a document.title change
@@ -792,6 +895,11 @@
             border-bottom: #414141 solid 1px;
             padding-bottom: 1.4em;
             margin-bottom: 0.46em;
+        }
+
+        /* Preemptively hide compatibility lines to prevent flashing */
+        body>p {
+            display: none;
         }
 
         /* Top right buttons & counter css */
@@ -1121,7 +1229,8 @@
         <div id="clear_button" title="Clear all lines.
 Clears the history as well when clicked while holding Shift.">⊘</div>
         <!-- This is the div used for the "Toggle scroll to bottom a when new line is added" button. -->
-        <div id="scroll_button" title="Scroll to bottom(⇓)/top(⇑)/nowhere(⇕) when a new line is added.">⇓</div>
+        <div id="scroll_button" title="Scroll to bottom(⇓)/top(⇑)/nowhere(⇕) when a new line is added.
+Also prepends new lines by default if set to top(⇑).">⇓</div>
         <!-- This is the div used for the "Enable editing" button. -->
         <div id="edit_button" title="Enables line editing.
 History is saved right when you enable this,
@@ -1154,7 +1263,7 @@ Saves history when pressed.">
         </div>
         <!-- This is the div used for the "remove last line" button. -->
         <div id="remove_button" title="Remove first/last line
-(removes first line instead when auto scroll is set to 'Scroll to top')">✖</div>
+Removes the first line when auto scroll is set to 'Scroll to top(⇑)'">✖</div>
     </div>
     <div class="countercontainer">
         <!-- This is the div used for the counter. -->
