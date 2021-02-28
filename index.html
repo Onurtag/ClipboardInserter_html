@@ -693,8 +693,8 @@
                 document.querySelector("#edit_button").classList.add("edit_button_on");
                 //also pin the buttons as well
                 if (document.querySelectorAll(".pin_button_on").length != 1) {
-                    togglePinning();
                     editPinnedButtons = true;
+                    togglePinning();
                 }
             }
             editingEnabled = !editingEnabled;
@@ -747,7 +747,9 @@
             //handle menu button visibility (for edge cases)
             handleMenuState();
             pinningEnabled = !pinningEnabled;
-            localStorage.setItem("pinningEnabled", pinningEnabled);
+            if (!editPinnedButtons) {
+                localStorage.setItem("pinningEnabled", pinningEnabled);
+            }
         }
 
         //notify new lines with a document.title change
