@@ -384,7 +384,7 @@
                         try {
 
                             //Everything other than "body > p" is ignored.
-                            if ((node.tagName == "P") && (node.parentNode.tagName != "BODY")) {
+                            if ((node.tagName != "P") || (node.parentNode.tagName != "BODY")) {
                                 return;
                             }
 
