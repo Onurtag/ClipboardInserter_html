@@ -325,7 +325,7 @@
                             switch (scrollOnNewline) {
                                 case "toTop":
                                     let prevSib = node.previousElementSibling;
-                                    if (prevSib != null) {
+                                    if (prevSib != null && forgiveHistoryTimes == 0) {
                                         document.querySelector("#textlines").prepend(node);
                                         return;
                                     }
@@ -383,7 +383,7 @@
                     Array.prototype.forEach.call(mutation.addedNodes, function(node) {
                         try {
 
-                            //Everything other than "body > p" is ignored.
+                            //Everything other than "body > p" is ignored. (second part might be useless)
                             if ((node.tagName != "P") || (node.parentNode.tagName != "BODY")) {
                                 return;
                             }
