@@ -26,7 +26,7 @@
         Both appending and prepending should work for all buttons and functionality. (Even if you don't have a modified Clipboard Inserter)
 
         Keyboard shortcuts:
-        - Alt + E: Toggle Editing
+        - Alt + S: Toggle Editing
 
         ❗ Default Options and Hidden features:
         - ❗ You can set a few default options right after the "old readme" below.  
@@ -290,8 +290,8 @@
 
             //Keyboard shortcuts
             document.addEventListener("keydown", function(e) {
-                //Alt + E: Toggle Editing
-                if (e.altKey && e.which == 69) {
+                //Alt + S: Toggle Editing
+                if (e.altKey && e.which == 83) {
                     toggleEditing();
                     e.preventDefault();
                 }
@@ -1237,7 +1237,7 @@ Also prepends new lines by default if set to top(⇑).">⇓</div>
         <div id="edit_button" title="Enables line editing.
 History is saved right when you enable this,
 so disable it if you want when you are done.
-Toggle Shortcut: Alt + E">🖉</div>
+Toggle Shortcut: Alt + S">🖉</div>
         <!-- This is the div used for the "Add a new line" button. -->
         <div id="add_line_button" title="Adds a new line and enables editing.
 Saves history when pressed.">

@@ -28,7 +28,7 @@ Tested on Firefox and Chrome.
 - Both appending and prepending should work for all buttons and functionality. (Even if you don't have a modified Clipboard Inserter)
 
 **Keyboard shortcuts:**  
-- Alt + E: Toggle Editing  
+- Alt + S: Toggle Editing  
 
 **More detailed readme and hidden features:**  
 - [Here](https://github.com/Onurtag/ClipboardInserter_html/blob/master/index.html#L11)
