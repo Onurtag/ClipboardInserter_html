@@ -8,8 +8,12 @@ Tested on Firefox and Chrome.
 
 ## 📝 Readme  
 
+**Recommended Fonts:**  
+- Installing the following font is not required but highly recommended for page style reasons:  
+  - [Noto Sans JP font family by Google](https://fonts.google.com/specimen/Noto+Sans+JP)
+
 **Clipboard Inserter addon settings:**  
-- The following Clipboard Inserter settings are not required but highly suggested:  
+- The following Clipboard Inserter settings are not required but highly suggested for performance reasons:  
   - element name: **pre**  
   - container selector: **#textlines**  
 

@@ -715,11 +715,13 @@
                 htmlNode.classList.remove("overlaymode");
                 cssNode.setAttribute("media", "not all");
                 document.querySelector("#overlay_button").classList.remove("overlay_button_on");
+                scroll_fix_alignment = 10;
             } else {
                 //turn overlay mode on
                 htmlNode.classList.add("overlaymode");
                 cssNode.setAttribute("media", "all");
                 document.querySelector("#overlay_button").classList.add("overlay_button_on");
+                scroll_fix_alignment = 24;
             }
         }
 
@@ -1290,13 +1292,22 @@
 
         .overlaymode > body {
             background-color: #000;
+            margin-bottom: -24px;
         }
         .overlaymode #textlines > pre {
-            color: #dddddd;
-            /*text-shadow: 0px 0px 2px #0b0b0b;*/
+            border-bottom: none;
+            margin-bottom: 56%;
+            margin-left: auto;
+            margin-right: auto;
+            width: 56%;
+        }
+        .overlaymode #textlines > pre > pre {
+            color: #fcfcfc;
+            text-shadow: 0px 0px 2px #0b0b0b;
             -webkit-text-stroke: .2px #eee;
-            text-shadow: -1px -1px 0 #101010, 0 -1px 0 #101010, 1px -1px 0 #101010, 1px 0 0 #101010, 1px 1px 0 #101010, 0 1px 0 #101010, -1px 1px 0 #101010, -1px 0 0 #101010;
+            /*text-shadow: -1px -1px 0 #101010, 0 -1px 0 #101010, 1px -1px 0 #101010, 1px 0 0 #101010, 1px 1px 0 #101010, 0 1px 0 #101010, -1px 1px 0 #101010, -1px 0 0 #101010;*/
             font-size: 1.1em;
+            font-family: "MS Gothic";
         }
         .overlaymode #go_to_last_button, .overlaymode #go_bottom_button {
             display: none;
@@ -1305,6 +1316,13 @@
             background-color: #50505099;
             border-radius: 4px;
         }
+        /*
+        .overlaymode .buttoncontainer {
+            
+            right: -1px;
+            top: -1px;
+        }
+        */
         .overlaymode #menu_button {
             font-size: 14px;
             padding: 0px 1px 0px 1px;
@@ -1313,10 +1331,14 @@
         .overlaymode .countercontainer {
             display: none;
         }
-        .overlaymode #textlines>pre {
-            border-bottom: none;
-            margin-bottom: 17em;
+        .overlaymode .hoverButtonsBackground {
+            display: flex !important;
+            transform: scale(1,0.11) translate(0px, -129px);
         }
+        .overlaymode .hoverButtonsBackground:hover {
+            transform: scale(1,1) translate(0px, -8px);
+        }
+        /*
         .overlaymode .hoverButtonsContainer {
             width: 8px;
             height: 8px;
@@ -1325,6 +1347,7 @@
             border-radius: 50%;
             background-color: #505050;
         }
+        */
         ::-webkit-scrollbar {
             width: 0 !important;
         }
