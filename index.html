@@ -113,13 +113,37 @@
          * Whenever a new line is added, This symbol ✔ will be flashed on page's title for a short time
          * 
          * To enable it, enter the following line into your console on this page:
-         * 
          * localStorage.setItem("notifyOnNewline", true);
+         * 
+         * (Don't forget to refresh the page afterwards)
          * 
          * You only have to enter this once unless you clear your browser cache/history/etc. or are using private browsing.
          * 
          * To disable, type this into your console: 
          * localStorage.setItem("notifyOnNewline", false);
+         * 
+         * */ 
+        /**
+         * overlayHotkeyEnabled
+         * 
+         * Enables the "Toggle overlay mode" Hotkey "]" 
+         * (The hotkey is ] key)
+         * 
+         * This setting only adds a hotkey for the overlay mode feature, 
+         * you can still use the top right overlay button without enabling this hotkey.
+         * 
+         * Entering below line in the browser console on this page will enable the overlay mode toggle hotkey.
+         * With this mode useless divs will be hidden and background will be black (So you could potentially use the page as an overlay).
+         * 
+         * To enable it, enter the following line into your console on this page:
+         * localStorage.setItem("overlayHotkeyEnabled", true);
+         * 
+         * (Don't forget to refresh the page afterwards)
+         * 
+         * You only have to enter this once unless you clear your browser cache/history/etc. or are using private browsing.
+         * 
+         * To disable, type this into your console: 
+         * localStorage.setItem("overlayHotkeyEnabled", false);
          * 
          * */
         //-----------------------------
@@ -131,6 +155,7 @@
         let scroll_fix_alignment = 10;
         let scrollOnNewline = "toBottom";
         let notifyOnNewline = false;
+        let overlayHotkeyEnabled = false;
         let forgiveHistoryTimes = 0;
         let linecount = 0;
         let editPinnedButtons = false;
@@ -139,6 +164,7 @@
         document.addEventListener("DOMContentLoaded", function(event) {
             scrollOnNewline = getIfInLocalStorage("scrollOnNewline", scrollOnNewline);
             notifyOnNewline = getIfInLocalStorage("notifyOnNewline", notifyOnNewline);
+            overlayHotkeyEnabled = getIfInLocalStorage("overlayHotkeyEnabled", overlayHotkeyEnabled);
             pinningEnabled = getIfInLocalStorage("pinningEnabled", pinningEnabled);
             editingEnabled = getIfInLocalStorage("editingEnabled", editingEnabled);
             autoHideYomichan = getIfInLocalStorage("autoHideYomichan", autoHideYomichan);
@@ -201,6 +227,11 @@
             //pin_button
             document.getElementById("pin_button").addEventListener("click", function() {
                 togglePinning();
+            });
+
+            //overlay_button
+            document.getElementById("overlay_button").addEventListener("click", function() {
+                toggleOverlayMode();
             });
 
             //menu_button (normally you hover this one.)
@@ -294,6 +325,12 @@
                 if (e.altKey && e.which == 83) {
                     toggleEditing();
                     e.preventDefault();
+                //"]" key: Toggle overlay mode css (experimental)
+                } else if (!e.ctrlKey && !e.altKey && e.key == "]") {
+                    if (overlayHotkeyEnabled) {
+                        toggleOverlayMode();
+                        e.preventDefault();
+                    }
                 }
             });
 
@@ -669,6 +706,23 @@
         }
         //end undo/redo buttons
 
+        //toggle overlay mode
+        function toggleOverlayMode() {
+            let htmlNode = document.querySelector("html");
+            let cssNode = document.querySelector("#overlaycss");
+            if (htmlNode.classList.contains("overlaymode")) {
+                //turn overlay mode off
+                htmlNode.classList.remove("overlaymode");
+                cssNode.setAttribute("media", "not all");
+                document.querySelector("#overlay_button").classList.remove("overlay_button_on");
+            } else {
+                //turn overlay mode on
+                htmlNode.classList.add("overlaymode");
+                cssNode.setAttribute("media", "all");
+                document.querySelector("#overlay_button").classList.add("overlay_button_on");
+            }
+        }
+
         //toggle editing
         function toggleEditing(firstload = false) {
             if (firstload) {
@@ -862,6 +916,7 @@
 
     </script>
 
+    <!-- This is the main css that styles everything -->
     <style id="maincss" type="text/css">
         html {
             overflow-y: scroll;
@@ -990,6 +1045,22 @@
             font-family: "Noto Sans JP Light", "Arial";
         }
 
+        #overlay_button {
+            font-size: 18px;
+            padding: 0px 6px 5px 5px;
+            line-height: 16px;
+            background-color: rgba(25, 25, 25, 0.65);
+            color: #9d9d9d;
+            float: left;
+            cursor: pointer;
+            font-family: "Calibri";
+        }
+
+        #overlay_button.overlay_button_on {
+            box-shadow: inset 0px 0px 3px 2px rgb(69, 183, 44, 0.5);
+            color: rgb(51, 144, 31) !important;
+        }
+
         #scroll_button {
             font-size: 14px;
             padding: 1px 3px 2px 4px;
@@ -1010,7 +1081,7 @@
         }
 
         .edit_button_on {
-            box-shadow: inset 0px 0px 6px 2px rgba(73, 196, 47, 0.5);
+            box-shadow: inset 0px 0px 3px 2px rgb(69, 183, 44, 0.5);
             color: rgb(73, 196, 47) !important;
         }
 
@@ -1214,7 +1285,54 @@
 
     </style>
 
+    <!-- This css is only for the overlay mode -->
+    <style id="overlaycss" type="text/css" media="not all">
+
+        .overlaymode > body {
+            background-color: #000;
+        }
+        .overlaymode #textlines > pre {
+            color: #dddddd;
+            /*text-shadow: 0px 0px 2px #0b0b0b;*/
+            -webkit-text-stroke: .2px #eee;
+            text-shadow: -1px -1px 0 #101010, 0 -1px 0 #101010, 1px -1px 0 #101010, 1px 0 0 #101010, 1px 1px 0 #101010, 0 1px 0 #101010, -1px 1px 0 #101010, -1px 0 0 #101010;
+            font-size: 1.1em;
+        }
+        .overlaymode #go_to_last_button, .overlaymode #go_bottom_button {
+            display: none;
+        }
+        .overlaymode #toprightbuttons {
+            background-color: #50505099;
+            border-radius: 4px;
+        }
+        .overlaymode #menu_button {
+            font-size: 14px;
+            padding: 0px 1px 0px 1px;
+            line-height: 14px;
+        }
+        .overlaymode .countercontainer {
+            display: none;
+        }
+        .overlaymode #textlines>pre {
+            border-bottom: none;
+            margin-bottom: 17em;
+        }
+        .overlaymode .hoverButtonsContainer {
+            width: 8px;
+            height: 8px;
+            margin-top: -20px;
+            margin-left: -16px;
+            border-radius: 50%;
+            background-color: #505050;
+        }
+        ::-webkit-scrollbar {
+            width: 0 !important;
+        }
+
+    </style>
+
 </head>
+
 
 <body>
     <div id="go_bottom_button" title="Scroll to the bottom">🡻</div>
@@ -1223,6 +1341,9 @@
         <div id="menu_button" title="Menu">⚙</div>
     </div>
     <div id="toprightbuttons" class="buttoncontainer">
+        <!-- This is the div used for the "Toggle Overlay Mode" button. -->
+        <div id="overlay_button" title="Toggle Overlay Mode (experimental)
+Toggles the page's style. Currently in testing.">α</div>
         <!-- This is the div used for the "Pin menu" button. -->
         <div id="pin_button" title="Pin/Unpin the menu">
             <div id="pintext">📌</div>
