@@ -531,8 +531,8 @@
                 clearTimeout(theTimer);
                 let reltarget = e.relatedTarget || e.toElement;
                 if (!reltarget || (reltarget.nodeName == "HTML" && e.target == document.firstChild)) {
-                    //Mouse left window here, do action 1000 miliseconds after the mouse leaves the window
-                    theTimer = setTimeout(doAction, 1000);
+                    //Mouse left window here, do action 600 miliseconds after the mouse leaves the window
+                    theTimer = setTimeout(doAction, 600);
                 }
             }
         }
