@@ -315,7 +315,7 @@
 
             document.getElementById("go_bottom_button").addEventListener("click", function() {
                 if (linecount > 0) {
-                    document.querySelectorAll("html")[0].scrollIntoView(false);
+                    scrollTopBottom("bottom");
                 }
             });
 
@@ -399,10 +399,10 @@
                                 case "disabled":
                                     break;
                                 case "toBottom":
-                                    scrollToLast(1);
+                                    scrollFirstLast("last", 20);
                                     break;
                                 case "toTop":
-                                    scrollToLast(0);
+                                    scrollFirstLast("first");
                                     break;
                                 default:
                                     break;
@@ -708,6 +708,11 @@
 
         //toggle overlay mode
         function toggleOverlayMode() {
+            let overlayButtonsHTML = `<div id="overlay_top_bottom_container">
+    <div id="overlay_top_button" title="Scroll to the Top" style="margin-right: 6px;">▲</div>
+    <div id="overlay_bottom_button" title="Scroll to the Bottom">▼</div>
+</div>`;
+
             let htmlNode = document.querySelector("html");
             let cssNode = document.querySelector("#overlaycss");
             if (htmlNode.classList.contains("overlaymode")) {
@@ -716,12 +721,31 @@
                 cssNode.setAttribute("media", "not all");
                 document.querySelector("#overlay_button").classList.remove("overlay_button_on");
                 scroll_fix_alignment = 10;
+                //Remove overlay buttons
+                document.querySelector("#overlay_top_bottom_container").remove();
             } else {
                 //turn overlay mode on
                 htmlNode.classList.add("overlaymode");
                 cssNode.setAttribute("media", "all");
                 document.querySelector("#overlay_button").classList.add("overlay_button_on");
                 scroll_fix_alignment = 24;
+                //Add overlay buttons
+                let newContainerDiv = document.createElement("div");
+                document.body.prepend(newContainerDiv)
+                newContainerDiv.outerHTML = overlayButtonsHTML;
+                //Overlay button events
+                document.getElementById("overlay_bottom_button").addEventListener("click", function() {
+                    if (linecount > 0) {
+                        //scrollTopBottom("bottom");
+                        scrollFirstLast("last", 1);
+                    }
+                });
+                document.getElementById("overlay_top_button").addEventListener("click", function() {
+                    if (linecount > 0) {
+                        scrollTopBottom("top");
+                    }
+                });
+
             }
         }
 
@@ -837,11 +861,21 @@
         }
 
         //scrolling
-        function scrollToLast(tolast) {
-            if (tolast) {
-                window.scroll(0, findPos(document.querySelector("#textlines > pre:last-of-type"))[1] - 280);
-            } else {
+        function scrollFirstLast(scrollTo, customY) {
+            let offsetY = customY || 280;
+            if (scrollTo == "last") {
+                window.scroll(0, findPos(document.querySelector("#textlines > pre:last-of-type"))[1] - offsetY);
+            } else if (scrollTo == "first") {
+                //We dont have a large top margin so just scroll to top
                 window.scroll(0, 0);
+            }
+        }
+
+        function scrollTopBottom(toTop) {
+            if (toTop == "top") {
+                document.querySelector("html").scrollIntoView(true);
+            } else if (toTop == "bottom") {
+                document.querySelector("html").scrollIntoView(false);
             }
         }
 
@@ -851,15 +885,19 @@
             let scrollto = null;
             try {
                 if (scrollUp) {
-                    scrollto = element.previousElementSibling;
+                    //Scroll to the previous element if it exists
+                    scrollto = element.previousElementSibling || element;
                 } else {
-                    scrollto = element.nextElementSibling;
+                    //Scroll to the next element if it exists
+                    scrollto = element.nextElementSibling || element;
                 }
+
                 if (scrollto == null) {
+                    //This part should not run anymore.
                     if (scrollUp) {
-                        document.querySelectorAll("html")[0].scrollIntoView(true);
+                        scrollTopBottom("top");
                     } else {
-                        document.querySelectorAll("html")[0].scrollIntoView(false);
+                        scrollTopBottom("bottom");
                     }
                 } else {
                     //fix scroll difference from reality
@@ -1295,7 +1333,7 @@
 
         .overlaymode > body {
             background-color: #000;
-            margin-bottom: -24px;
+            margin-bottom: -31px;
         }
         .overlaymode #textlines > pre {
             border-bottom: none;
@@ -1352,6 +1390,33 @@
             background-color: #505050;
         }
         */
+        .overlaymode #overlay_top_bottom_container {
+            transform: scale(1,0.08) translate(0px, -162px);
+            border-radius: none;
+        }
+        .overlaymode #overlay_top_bottom_container:hover {
+            transform: scale(1,1) translate(0px, -8px);
+            border-radius: 6px;
+        }
+        .overlaymode #overlay_top_bottom_container > div {
+            opacity: 35%;
+            cursor: pointer;
+            user-select: none;
+        }
+        .overlaymode #overlay_top_bottom_container > div:hover {
+            opacity: 90%;
+        }
+        .overlaymode #overlay_top_bottom_container {
+            /*transform: translateX(-50%);*/
+            /*height: 2px;*/
+            position: fixed;
+            top: 0px;
+            background-color: #242424;
+            left: 30%;
+            display: flex;
+            padding: 0px 4px 0px 4px;
+            font-family: Segoe UI;
+        }
         ::-webkit-scrollbar {
             width: 0 !important;
         }
