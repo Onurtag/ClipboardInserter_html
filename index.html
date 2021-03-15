@@ -709,7 +709,7 @@
         //toggle overlay mode
         function toggleOverlayMode() {
             let overlayButtonsHTML = `<div id="overlay_top_bottom_container">
-    <div id="overlay_top_button" title="Scroll to the Top" style="margin-right: 6px;">▲</div>
+    <div id="overlay_top_button" title="Scroll to the Top" style="margin-right: 10px;">▲</div>
     <div id="overlay_bottom_button" title="Scroll to the Bottom">▼</div>
 </div>`;
 
@@ -737,7 +737,7 @@
                 document.getElementById("overlay_bottom_button").addEventListener("click", function() {
                     if (linecount > 0) {
                         //scrollTopBottom("bottom");
-                        scrollFirstLast("last", 1);
+                        scrollFirstLast("last", 24);
                     }
                 });
                 document.getElementById("overlay_top_button").addEventListener("click", function() {
@@ -1411,10 +1411,10 @@
             /*height: 2px;*/
             position: fixed;
             top: 0px;
-            background-color: #242424;
+            background-color: #1D1D1D;
             left: 30%;
             display: flex;
-            padding: 0px 4px 0px 4px;
+            padding: 0px 12px 0px 12px;
             font-family: Segoe UI;
         }
         ::-webkit-scrollbar {
