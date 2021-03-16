@@ -714,6 +714,7 @@
     <div id="overlay_up_button" style="margin-right: 26px;" title="Scroll Up">▲</div>
     <div id="overlay_top_button" style="margin-right: 8px; font-size: 17px; margin-top: 2px;" title="Scroll to the Top">🢁</div>
     <div id="overlay_bottom_button" style="margin-right: 26px; font-size: 17px; margin-top: 6px;" title="Scroll to the Bottom">🢃</div>
+    <div id="overlay_text_button" style="margin-right: 8px; font-size: 18px; margin-top: 4px; font-weight: bold; font-family: Calibri; transform: scale(1.1, 1);" title="Toggle Text Visibility" class="">¶</div>
     <div id="overlay_background_button" style="font-size: 18px; margin-top: 4px;" title="Toggle Background Color">☯</div>
 </div>`;
 
@@ -766,8 +767,19 @@
                 document.getElementById("overlay_background_button").addEventListener("click", function(event) {
                     if (document.querySelector("body.lighterbg")) {
                         document.querySelector("body").classList.remove("lighterbg");
+                        event.target.classList.remove("button_on");
                     } else {
                         document.querySelector("body").classList.add("lighterbg");
+                        event.target.classList.add("button_on");
+                    }
+                });
+                document.getElementById("overlay_text_button").addEventListener("click", function(event) {
+                    if (document.querySelector("#textlines.hidden")) {
+                        document.querySelector("#textlines").classList.remove("hidden");
+                        event.target.classList.remove("button_on");
+                    } else {
+                        document.querySelector("#textlines").classList.add("hidden");
+                        event.target.classList.add("button_on");
                     }
                 });
 
@@ -922,22 +934,24 @@
             let scrollto = null;
             try {
                 if (scrollUp) {
-                    //Scroll to the previous element if it exists
-                    scrollto = element.previousElementSibling || element;
+                    //Scroll to the previous element if it exists, otherwise do nothing.
+                    scrollto = element.previousElementSibling;
                 } else {
-                    //Scroll to the next element if it exists
-                    scrollto = element.nextElementSibling || element;
+                    //Scroll to the next element if it exists, otherwise do nothing.
+                    scrollto = element.nextElementSibling;
                 }
-
-                if (scrollto == null) {
-                    //This part should not run anymore.
+                if (!scrollto) {
+                    //Do nothing.
+                    return;
+                    /*
                     if (scrollUp) {
                         scrollTopBottom("top");
                     } else {
                         scrollTopBottom("bottom");
                     }
+                    */
                 } else {
-                    //fix scroll difference from reality
+                    //Scroll to the element using mouse clientY and scroll_fix_alignment
                     doScroll(0, findPos(scrollto)[1] - clientY - scroll_fix_alignment);
                     //scrollto.scrollIntoView();
                 }
@@ -1380,6 +1394,10 @@
             background-color: #202020;
         }
 
+        .overlaymode #textlines.hidden {
+            visibility: hidden;
+        }
+
         .overlaymode #textlines {
             margin-top: 24px;
         }
@@ -1457,7 +1475,7 @@
         }
         */
         .overlaymode #overlay_buttons_container {
-            transform: scale(1, 0.08) translate(0px, -170px);
+            transform: scale(1, 0.08) translate(0px, -180px);
             border-radius: none;
         }
 
@@ -1477,6 +1495,11 @@
             color: #f7f7f7;
         }
 
+        .overlaymode #overlay_buttons_container>div.button_on {
+            color: #a6f57e;
+            opacity: 90%;
+        }
+
         .overlaymode #overlay_buttons_container {
             /*transform: translateX(-50%);*/
             /*height: 2px;*/
@@ -1485,7 +1508,7 @@
             background-color: #1D1D1D;
             left: 30%;
             display: flex;
-            padding: 0px 12px 0px 12px;
+            padding: 0px 12px 2px 12px;
             font-family: Segoe UI;
             font-size: 21px;
         }
