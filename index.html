@@ -122,7 +122,7 @@
          * To disable, type this into your console: 
          * localStorage.setItem("notifyOnNewline", false);
          * 
-         * */ 
+         * */
         /**
          * overlayHotkeyEnabled
          * 
@@ -156,6 +156,7 @@
         let scrollOnNewline = "toBottom";
         let notifyOnNewline = false;
         let overlayHotkeyEnabled = false;
+        let overlayModeEnabled = false;
         let forgiveHistoryTimes = 0;
         let linecount = 0;
         let editPinnedButtons = false;
@@ -309,7 +310,7 @@
             document.getElementById("go_to_last_button").addEventListener("click", function() {
                 //document.querySelector("#textlines > pre:last-of-type").scrollIntoView();
                 if (linecount > 0) {
-                    window.scroll(0, findPos(document.querySelector("#textlines > pre:last-of-type"))[1] - 200);
+                    doScroll(0, findPos(document.querySelector("#textlines > pre:last-of-type"))[1] - 200);
                 }
             });
 
@@ -325,7 +326,7 @@
                 if (e.altKey && e.which == 83) {
                     toggleEditing();
                     e.preventDefault();
-                //"]" key: Toggle overlay mode css (experimental)
+                    //"]" key: Toggle overlay mode css (experimental)
                 } else if (!e.ctrlKey && !e.altKey && e.key == "]") {
                     if (overlayHotkeyEnabled) {
                         toggleOverlayMode();
@@ -708,9 +709,12 @@
 
         //toggle overlay mode
         function toggleOverlayMode() {
-            let overlayButtonsHTML = `<div id="overlay_top_bottom_container">
-    <div id="overlay_top_button" title="Scroll to the Top" style="margin-right: 10px;">▲</div>
-    <div id="overlay_bottom_button" title="Scroll to the Bottom">▼</div>
+            let overlayButtonsHTML = `<div id="overlay_buttons_container">
+    <div id="overlay_down_button" style="margin-right: 8px;" title="Scroll Down">▼</div>
+    <div id="overlay_up_button" style="margin-right: 26px;" title="Scroll Up">▲</div>
+    <div id="overlay_top_button" style="margin-right: 8px; font-size: 17px; margin-top: 2px;" title="Scroll to the Top">🢁</div>
+    <div id="overlay_bottom_button" style="margin-right: 26px; font-size: 17px; margin-top: 6px;" title="Scroll to the Bottom">🢃</div>
+    <div id="overlay_background_button" style="font-size: 18px; margin-top: 4px;" title="Toggle Background Color">☯</div>
 </div>`;
 
             let htmlNode = document.querySelector("html");
@@ -722,29 +726,52 @@
                 document.querySelector("#overlay_button").classList.remove("overlay_button_on");
                 scroll_fix_alignment = 10;
                 //Remove overlay buttons
-                document.querySelector("#overlay_top_bottom_container").remove();
+                document.querySelector("#overlay_buttons_container").remove();
+
+                overlayModeEnabled = false;
+
             } else {
                 //turn overlay mode on
                 htmlNode.classList.add("overlaymode");
                 cssNode.setAttribute("media", "all");
                 document.querySelector("#overlay_button").classList.add("overlay_button_on");
-                scroll_fix_alignment = 24;
+                scroll_fix_alignment = 4;
                 //Add overlay buttons
                 let newContainerDiv = document.createElement("div");
                 document.body.prepend(newContainerDiv)
                 newContainerDiv.outerHTML = overlayButtonsHTML;
                 //Overlay button events
-                document.getElementById("overlay_bottom_button").addEventListener("click", function() {
+                document.getElementById("overlay_down_button").addEventListener("click", function(event) {
                     if (linecount > 0) {
-                        //scrollTopBottom("bottom");
-                        scrollFirstLast("last", 24);
+                        //scrollFirstLast("last", 4);
+                        document.querySelector("body").scrollBy(0, 100);
                     }
                 });
-                document.getElementById("overlay_top_button").addEventListener("click", function() {
+                document.getElementById("overlay_up_button").addEventListener("click", function(event) {
+                    if (linecount > 0) {
+                        //scrollTopBottom("top");
+                        document.querySelector("body").scrollBy(0, -100);
+                    }
+                });
+                document.getElementById("overlay_bottom_button").addEventListener("click", function(event) {
+                    if (linecount > 0) {
+                        scrollFirstLast("last", 4);
+                    }
+                });
+                document.getElementById("overlay_top_button").addEventListener("click", function(event) {
                     if (linecount > 0) {
                         scrollTopBottom("top");
                     }
                 });
+                document.getElementById("overlay_background_button").addEventListener("click", function(event) {
+                    if (document.querySelector("body.lighterbg")) {
+                        document.querySelector("body").classList.remove("lighterbg");
+                    } else {
+                        document.querySelector("body").classList.add("lighterbg");
+                    }
+                });
+
+                overlayModeEnabled = true;
 
             }
         }
@@ -860,22 +887,32 @@
             }, 900);
         }
 
+        //Pick scroll method (body or window depending on the current view)
+        function doScroll(valueX, valueY) {
+            if (overlayModeEnabled) {
+                document.querySelector("body").scroll(valueX, valueY);
+            } else {
+                window.scroll(valueX, valueY);
+            }
+        }
+
         //scrolling
         function scrollFirstLast(scrollTo, customY) {
             let offsetY = customY || 280;
             if (scrollTo == "last") {
-                window.scroll(0, findPos(document.querySelector("#textlines > pre:last-of-type"))[1] - offsetY);
+                doScroll(0, findPos(document.querySelector("#textlines > pre:last-of-type"))[1] - offsetY);
             } else if (scrollTo == "first") {
                 //We dont have a large top margin so just scroll to top
-                window.scroll(0, 0);
+                doScroll(0, 0);
             }
         }
 
         function scrollTopBottom(toTop) {
+            let scrollSelector = overlayModeEnabled ? document.querySelector("body") : document.querySelector("html");
             if (toTop == "top") {
-                document.querySelector("html").scrollIntoView(true);
+                scrollSelector.scroll(0, 0);
             } else if (toTop == "bottom") {
-                document.querySelector("html").scrollIntoView(false);
+                scrollSelector.scrollIntoView(false);
             }
         }
 
@@ -901,7 +938,7 @@
                     }
                 } else {
                     //fix scroll difference from reality
-                    window.scroll(0, findPos(scrollto)[1] - clientY - scroll_fix_alignment);
+                    doScroll(0, findPos(scrollto)[1] - clientY - scroll_fix_alignment);
                     //scrollto.scrollIntoView();
                 }
                 return;
@@ -958,7 +995,6 @@
 
     <!-- This is the main css that styles everything -->
     <style id="maincss" type="text/css">
-
         /* CSS styles will be overhauled with the svg buttons update (t.b.d.)*/
 
         html {
@@ -1330,19 +1366,41 @@
 
     <!-- This css is only for the overlay mode -->
     <style id="overlaycss" type="text/css" media="not all">
-
-        .overlaymode > body {
+        .overlaymode>body {
             background-color: #000;
             margin-bottom: -31px;
+            margin-top: 0px;
+            overflow: auto;
+            height: 134px;
+            /* Firefox */
+            scrollbar-width: none;
         }
-        .overlaymode #textlines > pre {
+
+        .overlaymode>body.lighterbg {
+            background-color: #202020;
+        }
+
+        .overlaymode #textlines {
+            margin-top: 24px;
+        }
+
+        .overlaymode .hoverButtonsContainer {
+            position: relative;
+        }
+
+        .overlaymode .hoverButtonsBackground {
+            position: relative;
+        }
+
+        .overlaymode #textlines>pre {
             border-bottom: none;
             margin-bottom: 56%;
             margin-left: auto;
             margin-right: auto;
             width: 56%;
         }
-        .overlaymode #textlines > pre > pre {
+
+        .overlaymode #textlines>pre>pre {
             color: #fcfcfc;
             text-shadow: 0px 0px 2px #0b0b0b;
             -webkit-text-stroke: .2px #eee;
@@ -1351,13 +1409,17 @@
             line-height: 1.15em;
             font-family: "MS Gothic";
         }
-        .overlaymode #go_to_last_button, .overlaymode #go_bottom_button {
+
+        .overlaymode #go_to_last_button,
+        .overlaymode #go_bottom_button {
             display: none;
         }
+
         .overlaymode #toprightbuttons {
             background-color: #50505099;
             border-radius: 4px;
         }
+
         /*
         .overlaymode .buttoncontainer {
             
@@ -1370,16 +1432,20 @@
             padding: 0px 1px 0px 1px;
             line-height: 14px;
         }
+
         .overlaymode .countercontainer {
             display: none;
         }
+
         .overlaymode .hoverButtonsBackground {
             display: flex !important;
-            transform: scale(1,0.11) translate(0px, -129px);
+            transform: scale(1, 0.11) translate(0px, -129px);
         }
+
         .overlaymode .hoverButtonsBackground:hover {
-            transform: scale(1,1) translate(0px, -8px);
+            transform: scale(1, 1) translate(0px, -8px);
         }
+
         /*
         .overlaymode .hoverButtonsContainer {
             width: 8px;
@@ -1390,23 +1456,28 @@
             background-color: #505050;
         }
         */
-        .overlaymode #overlay_top_bottom_container {
-            transform: scale(1,0.08) translate(0px, -162px);
+        .overlaymode #overlay_buttons_container {
+            transform: scale(1, 0.08) translate(0px, -170px);
             border-radius: none;
         }
-        .overlaymode #overlay_top_bottom_container:hover {
-            transform: scale(1,1) translate(0px, -8px);
+
+        .overlaymode #overlay_buttons_container:hover {
+            transform: scale(1, 1) translate(0px, -8px);
             border-radius: 6px;
         }
-        .overlaymode #overlay_top_bottom_container > div {
-            opacity: 35%;
+
+        .overlaymode #overlay_buttons_container>div {
+            opacity: 40%;
             cursor: pointer;
             user-select: none;
         }
-        .overlaymode #overlay_top_bottom_container > div:hover {
-            opacity: 90%;
+
+        .overlaymode #overlay_buttons_container>div:hover {
+            opacity: 75%;
+            color: #f7f7f7;
         }
-        .overlaymode #overlay_top_bottom_container {
+
+        .overlaymode #overlay_buttons_container {
             /*transform: translateX(-50%);*/
             /*height: 2px;*/
             position: fixed;
@@ -1416,7 +1487,9 @@
             display: flex;
             padding: 0px 12px 0px 12px;
             font-family: Segoe UI;
+            font-size: 21px;
         }
+
         ::-webkit-scrollbar {
             width: 0 !important;
         }
