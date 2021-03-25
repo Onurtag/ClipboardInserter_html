@@ -33,6 +33,9 @@
           - ❗ You don't have to change these options unless you are using private browsing mode (or clearing history/cache/localstorage etc.)
             - ❗ Except for the "auto hide yomichan popups" option. (Which requires the setting "Use a secure container around popups" to be off in yomichan's options.)
 
+        This page was made piece by piece for personal usage. 
+        Therefore; it might not work perfectly on different screen sizes and zoom settings.
+
         Original page was inspired/borrowed from: https://pastebin.com/raw/HxjV6YrB (Only a few lines of the code left) 
         Which was found here: https://pastebin.com/gNJfqpmN
 
@@ -400,7 +403,7 @@
                                 case "disabled":
                                     break;
                                 case "toBottom":
-                                    scrollFirstLast("last", 20);
+                                    scrollFirstLast("last");
                                     break;
                                 case "toTop":
                                     scrollFirstLast("first");
@@ -709,7 +712,11 @@
 
         //toggle overlay mode
         function toggleOverlayMode() {
-            let overlayButtonsHTML = `<div id="overlay_buttons_container">
+
+            const overlayCounterHTML = `<div id="counter" class="overlaycounter" title="No. of characters / No. of lines
+Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
+
+            const overlayButtonsHTML = `<div id="overlay_buttons_container">
     <div id="overlay_down_button" style="margin-right: 8px;" title="Scroll Down">▼</div>
     <div id="overlay_up_button" style="margin-right: 26px;" title="Scroll Up">▲</div>
     <div id="overlay_top_button" style="margin-right: 8px; font-size: 17px; margin-top: 2px;" title="Scroll to the Top">🢁</div>
@@ -717,6 +724,7 @@
     <div id="overlay_text_button" style="margin-right: 8px; font-size: 18px; margin-top: 4px; font-weight: bold; font-family: Calibri; transform: scale(1.1, 1);" title="Toggle Text Visibility" class="">¶</div>
     <div id="overlay_background_button" style="font-size: 18px; margin-top: 4px;" title="Toggle Background Color">☯</div>
 </div>`;
+
 
             let htmlNode = document.querySelector("html");
             let cssNode = document.querySelector("#overlaycss");
@@ -728,15 +736,22 @@
                 scroll_fix_alignment = 10;
                 //Remove overlay buttons
                 document.querySelector("#overlay_buttons_container").remove();
+                //Remove overlay counter
+                document.querySelector(".overlaycounter").remove();
 
                 overlayModeEnabled = false;
 
             } else {
+
                 //turn overlay mode on
                 htmlNode.classList.add("overlaymode");
                 cssNode.setAttribute("media", "all");
                 document.querySelector("#overlay_button").classList.add("overlay_button_on");
                 scroll_fix_alignment = 4;
+
+                //Add overlay counter
+                document.querySelector("#toprightbuttons").insertAdjacentHTML("afterbegin", overlayCounterHTML);
+
                 //Add overlay buttons
                 let newContainerDiv = document.createElement("div");
                 document.body.prepend(newContainerDiv)
@@ -745,23 +760,22 @@
                 document.getElementById("overlay_down_button").addEventListener("click", function(event) {
                     if (linecount > 0) {
                         //scrollFirstLast("last", 4);
-                        document.querySelector("body").scrollBy(0, 100);
+                        document.querySelector("body").scrollBy(0, 80);
                     }
                 });
                 document.getElementById("overlay_up_button").addEventListener("click", function(event) {
                     if (linecount > 0) {
-                        //scrollTopBottom("top");
-                        document.querySelector("body").scrollBy(0, -100);
+                        document.querySelector("body").scrollBy(0, -80);
                     }
                 });
                 document.getElementById("overlay_bottom_button").addEventListener("click", function(event) {
                     if (linecount > 0) {
-                        scrollFirstLast("last", 4);
+                        scrollFirstLast("last");
                     }
                 });
                 document.getElementById("overlay_top_button").addEventListener("click", function(event) {
                     if (linecount > 0) {
-                        scrollTopBottom("top");
+                        scrollFirstLast("first");
                     }
                 });
                 document.getElementById("overlay_background_button").addEventListener("click", function(event) {
@@ -909,13 +923,13 @@
         }
 
         //scrolling
-        function scrollFirstLast(scrollTo, customY) {
-            let offsetY = customY || 280;
+        function scrollFirstLast(scrollTo) {
+            //Use a different Y offset depending on the current mode
+            let offsetY = overlayModeEnabled ? 4 : 24;
             if (scrollTo == "last") {
                 doScroll(0, findPos(document.querySelector("#textlines > pre:last-of-type"))[1] - offsetY);
             } else if (scrollTo == "first") {
-                //We dont have a large top margin so just scroll to top
-                doScroll(0, 0);
+                doScroll(0, findPos(document.querySelector("#textlines > pre:first-of-type"))[1] - offsetY);
             }
         }
 
@@ -1064,7 +1078,7 @@
 
         #counter {
             font-size: 11px;
-            padding: 4px 6px 4px 6px !important;
+            padding: 4px 6px 4px 6px;
             margin-right: 0px;
             border-radius: 4px !important;
             background-color: rgba(25, 25, 25, 0.65);
@@ -1412,7 +1426,8 @@
 
         .overlaymode #textlines>pre {
             border-bottom: none;
-            margin-bottom: 56%;
+            margin-bottom: 86px;
+            margin-top: 160px;
             margin-left: auto;
             margin-right: auto;
             width: 56%;
@@ -1423,7 +1438,7 @@
             text-shadow: 0px 0px 2px #0b0b0b;
             -webkit-text-stroke: .2px #eee;
             /*text-shadow: -1px -1px 0 #101010, 0 -1px 0 #101010, 1px -1px 0 #101010, 1px 0 0 #101010, 1px 1px 0 #101010, 0 1px 0 #101010, -1px 1px 0 #101010, -1px 0 0 #101010;*/
-            font-size: 1.1em;
+            font-size: 1.154em;
             line-height: 1.15em;
             font-family: "MS Gothic";
         }
@@ -1438,6 +1453,11 @@
             border-radius: 4px;
         }
 
+        .overlaymode #counter.overlaycounter {
+            padding: 5px 6px 5px 6px;
+            margin-right: 6px;
+        }
+
         /*
         .overlaymode .buttoncontainer {
             
@@ -1446,34 +1466,51 @@
         }
         */
         .overlaymode #menu_button {
-            font-size: 14px;
-            padding: 0px 1px 0px 1px;
-            line-height: 14px;
+            font-size: 14.7px;
+            padding: 1px 2px 1px 2px;
+            line-height: 15px;
         }
 
         .overlaymode .countercontainer {
             display: none;
         }
 
+        /* Style per line hover buttons */
         .overlaymode .hoverButtonsBackground {
             display: flex !important;
-            transform: scale(1, 0.11) translate(0px, -129px);
+            transform: scale(1.26, 0.11) translate(0px, -130px);
         }
 
         .overlaymode .hoverButtonsBackground:hover {
-            transform: scale(1, 1) translate(0px, -8px);
+            transform: scale(1.26, 1.26) translate(0px, -5px);
+            padding-bottom: 4px;
         }
 
-        /*
-        .overlaymode .hoverButtonsContainer {
-            width: 8px;
-            height: 8px;
-            margin-top: -20px;
-            margin-left: -16px;
-            border-radius: 50%;
-            background-color: #505050;
+        .overlaymode .hoverButtonReduceNewlines {
+            margin-top: -3px;
+            font-size: 18px;
+            font-family: Verdana;
         }
-        */
+
+        .overlaymode .hoverButtonDelete {
+            margin-top: -3px;
+            margin-right: 2px;
+            font-family: Arial;
+            font-weight: bold;
+        }
+
+        .overlaymode .hoverButtonsBackground:not(:hover) .hoverButtonReduceNewlines {
+            margin-top: -8px;
+            font-family: Segoe UI;
+            font-size: 22px;
+        }
+
+        .overlaymode .hoverButtonsBackground:not(:hover) .hoverButtonDelete,
+        .overlaymode .hoverButtonsBackground:not(:hover) .hoverButtonUp {
+            opacity: 55%;
+        }
+
+        /* Style new overlay buttons */
         .overlaymode #overlay_buttons_container {
             transform: scale(1, 0.08) translate(0px, -180px);
             border-radius: none;
@@ -1491,8 +1528,7 @@
         }
 
         .overlaymode #overlay_buttons_container>div:hover {
-            opacity: 75%;
-            color: #f7f7f7;
+            opacity: 80%;
         }
 
         .overlaymode #overlay_buttons_container>div.button_on {
@@ -1506,9 +1542,10 @@
             position: fixed;
             top: 0px;
             background-color: #1D1D1D;
+            color: #fff;
             left: 30%;
             display: flex;
-            padding: 0px 12px 2px 12px;
+            padding: 0px 10px 1px 10px;
             font-family: Segoe UI;
             font-size: 21px;
         }
@@ -1578,7 +1615,8 @@ Removes the first line when auto scroll is set to 'Scroll to top(⇑)'">✖</div
     </div>
     <div class="countercontainer">
         <!-- This is the div used for the counter. -->
-        <div id="counter" title="No. of characters / No. of lines">0 / 0</div>
+        <div id="counter" title="No. of characters / No. of lines
+Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>
     </div>
     <div style="display:none;">
         <!-- Dummy div for buttons-->
