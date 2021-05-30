@@ -129,8 +129,8 @@
         /**
          * overlayHotkeyEnabled
          * 
-         * Enables the "Toggle overlay mode" Hotkey "]" 
-         * (The hotkey is ] key)
+         * Enables the "Toggle overlay mode" Hotkey "}" 
+         * (The hotkey is } key)
          * 
          * This setting only adds a hotkey for the overlay mode feature, 
          * you can still use the top right overlay button without enabling this hotkey.
@@ -329,8 +329,8 @@
                 if (e.altKey && e.which == 83) {
                     toggleEditing();
                     e.preventDefault();
-                    //"]" key: Toggle overlay mode css (experimental)
-                } else if (!e.ctrlKey && !e.altKey && e.key == "]") {
+                    //"}" key: Toggle overlay mode css (experimental)
+                } else if (!e.ctrlKey && !e.altKey && e.key == "}") {
                     if (overlayHotkeyEnabled) {
                         toggleOverlayMode();
                         e.preventDefault();
@@ -393,7 +393,7 @@
                             createhoverButtons(node);
 
                             //Notify on new line (using document.title)
-                            if ((notifyOnNewline) && (document.querySelector('html:hover') == null)) {
+                            if ((notifyOnNewline) && (!overlayModeEnabled) && (document.querySelector('html:hover') == null)) {
                                 //console.log(document.querySelector('div:hover'));
                                 notifyUsingTitle();
                             }
@@ -736,7 +736,8 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
                 scroll_fix_alignment = 10;
                 //Remove overlay buttons
                 document.querySelector("#overlay_buttons_container").remove();
-                //Remove overlay counter
+                //Set the regular counter's value and remove overlay counter 
+                document.querySelector(".countercontainer #counter").textContent = document.querySelector("#toprightbuttons .overlaycounter").textContent;
                 document.querySelector(".overlaycounter").remove();
 
                 overlayModeEnabled = false;
@@ -749,8 +750,9 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
                 document.querySelector("#overlay_button").classList.add("overlay_button_on");
                 scroll_fix_alignment = 4;
 
-                //Add overlay counter
+                //Add overlay counter and set its value
                 document.querySelector("#toprightbuttons").insertAdjacentHTML("afterbegin", overlayCounterHTML);
+                document.querySelector("#toprightbuttons .overlaycounter").textContent = document.querySelector(".countercontainer #counter").textContent;
 
                 //Add overlay buttons
                 let newContainerDiv = document.createElement("div");
@@ -1053,6 +1055,8 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
             word-wrap: break-word;
             margin: 0em 0em 0em 0em;
             padding-bottom: 0px;
+            /* Prevent the editable outline from covering the caret */
+            outline-offset: 2px;
         }
 
         #textlines>pre {
@@ -1451,6 +1455,7 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
         .overlaymode #toprightbuttons {
             background-color: #50505099;
             border-radius: 4px;
+            top: 0px;
         }
 
         .overlaymode #counter.overlaycounter {
