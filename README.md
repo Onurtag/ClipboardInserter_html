@@ -9,11 +9,11 @@ Tested on Firefox and Chrome.
 ## 📝 Readme  
 
 **Recommended Fonts:**  
-- Installing the following font is not required but highly recommended for page style reasons:  
+- Installing the following font is not required but **highly recommended** styling reasons:  
   - [Noto Sans JP font family by Google](https://fonts.google.com/specimen/Noto+Sans+JP)
 
 **Clipboard Inserter addon settings:**  
-- The following Clipboard Inserter settings are not required but highly suggested for performance reasons:  
+- The following Clipboard Inserter settings are not required but **highly recommended** for performance reasons:  
   - element name: **pre**  
   - container selector: **#textlines**  
 
@@ -27,12 +27,11 @@ Tested on Firefox and Chrome.
 - This feature is enabled by default.  
 
 **General Usage Help:**  
-
-- Hover the buttons to read their descriptions.  
-- Both appending and prepending should work for all buttons and functionality. (Even if you don't have a modified Clipboard Inserter)
+- Hover the buttons on the page to read their descriptions.  
+- Both appending and prepending should work for all buttons and functionality. (Even if you don't have a modified Clipboard Inserter)  
 
 **Keyboard shortcuts:**  
 - Alt + S: Toggle Editing  
 
 **More detailed readme and hidden features:**  
-- [Here](https://github.com/Onurtag/ClipboardInserter_html/blob/master/index.html#L11)
+- [Here](https://github.com/Onurtag/ClipboardInserter_html/blob/master/index.html#L11)  
