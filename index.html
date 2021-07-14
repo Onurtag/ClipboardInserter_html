@@ -891,8 +891,8 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
 
         //notify new lines with a document.title change
         function notifyUsingTitle() {
-            backupTitle = document.title.replace(/☑ |✔ /gim,"");
-            
+            backupTitle = document.title.replace(/☑ |✔ /gim, "");
+
             //Add notification icon
             document.title = "✔ " + backupTitle;
 
@@ -1056,14 +1056,14 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
             outline-offset: 2px;
         }
 
-        #textlines>pre {
+        #textlines > pre {
             border-bottom: #414141 solid 1px;
             padding-bottom: 1.4em;
             margin-bottom: 0.46em;
         }
 
         /* Preemptively hide compatibility lines to prevent flashing */
-        body>p {
+        body > p {
             display: none;
         }
 
@@ -1100,7 +1100,7 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
         }
 
         #toprightbuttons:hover,
-        #menucontainer:hover~#toprightbuttons {
+        #menucontainer:hover ~ #toprightbuttons {
             display: inline-block !important;
         }
 
@@ -1109,19 +1109,19 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
             display: none;
         }
 
-        .buttoncontainer>div:not(#counter):hover {
+        .buttoncontainer > div:not(#counter):hover {
             color: #d7d7d7;
             fill: #d7d7d7;
             background-color: rgba(27, 27, 27, 1.00);
         }
 
-        .buttoncontainer>#pin_button:hover {
+        .buttoncontainer > #pin_button:hover {
             filter: brightness(140%) grayscale(100%);
             background-color: rgba(19, 19, 19, 1.00) !important;
         }
 
-        .buttoncontainer>div,
-        .countercontainer>div {
+        .buttoncontainer > div,
+        .countercontainer > div {
             border-radius: 4px !important;
             margin-right: 5px;
         }
@@ -1137,7 +1137,7 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
             font-family: "Segoe UI", "Noto Sans JP Light", "Arial";
         }
 
-        .pin_button_on>#pintext {
+        .pin_button_on > #pintext {
             transform: rotate(-45deg) !important;
             margin-right: 1px;
             margin-left: -1px;
@@ -1214,7 +1214,7 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
             pointer-events: initial;
         }
 
-        .undoredoButtons>div:hover,
+        .undoredoButtons > div:hover,
         #remove_button:hover {
             color: #ccc !important;
         }
@@ -1301,12 +1301,12 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
         }
 
         .hoverButtonsContainer:hover,
-        pre:hover>.hoverButtonsContainer>.hoverButtonsBackground {
+        pre:hover > .hoverButtonsContainer > .hoverButtonsBackground {
             display: flex !important;
         }
 
         .hoverButtonsBackground:hover,
-        .hoverButtonsBackground:hover>.hoverButtons {
+        .hoverButtonsBackground:hover > .hoverButtons {
             opacity: 90%;
         }
 
@@ -1395,7 +1395,7 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
 
     <!-- This css is only for the overlay mode -->
     <style id="overlaycss" type="text/css" media="not all">
-        .overlaymode>body {
+        .overlaymode > body {
             background-color: #000;
             margin-bottom: -31px;
             margin-top: 0px;
@@ -1405,11 +1405,12 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
             scrollbar-width: none;
         }
 
-        .overlaymode>body.lighterbg {
+        .overlaymode > body.lighterbg {
             background-color: #202020;
             height: 100%;
         }
-        .overlaymode>body.lighterbg>#textlines>pre {
+
+        .overlaymode > body.lighterbg > #textlines > pre {
             margin-top: 0px;
             margin-bottom: 0.46em;
         }
@@ -1430,7 +1431,7 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
             position: relative;
         }
 
-        .overlaymode #textlines>pre {
+        .overlaymode #textlines > pre {
             border-bottom: none;
             margin-bottom: 86px;
             margin-top: 160px;
@@ -1439,7 +1440,7 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
             width: 56%;
         }
 
-        .overlaymode #textlines>pre>pre {
+        .overlaymode #textlines > pre > pre {
             color: #fcfcfc;
             text-shadow: 0px 0px 2px #0b0b0b;
             -webkit-text-stroke: .2px #eee;
@@ -1528,17 +1529,17 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
             border-radius: 6px;
         }
 
-        .overlaymode #overlay_buttons_container>div {
+        .overlaymode #overlay_buttons_container > div {
             opacity: 40%;
             cursor: pointer;
             user-select: none;
         }
 
-        .overlaymode #overlay_buttons_container>div:hover {
+        .overlaymode #overlay_buttons_container > div:hover {
             opacity: 80%;
         }
 
-        .overlaymode #overlay_buttons_container>div.button_on {
+        .overlaymode #overlay_buttons_container > div.button_on {
             color: #a6f57e;
             opacity: 90%;
         }
