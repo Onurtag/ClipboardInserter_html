@@ -154,7 +154,6 @@
         const historystack = [];
         const historystack_forward = [];
         const maxhistorylength = 1000;
-        let pageTitle = document.title;
         let scroll_fix_alignment = 10;
         let scrollOnNewline = "toBottom";
         let notifyOnNewline = false;
@@ -193,11 +192,10 @@
 
             //Document Title is different for local and online pages
             if (document.location.protocol.indexOf("http") == -1) {
-                document.title = pageTitle += " (Local)";
+                document.title = document.title += " (Local)";
             } else {
-                document.title = pageTitle += " (Online)";
+                document.title = document.title += " (Online)";
             }
-            pageTitle = document.title;
 
             //load first states
             if (pinningEnabled) {
@@ -730,6 +728,8 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
             let cssNode = document.querySelector("#overlaycss");
             if (htmlNode.classList.contains("overlaymode")) {
                 //turn overlay mode off
+                document.title = document.title.replace(" (Overlay Mode)", "");
+
                 htmlNode.classList.remove("overlaymode");
                 cssNode.setAttribute("media", "not all");
                 document.querySelector("#overlay_button").classList.remove("overlay_button_on");
@@ -745,6 +745,8 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
             } else {
 
                 //turn overlay mode on
+                document.title = document.title + " (Overlay Mode)";
+
                 htmlNode.classList.add("overlaymode");
                 cssNode.setAttribute("media", "all");
                 document.querySelector("#overlay_button").classList.add("overlay_button_on");
@@ -889,30 +891,25 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
 
         //notify new lines with a document.title change
         function notifyUsingTitle() {
+            backupTitle = document.title.replace(/☑ |✔ /gim,"");
+            
             //Add notification icon
-            document.title = "✔ " + pageTitle;
+            document.title = "✔ " + backupTitle;
 
             //Blink the icon
             setTimeout(() => {
-                document.title = "☑ " + pageTitle;
-            }, 150);
-            setTimeout(() => {
-                document.title = "✔ " + pageTitle;
-            }, 300);
-            setTimeout(() => {
-                document.title = "☑ " + pageTitle;
-            }, 450);
-            setTimeout(() => {
-                document.title = "✔ " + pageTitle;
-            }, 600);
-            setTimeout(() => {
-                document.title = "☑ " + pageTitle;
-            }, 750);
-
+                document.title = "☑ " + backupTitle;
+            }, 800);
             //Go back to the original title
             setTimeout(() => {
-                document.title = pageTitle;
-            }, 900);
+                document.title = backupTitle;
+                //(test) lame workaround to prevent being stuck in between
+                if (document.title != backupTitle) {
+                    setTimeout(() => {
+                        document.title = backupTitle;
+                    }, 500);
+                }
+            }, 1600);
         }
 
         //Pick scroll method (body or window depending on the current view)
