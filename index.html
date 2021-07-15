@@ -1413,6 +1413,7 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
         .overlaymode > body.lighterbg > #textlines > pre {
             margin-top: 0px;
             margin-bottom: 0.46em;
+            border-bottom: #414141 solid 1px;
         }
 
         .overlaymode #textlines.hidden {
@@ -1484,12 +1485,13 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
         }
 
         /* Style per line hover buttons */
-        .overlaymode .hoverButtonsBackground {
+        .overlaymode body:not(.lighterbg) .hoverButtonsBackground {
             display: flex !important;
             transform: scale(1.26, 0.11) translate(0px, -130px);
         }
 
-        .overlaymode .hoverButtonsBackground:hover {
+        .overlaymode body:not(.lighterbg) .hoverButtonsBackground:hover,
+        .overlaymode body.lighterbg .hoverButtonsContainer {
             transform: scale(1.26, 1.26) translate(0px, -5px);
             padding-bottom: 4px;
         }
@@ -1507,14 +1509,14 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
             font-weight: bold;
         }
 
-        .overlaymode .hoverButtonsBackground:not(:hover) .hoverButtonReduceNewlines {
+        .overlaymode body:not(.lighterbg) .hoverButtonsBackground:not(:hover) .hoverButtonReduceNewlines {
             margin-top: -8px;
             font-family: Segoe UI;
             font-size: 22px;
         }
 
-        .overlaymode .hoverButtonsBackground:not(:hover) .hoverButtonDelete,
-        .overlaymode .hoverButtonsBackground:not(:hover) .hoverButtonUp {
+        .overlaymode body:not(.lighterbg) .hoverButtonsBackground:not(:hover) .hoverButtonDelete,
+        .overlaymode body:not(.lighterbg) .hoverButtonsBackground:not(:hover) .hoverButtonUp {
             opacity: 55%;
         }
 
