@@ -3,7 +3,7 @@
 A downloadable single-file HTML page for the clipboard-inserter browser add-on. Mainly for personal use so don't expect much support.  
 Tested on Firefox and Chrome.
 
-## 🌐 Online version:  
+## 🌐 Online version  
 **https://onurtag.github.io/ClipboardInserter_html/**  
 
 ## 📝 Readme  
@@ -33,5 +33,5 @@ Tested on Firefox and Chrome.
 **Keyboard shortcuts:**  
 - Alt + S: Toggle Editing  
 
-**More detailed readme and hidden features:**  
-- [Here](https://github.com/Onurtag/ClipboardInserter_html/blob/master/index.html#L11)  
+**More detailed readme *(with hidden hotkeys and features)*:**  
+- [Read it here](https://github.com/Onurtag/ClipboardInserter_html/blob/master/index.html#L11)  

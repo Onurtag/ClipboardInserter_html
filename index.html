@@ -41,6 +41,8 @@
 
 
         TODO: Switch to svg from shitty font icons, Switch to using closest() for some functionality.
+        TODO: (later) Redo the whole hover button functionality to improve performance. There should be only a single hover button set which should move to the hovered line (or something similar). Could also implement pagination to show a single line or 10 at a time {harder}
+            TODO: (might be unnecessary if I do above) Have a maximum limit of lines to prevent slowdown (with a backup/pagination system)
 
             ------old readme------
             ------Might be useful if you are new and want to change the fonts------
@@ -113,7 +115,7 @@
          * notifyOnNewline
          * 
          * Entering below line in the browser console on this page will enable the notify on new lines hidden feature. 
-         * Whenever a new line is added, This symbol ✔ will be flashed on page's title for a short time
+         * Whenever a new line is added, The symbol ✔ will flash on page's and window's title for a short time
          * 
          * To enable it, enter the following line into your console on this page:
          * localStorage.setItem("notifyOnNewline", true);
@@ -130,10 +132,10 @@
          * overlayHotkeyEnabled
          * 
          * Enables the "Toggle overlay mode" Hotkey "}" 
-         * (The hotkey is } key)
+         * (The hotkey is } )
          * 
-         * This setting only adds a hotkey for the overlay mode feature, 
-         * you can still use the top right overlay button without enabling this hotkey.
+         * This setting just adds a hotkey for the overlay mode feature 
+         * you can still use the toggle overlay mode button without enabling this hotkey.
          * 
          * Entering below line in the browser console on this page will enable the overlay mode toggle hotkey.
          * With this mode useless divs will be hidden and background will be black (So you could potentially use the page as an overlay).
@@ -149,6 +151,28 @@
          * localStorage.setItem("overlayHotkeyEnabled", false);
          * 
          * */
+        
+        /**
+         * backlogHotkeyEnabled (For the overlay mode)
+         * 
+         * Enables the "Toggle backlog mode" Hotkey "Alt + O" 
+         * 
+         * This setting just adds a hotkey for the backlog mode feature 
+         * you can still use the top backlog mode button without enabling this hotkey.
+         * 
+         * Entering below line in the browser console on this page will enable the backlog mode toggle hotkey.
+         * 
+         * To enable it, enter the following line into your console on this page:
+         * localStorage.setItem("backlogHotkeyEnabled", true);
+         * 
+         * (Don't forget to refresh the page afterwards)
+         * 
+         * You only have to enter this once unless you clear your browser cache/history/etc. or are using private browsing.
+         * 
+         * To disable, type this into your console: 
+         * localStorage.setItem("backlogHotkeyEnabled", false);
+         * 
+         * */
         //-----------------------------
 
         const historystack = [];
@@ -158,6 +182,7 @@
         let scrollOnNewline = "toBottom";
         let notifyOnNewline = false;
         let overlayHotkeyEnabled = false;
+        let backlogHotkeyEnabled = false;
         let overlayModeEnabled = false;
         let forgiveHistoryTimes = 0;
         let linecount = 0;
@@ -168,6 +193,7 @@
             scrollOnNewline = getIfInLocalStorage("scrollOnNewline", scrollOnNewline);
             notifyOnNewline = getIfInLocalStorage("notifyOnNewline", notifyOnNewline);
             overlayHotkeyEnabled = getIfInLocalStorage("overlayHotkeyEnabled", overlayHotkeyEnabled);
+            backlogHotkeyEnabled = getIfInLocalStorage("backlogHotkeyEnabled", backlogHotkeyEnabled);
             pinningEnabled = getIfInLocalStorage("pinningEnabled", pinningEnabled);
             editingEnabled = getIfInLocalStorage("editingEnabled", editingEnabled);
             autoHideYomichan = getIfInLocalStorage("autoHideYomichan", autoHideYomichan);
@@ -327,10 +353,16 @@
                 if (e.altKey && e.which == 83) {
                     toggleEditing();
                     e.preventDefault();
-                    //"}" key: Toggle overlay mode css (experimental)
-                } else if (!e.ctrlKey && !e.altKey && e.key == "}") {
+                //"}" key: Toggle Overlay mode (experimental)
+                } else if (e.key == "}") {
                     if (overlayHotkeyEnabled) {
                         toggleOverlayMode();
+                        e.preventDefault();
+                    }
+                //Alt + O: Toggle Backlog mode (when the overloy mode is on)
+                } else if (e.altKey && e.which == 79) {
+                    if (overlayModeEnabled && backlogHotkeyEnabled) {
+                        toggleBacklogMode();
                         e.preventDefault();
                     }
                 }
@@ -783,13 +815,7 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
                     }
                 });
                 document.getElementById("overlay_background_button").addEventListener("click", function(event) {
-                    if (document.querySelector("body.lighterbg")) {
-                        document.querySelector("body").classList.remove("lighterbg");
-                        event.target.classList.remove("button_on");
-                    } else {
-                        document.querySelector("body").classList.add("lighterbg");
-                        event.target.classList.add("button_on");
-                    }
+                    toggleBacklogMode();
                 });
                 document.getElementById("overlay_text_button").addEventListener("click", function(event) {
                     if (document.querySelector("#textlines.hidden")) {
@@ -803,6 +829,17 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
 
                 overlayModeEnabled = true;
 
+            }
+        }
+
+        //Overlay Mode: Toggle backlog mode
+        function toggleBacklogMode() {
+            if (document.querySelector("body.backlogmode")) {
+                document.querySelector("body").classList.remove("backlogmode");
+                event.target.classList.remove("button_on");
+            } else {
+                document.querySelector("body").classList.add("backlogmode");
+                event.target.classList.add("button_on");
             }
         }
 
@@ -1405,12 +1442,12 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
             scrollbar-width: none;
         }
 
-        .overlaymode > body.lighterbg {
+        .overlaymode > body.backlogmode {
             background-color: #202020;
             height: 100%;
         }
 
-        .overlaymode > body.lighterbg > #textlines > pre {
+        .overlaymode > body.backlogmode > #textlines > pre {
             margin-top: 0px;
             margin-bottom: 0.46em;
             border-bottom: #414141 solid 1px;
@@ -1485,13 +1522,13 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
         }
 
         /* Style per line hover buttons */
-        .overlaymode body:not(.lighterbg) .hoverButtonsBackground {
+        .overlaymode body:not(.backlogmode) .hoverButtonsBackground {
             display: flex !important;
             transform: scale(1.26, 0.11) translate(0px, -130px);
         }
 
-        .overlaymode body:not(.lighterbg) .hoverButtonsBackground:hover,
-        .overlaymode body.lighterbg .hoverButtonsContainer {
+        .overlaymode body:not(.backlogmode) .hoverButtonsBackground:hover,
+        .overlaymode body.backlogmode .hoverButtonsContainer {
             transform: scale(1.26, 1.26) translate(0px, -5px);
             padding-bottom: 4px;
         }
@@ -1509,14 +1546,14 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
             font-weight: bold;
         }
 
-        .overlaymode body:not(.lighterbg) .hoverButtonsBackground:not(:hover) .hoverButtonReduceNewlines {
+        .overlaymode body:not(.backlogmode) .hoverButtonsBackground:not(:hover) .hoverButtonReduceNewlines {
             margin-top: -8px;
             font-family: Segoe UI;
             font-size: 22px;
         }
 
-        .overlaymode body:not(.lighterbg) .hoverButtonsBackground:not(:hover) .hoverButtonDelete,
-        .overlaymode body:not(.lighterbg) .hoverButtonsBackground:not(:hover) .hoverButtonUp {
+        .overlaymode body:not(.backlogmode) .hoverButtonsBackground:not(:hover) .hoverButtonDelete,
+        .overlaymode body:not(.backlogmode) .hoverButtonsBackground:not(:hover) .hoverButtonUp {
             opacity: 55%;
         }
 
