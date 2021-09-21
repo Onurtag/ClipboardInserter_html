@@ -187,6 +187,7 @@
         let forgiveHistoryTimes = 0;
         let linecount = 0;
         let editPinnedButtons = false;
+        let textlinesTempVisible = false;
 
         //DOMContentLoaded Start (first load)
         document.addEventListener("DOMContentLoaded", function(event) {
@@ -392,7 +393,7 @@
                     Array.prototype.forEach.call(mutation.addedNodes, function(node) {
                         try {
 
-                            //Compatibility for prepending because some can't be bothered to switch to a modified clipboard inserter that allows prepending.
+                            //Compatibility for prepending because most people aren't using an upgraded clipboard inserter add-on that allows prepending.
                             switch (scrollOnNewline) {
                                 case "toTop":
                                     let prevSib = node.previousElementSibling;
@@ -418,6 +419,15 @@
                             let preNodeOpen = editingEnabled ? "<pre contenteditable=\"true\">" : "<pre>";
                             //put the added pre text into another pre so we can modify it later on.
                             node.innerHTML = preNodeOpen + node.innerHTML + "</pre>";
+
+                            //Overlay mode
+                            if (overlayModeEnabled) {
+                                //If text lines were temprorarily made visible
+                                if (textlinesTempVisible) {
+                                    document.querySelector("#textlines").classList.add("hidden");
+                                    textlinesTempVisible = false;
+                                }
+                            }
 
                             //add hover buttons to every line
                             createhoverButtons(node);
@@ -751,7 +761,8 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
     <div id="overlay_up_button" style="margin-right: 26px;" title="Scroll Up">▲</div>
     <div id="overlay_top_button" style="margin-right: 8px; font-size: 17px; margin-top: 2px;" title="Scroll to the Top">🢁</div>
     <div id="overlay_bottom_button" style="margin-right: 26px; font-size: 17px; margin-top: 6px;" title="Scroll to the Bottom">🢃</div>
-    <div id="overlay_text_button" style="margin-right: 8px; font-size: 18px; margin-top: 4px; font-weight: bold; font-family: Calibri; transform: scale(1.1, 1);" title="Toggle Text Visibility" class="">¶</div>
+    <div id="overlay_text_button" style="margin-right: 8px; font-size: 18px; margin-top: 4px; font-weight: bold; font-family: Calibri; transform: scale(1.1, 1);" title="Toggle Text Visibility
+If you hover this button while it is enabled, text lines will be visible until a new line is added." class="">¶</div>
     <div id="overlay_background_button" style="font-size: 18px; margin-top: 4px;" title="Toggle Backlog Mode">☯</div>
 </div>`;
 
@@ -824,6 +835,17 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
                     } else {
                         document.querySelector("#textlines").classList.add("hidden");
                         event.target.classList.add("button_on");
+                    }
+                    //turn temp visibility off
+                    textlinesTempVisible = false;
+                });
+
+                //When hovered, temprorarily show text lines until a new line is added (only while the button is turned on)
+                document.getElementById("overlay_text_button").addEventListener("mouseover", function(event) {
+                        console.log("🚀 ~ document.getElementById ~ event", event);
+                    if (!textlinesTempVisible && event.target.classList.contains("button_on")) {
+                        document.querySelector("#textlines").classList.remove("hidden");
+                        textlinesTempVisible = true;
                     }
                 });
 
