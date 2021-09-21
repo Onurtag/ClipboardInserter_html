@@ -412,9 +412,6 @@
                                 --forgiveHistoryTimes;
                             }
 
-                            //update counter
-                            updateCounter();
-
                             //check if editing is enabled
                             let preNodeOpen = editingEnabled ? "<pre contenteditable=\"true\">" : "<pre>";
                             //put the added pre text into another pre so we can modify it later on.
@@ -429,6 +426,9 @@
                                 }
                             }
 
+                            //update counter
+                            updateCounter();
+                            
                             //add hover buttons to every line
                             createhoverButtons(node);
 
