@@ -652,12 +652,15 @@
                 scrollUpDown(event.target, event.clientY, false);
             });
             element.querySelector(".hoverButtonCopy").addEventListener("click", function(event) {
-                let range = document.createRange();
-                range.selectNode(event.target.parentNode.parentNode.parentNode.querySelector("pre"));
-                window.getSelection().removeAllRanges();
-                window.getSelection().addRange(range);
+                let elementInner = event.target.closest("pre").querySelector("pre");
+                //Add a temprorary copy event listener
+                function clipListener(e) {
+                    e.clipboardData.setData("text/plain", elementInner.innerText);
+                    e.preventDefault();
+                }
+                document.addEventListener("copy", clipListener);
                 document.execCommand("copy");
-                window.getSelection().removeAllRanges();
+                document.removeEventListener("copy", clipListener);
             });
         }
 
