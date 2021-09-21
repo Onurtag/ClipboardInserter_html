@@ -1004,15 +1004,15 @@ If you hover this button while it is enabled, text lines will be visible until a
 
         function scrollUpDown(element, clientY, scrollUp) {
             //get the pre
-            element = element.parentNode.parentNode.parentNode;
+            let elementOuter = element.closest("pre");
             let scrollto = null;
             try {
                 if (scrollUp) {
                     //Scroll to the previous element if it exists, otherwise do nothing.
-                    scrollto = element.previousElementSibling;
+                    scrollto = elementOuter.previousElementSibling;
                 } else {
                     //Scroll to the next element if it exists, otherwise do nothing.
-                    scrollto = element.nextElementSibling;
+                    scrollto = elementOuter.nextElementSibling;
                 }
                 if (!scrollto) {
                     //Do nothing.
@@ -1047,14 +1047,14 @@ If you hover this button while it is enabled, text lines will be visible until a
         }
 
         function removeLine(element) {
-            element = element.parentNode.parentNode.parentNode;
-            element.remove();
+            let elementOuter = element.closest("pre");
+            elementOuter.remove();
             updateCounter();
         }
 
         function reduceNewlines(element) {
-            element = element.parentNode.parentNode.parentNode;
-            let modifystring = element.querySelector("pre").innerText;
+            let elementInner = element.closest("pre").querySelector("pre");
+            let modifystring = elementInner.innerText;
             //trim newline+spaces at the start (once)
             modifystring = modifystring.replace(/^[\r\t\f\v 　\u00a0]*\n/, "");
             //trim spaces+newline at the end (once)
@@ -1063,16 +1063,17 @@ If you hover this button while it is enabled, text lines will be visible until a
             modifystring = modifystring.replace(/\n[\r\t\f\v 　\u00a0]*/gm, "\n");
             //reduce newlines (2->1, 1->0 etc...)
             modifystring = modifystring.replace(/(\n(\n+?))|(\n+?)/gm, "$2$3");
-            element.querySelector("pre").innerText = modifystring;
+            elementInner.innerText = modifystring;
         }
 
         function updateCounter() {
             let charlength = 0;
             linecount = 0;
             try {
-                document.querySelectorAll("#textlines > pre").forEach(element => {
-                    charlength += element.innerText.length;
-                    linecount++;
+                let lines = document.querySelectorAll("#textlines > pre > pre");
+                linecount = lines.length;
+                lines.forEach(element => {
+                    charlength += element.textContent.length;
                 });
             } catch (error) {}
             document.querySelector("#counter").textContent = charlength + ' / ' + linecount;
