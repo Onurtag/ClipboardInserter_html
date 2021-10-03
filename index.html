@@ -188,6 +188,7 @@
         let linecount = 0;
         let editPinnedButtons = false;
         let textlinesTempVisible = false;
+        let isChromium = window.chrome ? true : false
 
         //DOMContentLoaded Start (first load)
         document.addEventListener("DOMContentLoaded", function(event) {
@@ -642,6 +643,35 @@
             });
             element.querySelector(".hoverButtonCopy").addEventListener("click", function(event) {
                 let elementInner = event.target.closest("pre").querySelector("pre");
+                /**
+                 * Copy Methods comparison:
+                 * Copy Method 1: e.clipboardData.setData
+                 *      - Chrome & Firefox can't copy newlines 
+                 * Copy Method 2: navigator.clipboard.writeText
+                 *      - Firefox can't copy newlines
+                 * Copy Method 3: range and document.execCommand("copy")
+                 *      - Chrome can't copy contenteditable nodes
+                 * 
+                 * Solution: use Method 2 on chromium and Method 3 on others (Firefox)
+                 * 
+                 * */
+                //Use innerText as it converts <br>'s that were manually added with Enter into \n's. (not necessary on chrome when using display: inline-block)
+                if (isChromium) {
+                    //Copy Method 2
+                    navigator.clipboard.writeText(elementInner.innerText).then((result) => {return;});
+                } else {
+                    //Copy Method 3
+                    elementInner.focus();
+                    window.getSelection().removeAllRanges();
+                    let range = document.createRange();
+                    range.selectNode(elementInner);
+                    window.getSelection().addRange(range);
+                    document.execCommand("copy");
+                    window.getSelection().removeAllRanges();
+                }
+
+                /*
+                //Copy Method 1
                 //Add a temprorary copy event listener
                 function clipListener(e) {
                     e.clipboardData.setData("text/plain", elementInner.innerText);
@@ -650,6 +680,7 @@
                 document.addEventListener("copy", clipListener);
                 document.execCommand("copy");
                 document.removeEventListener("copy", clipListener);
+                */
             });
         }
 
@@ -1070,6 +1101,7 @@ If you hover this button while it is enabled, text lines will be visible until a
 
         function reduceNewlines(element) {
             let elementInner = element.closest("pre").querySelector("pre");
+            //Use innerText as it converts <br>'s that were manually added with Enter into \n's.
             let modifystring = elementInner.innerText;
             //trim newline+spaces at the start (once)
             modifystring = modifystring.replace(/^[\r\t\f\v 　\u00a0]*\n/, "");
@@ -1077,9 +1109,10 @@ If you hover this button while it is enabled, text lines will be visible until a
             modifystring = modifystring.replace(/[\r\t\f\v 　\u00a0]*\n$/, "");
             //clean spaces
             modifystring = modifystring.replace(/\n[\r\t\f\v 　\u00a0]*/gm, "\n");
-            //reduce newlines (2->1, 1->0 etc...)
+            //reduce newlines by half (at least 1) (6->3, 5->3, 4->2, 3->2, 2->1, 1->0 etc...)
             modifystring = modifystring.replace(/(\n(\n+?))|(\n+?)/gm, "$2$3");
-            elementInner.innerText = modifystring;
+            //Use textContent or innerHTML to put the clean string into the div (without <br>'s).
+            elementInner.textContent = modifystring;
         }
 
         function updateCounter() {
@@ -1132,6 +1165,9 @@ If you hover this button while it is enabled, text lines will be visible until a
             padding-bottom: 0px;
             /* Prevent the editable outline from covering the caret */
             outline-offset: 2px;
+            /* While editable: Prevent chrome from adding <div><br></div> packages when Enter is pressed */
+            display: inline-block;
+            width: 100%;
         }
 
         #textlines > pre {
