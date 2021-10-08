@@ -41,8 +41,9 @@
 
 
         TODO: Switch to svg from font icons and add <!DOCTYPE html> (fix the problems/style changes that occur after adding)
-        TODO: (later) Redo the whole hover button functionality to improve performance. There should be only a single hover button set which should move to the hovered line (or something similar). Could also implement pagination to show a single line or 10 at a time {harder}
-            TODO: (might be unnecessary if I do above) Have a maximum limit of lines to prevent slowdown (with a backup/pagination system)
+        TODO: (later) Redo the whole hover button functionality to improve performance. There should be only a single hover button set which should move to the hovered line (or something similar).
+            ^^^ a worse method but could also implement pagination to show a single line or 500 at a time {easier but could break history}. Older pages could be read only and would have a seperate view. (rather redo)
+        TODO: (will be unnecessary if I do above) Have a maximum limit of lines to prevent slowdown (with a backup/pagination system)
 
             ------old readme------
             ------Might be useful if you are new and want to change the fonts------
@@ -1031,6 +1032,10 @@ If you hover this button while it is enabled, text lines will be visible until a
         }
 
         function scrollFirstLast(scrollTo) {
+            //Cancel if there is no first or last
+            if (linecount <= 0) {
+                return;
+            }
             //Use a different Y offset depending on the current mode
             let offsetY = overlayModeEnabled ? 4 : 24;
             if (scrollTo == "last") {
@@ -1064,13 +1069,6 @@ If you hover this button while it is enabled, text lines will be visible until a
                 if (!scrollto) {
                     //Do nothing.
                     return;
-                    /*
-                    if (scrollUp) {
-                        scrollTopBottom("top");
-                    } else {
-                        scrollTopBottom("bottom");
-                    }
-                    */
                 } else {
                     //Scroll to the element using mouse clientY and scroll_fix_alignment
                     doScroll(0, findPos(scrollto)[1] - clientY - scroll_fix_alignment);
@@ -1083,7 +1081,7 @@ If you hover this button while it is enabled, text lines will be visible until a
         //find an element's position in the whole page
         function findPos(obj) {
             let curleft = curtop = 0;
-            if (obj.offsetParent) {
+            if (obj && obj.offsetParent) {
                 do {
                     curleft += obj.offsetLeft;
                     curtop += obj.offsetTop;
@@ -1115,6 +1113,7 @@ If you hover this button while it is enabled, text lines will be visible until a
             elementInner.textContent = modifystring;
         }
 
+        //Note: linecount is used for more than just the #counter
         function updateCounter() {
             let charlength = 0;
             linecount = 0;
@@ -1165,15 +1164,18 @@ If you hover this button while it is enabled, text lines will be visible until a
             padding-bottom: 0px;
             /* Prevent the editable outline from covering the caret */
             outline-offset: 2px;
-            /* While editable: Prevent chrome from adding <div><br></div> packages when Enter is pressed */
-            display: inline-block;
-            width: 100%;
         }
 
         #textlines > pre {
             border-bottom: #414141 solid 1px;
             padding-bottom: 1.4em;
             margin-bottom: 0.46em;
+        }
+
+        #textlines > pre > pre {
+            /* While editable: Prevent chrome from adding <div><br></div> packages when Enter is pressed */
+            display: inline-block;
+            width: 100%;
         }
 
         /* Preemptively hide compatibility lines to prevent flashing */
