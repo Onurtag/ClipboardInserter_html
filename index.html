@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -9,13 +10,14 @@
     <script>
         /*
         /////////////////////////////////////////////////////////////////////////
-        /////// Downloadable HTML for Clipboard Inserter (Enhanced) v2.1  ///////
+        ////////// Downloadable HTML for Clipboard Inserter (Enhanced) //////////
+        //////////                    Version: 3.0                     //////////
         /////////////////////////////////////////////////////////////////////////
 
-            ------ General Info ------
+
             ------ General Info ------
 
-        The following Non-default Clipboard Inserter settings are NOT required but highly suggested:
+        ❗ The following Non-default Clipboard Inserter settings are NOT required but highly suggested:
         - element name: pre
         - container selector: #textlines
 
@@ -27,10 +29,11 @@
 
         Keyboard shortcuts:
         - Alt + S: Toggle Editing
+        - Some more shortcuts among the hidden features below.
 
         ❗ Default Options and Hidden features:
-        - ❗ You can set a few default options right after the "old readme" below.  
-        - ❗ You will also find directions to enable some hidden features. These must be enabled manually if you need them.  
+        - ❗ You can change a few options below.  
+        - ❗ You will also find directions to enable some hidden features. These features must be enabled manually if you need them.  
         - ❗ If you are using private browsing mode (or clearing history/cache/localstorage etc.), your settings (button states and hidden options) might not get saved. Just edit the javascript variables directly.
 
         This page was made piece by piece for personal usage. 
@@ -40,51 +43,103 @@
         Which was found here: https://pastebin.com/gNJfqpmN
 
 
-        TODO: Switch to svg from font icons and add <!DOCTYPE html> (fix the problems/style changes that occur after adding)
-        TODO: (later) Redo the whole hover button functionality to improve performance. There should be only a single hover button set which should move to the hovered line (or something similar).
-            ^^^ a worse method but could also implement pagination to show a single line or 500 at a time {easier but could break history}. Older pages could be read only and would have a seperate view. (rather redo)
-        TODO: (will be unnecessary if I do above) Have a maximum limit of lines to prevent slowdown (with a backup/pagination system)
+        TODO: nothing
 
-            ------old readme------
-            ------Might be useful if you are new and want to change the fonts------
-            ------old readme------
-
-
-        To change background color or text color, just replace the style values above with the hex values for the colors you want.
-        If you want the background of the counter to remain semi-transparent, you must use rgb values like above. The last number (where I've put 0.8) is the opacity level (1.0 = completely opaque).
-        To change font size, just change the em value to what works for you (the standard size is 1, I like it at 1.5).
-        To change font weight (boldness), just edit the value above.  100 is quite thin, 400 is default, 900 is quite thick.  You may want it higher than default for Mincho fonts.
-        The line-height value changes the spacing between lines.
-
-        To use the font of your choice, remove the list of fonts above and put the ENGLISH name of your font in quotation marks (some JP font names are in Japanese).
-        Be sure to leave a semi-colon at the end of the line.
-        To find the English name of a given font, first install it, then open Firefox.
-        Go to about:preferences#content in the address bar, then click on the 'Default font' drop-down menu.
-        The "correct" name of your font will be listed here - just copy that down and paste it up above.
-
-        Note that if you would like to use your browser default font, replace the font-family line with font-family:""; or delete it altogether.
-        Your default is probably Gothic - if you want to try out a good Mincho font, try Aozora Mincho at http://www.freejapanesefont.com/aozora-mincho-download/
-        For various other free Japanese fonts, visit http://www.freejapanesefont.com/
-        For more font attribute information visit http://www.w3schools.com/css/css_font.asp
-
-            ----------------------
-            ----------------------
-            ----------------------
+        NEVER: (useless for now) Maybe add a name detection system: (sounds useless)
+            ^^^ if clipboard text starts with "CI=Name" or something: put it in front of the previous text. If name gets copied first it could be weird.
+            ^^^ maybe try using global variables on Textractor lua
 
         */
 
-        //------ Default Options (Useful) ------
+        //------ Default Options ------
+        //Read below for more info.
+        const settings = {
+            scrollOnNewline: "toBottom",
+            notifyOnNewline: false,
+            overlayHotkeyEnabled: false,
+            backlogHotkeyEnabled: false,
+            pinningEnabled: false,
+            editingEnabled: false,
+            autoHideYomichan: true,
+            purge500LinesWhen: 0,
+        }
+        //------ Hidden Features ------
         /**
          * autoHideYomichan
          * 
-         * true: Allows you to auto-hide the yomichan popup when your mouse is out of the window, false: disabled
+         * true: Allows you to auto-hide the yomichan popup when your mouse is out of the window, 
+         * false: disabled
          * ❗ This option requires the setting "Use a secure container around popups" to be off in yomichan's options.
          * 
-         * Console command to permanently disable this without editing the line below: 
+         * Console command to permanently disable this without editing the values above:
          * localStorage.setItem("autoHideYomichan", false);
          * 
          * */
-        let autoHideYomichan = true;
+        /**
+         * purge500LinesWhen
+         * 
+         * Purges the oldest 500 lines when you go over this amount (which can keep the page smooth).
+         * 
+         * 0: disabled
+         * Any number other than 0: enabled
+         * 
+         * To enable this for 1500 lines, enter the following line into your console on this page and refresh:
+         * localStorage.setItem("purge500LinesWhen", 1500);
+         * 
+         * You only have to enter this once unless you clear your browser cache/history/etc. or are using private browsing.
+         * 
+         * To disable, type this into your console: 
+         * localStorage.setItem("purge500LinesWhen", 0);
+         * 
+         * */
+        /**
+         * notifyOnNewline
+         * 
+         * Whenever a new line is added, The symbol ✔ will flash on page's and window's title for a short time
+         * 
+         * To enable this, enter the following line into your console on this page and refresh:
+         * localStorage.setItem("notifyOnNewline", true);
+         * 
+         * You only have to enter this once unless you clear your browser cache/history/etc. or are using private browsing.
+         * 
+         * To disable, type this into your console: 
+         * localStorage.setItem("notifyOnNewline", false);
+         * 
+         * */
+        /**
+         * overlayHotkeyEnabled
+         * 
+         * Enables the "Toggle overlay mode" Hotkey "Alt + 0" or "}"
+         * 
+         * This setting just adds a hotkey for the overlay mode feature. You can still use the toggle overlay mode button without enabling this hotkey.
+         * 
+         * To enable this, enter the following line into your console on this page and refresh:
+         * localStorage.setItem("overlayHotkeyEnabled", true);
+         * 
+         * You only have to enter this once unless you clear your browser cache/history/etc. or are using private browsing.
+         * 
+         * To disable, type this into your console: 
+         * localStorage.setItem("overlayHotkeyEnabled", false);
+         * 
+         * */
+
+        /**
+         * backlogHotkeyEnabled (For Overlay mode)
+         * 
+         * Enables the "Toggle backlog mode" Hotkey "Alt + O" 
+         * 
+         * This setting just adds a hotkey for the backlog mode feature. You can still use the backlog mode button without enabling this hotkey.
+         * 
+         * To enable this, enter the following line into your console on this page and refresh:
+         * localStorage.setItem("backlogHotkeyEnabled", true);
+         * 
+         * You only have to enter this once unless you clear your browser cache/history/etc. or are using private browsing.
+         * 
+         * To disable, type this into your console: 
+         * localStorage.setItem("backlogHotkeyEnabled", false);
+         * 
+         * */
+        //-----------------------------
 
         //------ Default Options (Useless) ------
         /**
@@ -96,7 +151,6 @@
          * Therefore, you don't have to set this option unless you are or clearing history/cache/localstorage etc. (e.g: Using private browsing mode)
          * 
          * */
-        let pinningEnabled = false;
 
         /**
          * editingEnabled
@@ -107,101 +161,30 @@
          * Therefore, you don't have to set this option unless you are or clearing history/cache/localstorage etc. (e.g: Using private browsing mode)
          * 
          * */
-        let editingEnabled = false;
 
         //---------------------
 
-        //------ Hidden Features ------
-        /**
-         * notifyOnNewline
-         * 
-         * Entering below line in the browser console on this page will enable the notify on new lines hidden feature. 
-         * Whenever a new line is added, The symbol ✔ will flash on page's and window's title for a short time
-         * 
-         * To enable it, enter the following line into your console on this page:
-         * localStorage.setItem("notifyOnNewline", true);
-         * 
-         * (Don't forget to refresh the page afterwards)
-         * 
-         * You only have to enter this once unless you clear your browser cache/history/etc. or are using private browsing.
-         * 
-         * To disable, type this into your console: 
-         * localStorage.setItem("notifyOnNewline", false);
-         * 
-         * */
-        /**
-         * overlayHotkeyEnabled
-         * 
-         * Enables the "Toggle overlay mode" Hotkey "}" 
-         * (The hotkey is } )
-         * 
-         * This setting just adds a hotkey for the overlay mode feature 
-         * you can still use the toggle overlay mode button without enabling this hotkey.
-         * 
-         * Entering below line in the browser console on this page will enable the overlay mode toggle hotkey.
-         * With this mode useless divs will be hidden and background will be black (So you could potentially use the page as an overlay).
-         * 
-         * To enable it, enter the following line into your console on this page:
-         * localStorage.setItem("overlayHotkeyEnabled", true);
-         * 
-         * (Don't forget to refresh the page afterwards)
-         * 
-         * You only have to enter this once unless you clear your browser cache/history/etc. or are using private browsing.
-         * 
-         * To disable, type this into your console: 
-         * localStorage.setItem("overlayHotkeyEnabled", false);
-         * 
-         * */
-        
-        /**
-         * backlogHotkeyEnabled (For the overlay mode)
-         * 
-         * Enables the "Toggle backlog mode" Hotkey "Alt + O" 
-         * 
-         * This setting just adds a hotkey for the backlog mode feature 
-         * you can still use the top backlog mode button without enabling this hotkey.
-         * 
-         * Entering below line in the browser console on this page will enable the backlog mode toggle hotkey.
-         * 
-         * To enable it, enter the following line into your console on this page:
-         * localStorage.setItem("backlogHotkeyEnabled", true);
-         * 
-         * (Don't forget to refresh the page afterwards)
-         * 
-         * You only have to enter this once unless you clear your browser cache/history/etc. or are using private browsing.
-         * 
-         * To disable, type this into your console: 
-         * localStorage.setItem("backlogHotkeyEnabled", false);
-         * 
-         * */
-        //-----------------------------
 
         const historystack = [];
         const historystack_forward = [];
+        const purged_lines = [];
         const maxhistorylength = 1000;
-        let scroll_fix_alignment = 10;
-        let scrollOnNewline = "toBottom";
-        let notifyOnNewline = false;
-        let overlayHotkeyEnabled = false;
-        let backlogHotkeyEnabled = false;
+        let scroll_fix_alignment = 0;
         let overlayModeEnabled = false;
+        let overlayModeBacklog = false;
         let forgiveHistoryTimes = 0;
         let linecount = 0;
         let editPinnedButtons = false;
         let textlinesTempVisible = false;
         let isChromium = window.chrome ? true : false
+        let hoverTarget = null;
 
         //DOMContentLoaded Start (first load)
         document.addEventListener("DOMContentLoaded", function(event) {
-            scrollOnNewline = getIfInLocalStorage("scrollOnNewline", scrollOnNewline);
-            notifyOnNewline = getIfInLocalStorage("notifyOnNewline", notifyOnNewline);
-            overlayHotkeyEnabled = getIfInLocalStorage("overlayHotkeyEnabled", overlayHotkeyEnabled);
-            backlogHotkeyEnabled = getIfInLocalStorage("backlogHotkeyEnabled", backlogHotkeyEnabled);
-            pinningEnabled = getIfInLocalStorage("pinningEnabled", pinningEnabled);
-            editingEnabled = getIfInLocalStorage("editingEnabled", editingEnabled);
-            autoHideYomichan = getIfInLocalStorage("autoHideYomichan", autoHideYomichan);
+            //Load settings from localstorage
+            loadSettings();
 
-            switch (scrollOnNewline) {
+            switch (settings.scrollOnNewline) {
                 case "disabled":
                     document.querySelector("#scroll_button").style.color = "#595959";
                     document.querySelector("#scroll_button").innerText = "⇕";
@@ -215,7 +198,7 @@
                     document.querySelector("#scroll_button").innerText = "⇑";
                     break;
                 default:
-                    scrollOnNewline = "toBottom";
+                    settings.scrollOnNewline = "toBottom";
                     break;
             }
 
@@ -227,12 +210,15 @@
             }
 
             //load first states
-            if (pinningEnabled) {
+            if (settings.pinningEnabled) {
                 togglePinning(true);
             }
-            if (editingEnabled) {
+            if (settings.editingEnabled) {
                 toggleEditing(true);
             }
+
+            //Create movable hover buttons
+            createHoverButtons();
 
             //add button events
             //undo_button
@@ -272,27 +258,27 @@
 
             //scroll_button
             document.getElementById("scroll_button").addEventListener("click", function() {
-                switch (scrollOnNewline) {
+                switch (settings.scrollOnNewline) {
                     case "disabled":
                         document.querySelector("#scroll_button").style.color = "";
                         document.querySelector("#scroll_button").innerText = "⇓";
-                        scrollOnNewline = "toBottom";
+                        settings.scrollOnNewline = "toBottom";
                         break;
                     case "toBottom":
                         document.querySelector("#scroll_button").style.color = "";
                         document.querySelector("#scroll_button").innerText = "⇑";
-                        scrollOnNewline = "toTop";
+                        settings.scrollOnNewline = "toTop";
                         break;
                     case "toTop":
                         document.querySelector("#scroll_button").style.color = "#595959";
                         document.querySelector("#scroll_button").innerText = "⇕";
-                        scrollOnNewline = "disabled";
+                        settings.scrollOnNewline = "disabled";
                         break;
                     default:
-                        scrollOnNewline = "toBottom";
+                        settings.scrollOnNewline = "toBottom";
                         break;
                 }
-                localStorage.setItem("scrollOnNewline", scrollOnNewline);
+                saveSettings("scrollOnNewline");
             });
 
             document.getElementById("remove_button").addEventListener("click", function() {
@@ -303,7 +289,7 @@
                 if (linecount > 0) {
 
                     //Remove the first/last line.
-                    switch (scrollOnNewline) {
+                    switch (settings.scrollOnNewline) {
                         case "disabled":
                             document.querySelector("#textlines > pre:last-of-type").remove();
                             break;
@@ -327,7 +313,7 @@
                 if (e.shiftKey) {
                     historystack.length = 0;
                     historystack_forward.length = 0;
-                    sethistoryButtons();
+                    setHistoryButtons();
                 } else {
                     historyPush();
                 }
@@ -353,19 +339,19 @@
             //Keyboard shortcuts
             document.addEventListener("keydown", function(e) {
                 //Alt + S: Toggle Editing
-                if (e.altKey && e.which == 83) {
+                if (e.altKey && e.key.toLowerCase() == "s") {
                     toggleEditing();
                     e.preventDefault();
-                //"}" key: Toggle Overlay mode (experimental)
-                } else if (e.key == "}") {
-                    if (overlayHotkeyEnabled) {
-                        toggleOverlayMode();
+                    //Alt + O: Toggle Backlog mode (when the overloy mode is on)
+                } else if (e.altKey && e.key.toLowerCase() == "o") {
+                    if (overlayModeEnabled && settings.backlogHotkeyEnabled) {
+                        toggleBacklogMode();
                         e.preventDefault();
                     }
-                //Alt + O: Toggle Backlog mode (when the overloy mode is on)
-                } else if (e.altKey && e.which == 79) {
-                    if (overlayModeEnabled && backlogHotkeyEnabled) {
-                        toggleBacklogMode();
+                    //Alt + 0 or }: Toggle Overlay mode (disabled by default)
+                } else if ((e.altKey && e.key.toLowerCase() == "0") || e.key == "}") {
+                    if (settings.overlayHotkeyEnabled) {
+                        toggleOverlayMode();
                         e.preventDefault();
                     }
                 }
@@ -378,16 +364,35 @@
             });
 
             document.getElementById("toprightbuttons").addEventListener("mouseleave", function(e) {
-                if (!pinningEnabled) {
+                if (!settings.pinningEnabled) {
                     //document.querySelector("#menucontainer").removeAttribute("style");
                     handleMenuState();
                 }
             });
 
             //start checking for mouse in/out
-            if (autoHideYomichan) {
+            if (settings.autoHideYomichan) {
                 checkMouseInOut();
             }
+
+            /**
+             * Start detecting hover targets so we can move the hover buttons
+             */
+            document.addEventListener('mouseover', function(e) {
+                let textlines_Node = document.querySelector("#textlines");
+                let hoverbuttons_Node = getHoverButtons();
+                currentElement = e.target;
+                if (e.path.includes(textlines_Node) && (currentElement.tagName == "PRE" || currentElement.classList.contains("hoverButtonsContainer"))) {
+                    //Move hover buttons to target
+                    if (currentElement.parentNode != textlines_Node) {
+                        currentElement = currentElement.parentNode;
+                    }
+                    moveHoverButtons(currentElement);
+                } else if (!e.path.includes(hoverbuttons_Node)) {
+                    //Hide hover buttons
+                    moveHoverButtons(null);
+                }
+            });
 
             //main mutation observer for new lines.
             const textlinesMutationObserver = new MutationObserver(function(records) {
@@ -396,10 +401,11 @@
                         try {
 
                             //Compatibility for prepending because most people aren't using an upgraded clipboard inserter add-on that allows prepending.
-                            switch (scrollOnNewline) {
+                            switch (settings.scrollOnNewline) {
                                 case "toTop":
-                                    let prevSib = node.previousElementSibling;
-                                    if (prevSib != null && forgiveHistoryTimes == 0) {
+                                    let nextSib = node.nextElementSibling;
+                                    //detect an append() (should have been a prepend)
+                                    if (nextSib == null && forgiveHistoryTimes == 0 && linecount > 0) {
                                         document.querySelector("#textlines").prepend(node);
                                         return;
                                     }
@@ -414,36 +420,57 @@
                                 --forgiveHistoryTimes;
                             }
 
-                            //check if editing is enabled
-                            let preNodeOpen = editingEnabled ? "<pre contenteditable=\"true\">" : "<pre>";
-                            //put the added pre text into another pre so we can modify it later on.
-                            node.innerHTML = preNodeOpen + node.innerHTML + "</pre>";
+                            //Check if the node is a history node that already has the inner pre and the hover container
+                            let innerPre = node.querySelector("pre");
+                            if (innerPre == null) {
+                                //Not a history node
 
-                            //Overlay mode
-                            if (overlayModeEnabled) {
-                                //If text lines were temprorarily made visible
-                                if (textlinesTempVisible) {
-                                    document.querySelector("#textlines").classList.add("hidden");
-                                    textlinesTempVisible = false;
+                                //check if editing is enabled
+                                let preNodeOpen = settings.editingEnabled ? "<pre contenteditable=\"true\">" : "<pre>";
+                                //put the added pre text into another pre so we can modify it later on.
+                                node.innerHTML = preNodeOpen + node.innerHTML + "</pre>";
+
+                                //add hover container to the line
+                                createhoverContainer(node);
+                            } else {
+                                //History node. No need to add inner pre or container.
+                                if (settings.editingEnabled) {
+                                    innerPre.setAttribute("contenteditable", "true");
                                 }
                             }
 
-                            //update counter
-                            updateCounter();
+                            //Skip some steps while loading history
+                            if (forgiveHistoryTimes == 0) {
 
-                            //add hover buttons to every line
-                            createhoverButtons(node);
+                                //Overlay mode
+                                if (overlayModeEnabled) {
+                                    //If text lines were temprorarily made visible, show them.
+                                    if (textlinesTempVisible) {
+                                        document.querySelector("#textlines").classList.add("hidden");
+                                        textlinesTempVisible = false;
+                                    }
+                                }
+                                //update counter
+                                updateCounter();
 
-                            //Notify on new line (using document.title)
-                            if ((notifyOnNewline) && (!overlayModeEnabled) && (document.querySelector('html:hover') == null)) {
-                                //console.log(document.querySelector('div:hover'));
-                                notifyUsingTitle();
+                                //purge 500 lines if its enabled.
+                                if (settings.purge500LinesWhen && linecount > settings.purge500LinesWhen) {
+                                    purgeExtraLines();
+                                }
+
+                                //Notify on new line if enabled (using document.title)
+                                if ((settings.notifyOnNewline) && (!overlayModeEnabled) && (document.querySelector('html:hover') == null)) {
+                                    notifyUsingTitle();
+                                }
+
+                                //Scroll to the top/bottom based on the current setting
+                                doScrollOnNewline();
+
                             }
 
-                            //Scroll to the top/bottom based on the current setting
-                            doScrollOnNewline();
-
-                        } catch (e) {}
+                        } catch (error) {
+                            console.error(error);
+                        }
 
                     });
                 });
@@ -468,7 +495,7 @@
                             node.remove();
 
                             //Append or prepend the new node depending on the current setting
-                            switch (scrollOnNewline) {
+                            switch (settings.scrollOnNewline) {
                                 case "disabled":
                                     document.querySelector("#textlines").append(newNode);
                                     break;
@@ -484,7 +511,9 @@
                             }
 
 
-                        } catch (e) {}
+                        } catch (error) {
+                            console.error(error);
+                        }
 
                     });
                 });
@@ -516,6 +545,73 @@
 
         //----------functions----------
 
+        /**
+         * Set hover target and Move Hover buttons 
+         * */
+        function moveHoverButtons(newTarget) {
+            let hoverButtonsNode = getHoverButtons();
+            if (newTarget != null) {
+                hoverTarget = newTarget;
+                if (hoverTarget.querySelector(".hoverButtonsBackground") == null) {
+                    hoverTarget.querySelector(".hoverButtonsContainer").append(hoverButtonsNode);
+                }
+                //let targetXY = findPos(hoverTarget);
+                //hoverButtonsNode.style.setProperty("left", `${targetXY[0]}px`);
+                //hoverButtonsNode.style.setProperty("top", `${targetXY[1] + 8}px`);
+                hoverButtonsNode.style.setProperty("visibility", "visible");
+            } else {
+                hoverButtonsNode.style.setProperty("visibility", "hidden");
+            }
+        }
+
+        /**
+         * Load settings from localstorage
+         * */
+        function loadSettings() {
+            Object.entries(settings).forEach(([key, value]) => {
+                settings[key] = getIfInLocalStorage(key, value);
+            });
+
+            //parse integers
+            settings.purge500LinesWhen = parseInt(settings.purge500LinesWhen);
+        }
+
+        /**
+         * Saves setting to localstorage
+         * */
+        function saveSettings(keyString = null) {
+            //save all or just a specific setting
+            if (keyString == null) {
+                Object.entries(settings).forEach(([key, value]) => {
+                    localStorage.setItem(key, value);
+                });
+            } else {
+                localStorage.setItem(keyString, settings[keyString]);
+            }
+        }
+
+        /**
+         * Load setting from localstorage if it exists, otherwise keep current value.
+         * Parses "true" and "false".
+         * */
+        function getIfInLocalStorage(itemName, currentVal) {
+            let storedVal = localStorage.getItem(itemName);
+            if (storedVal != null) {
+                //If the stored value is true or false return those.
+                switch (storedVal.toLowerCase()) {
+                    case "true":
+                        return true;
+                    case "false":
+                        return false;
+                    default:
+                        return storedVal;
+                }
+            } else {
+                //No stored value
+                return currentVal;
+            }
+        }
+
         //Modified from https://stackoverflow.com/a/24989958/5050478
         //Mouse in/out check for yomichan (with shadow dom disabled in settings)
         function checkMouseInOut() {
@@ -537,7 +633,9 @@
                             aFrameWasHidden = true;
                         }
                     });
-                } catch (error) {}
+                } catch (error) {
+                    console.error(error);
+                }
             }
 
             function clearTimer(e) {
@@ -559,7 +657,9 @@
                             }
                         });
                     }
-                } catch (error) {}
+                } catch (error) {
+                    console.error(error);
+                }
             }
 
             function resetTimer(e) {
@@ -569,25 +669,6 @@
                     //Mouse left window here, do action 600 miliseconds after the mouse leaves the window
                     theTimer = setTimeout(doAction, 600);
                 }
-            }
-        }
-
-        //Get from localstorage if it exists, otherwise keep current value.
-        function getIfInLocalStorage(itemName, currentVal) {
-            let storedVal = localStorage.getItem(itemName);
-            if (storedVal != null) {
-                //If the stored value is true or false return those.
-                switch (storedVal.toLowerCase()) {
-                    case "true":
-                        return true;
-                    case "false":
-                        return false;
-                    default:
-                        return storedVal;
-                }
-            } else {
-                //No stored value
-                return currentVal;
             }
         }
 
@@ -607,43 +688,63 @@
         //Firefox hover bug workaround: Recheck the menu state when its hidden to prevent it from being hidden permanently.
         let menustateInterval = setInterval(() => {
             //Check when not pinned and hidden manually
-            if (!pinningEnabled && document.querySelector('#menucontainer[style="display:none;"]')) {
+            if (!settings.pinningEnabled && document.querySelector('#menucontainer[style="display:none;"]')) {
                 handleMenuState();
             }
         }, 175);
 
-        //add hover buttons to every line
-        function createhoverButtons(element) {
-
+        //Add a hover container to every line
+        function createhoverContainer(element) {
             let hoverButtons = document.createElement("div");
             element.prepend(hoverButtons);
-            hoverButtons.outerHTML = `<div class="hoverButtonsContainer">
-<div class="hoverButtonsBackground">
-<div class="hoverButtons hoverButtonDelete" title="Remove line">✖</div>
-<div class="hoverButtons hoverButtonReduceNewlines" title="Reduce newlines and spaces">≡</div>
-<div class="hoverButtons hoverButtonCopy" title="Copy to clipboard">📋</div>
-<div class="hoverButtons hoverButtonDown" title="Scroll down one line">🡻</div>
-<div class="hoverButtons hoverButtonUp" title="Scroll up one line">🡹</div>
-</div>
-</div>`;
-            element.querySelector(".hoverButtonDelete").addEventListener("click", function(event) {
+            hoverButtons.outerHTML = `<div class="hoverButtonsContainer"></div>`;
+        }
+
+        //Create hover buttons (then we move it)
+        function createHoverButtons() {
+
+            let hoverButtons = document.createElement("div");
+            document.body.append(hoverButtons);
+            //svg art from https://www.svgrepo.com/collection/basicons-interface-line-icons/. MIT.
+            hoverButtons.outerHTML = `
+            <div class="hoverButtonsBackground" style="visibility: hidden;">
+            <div class="hoverButtons hoverButtonDelete" title="Remove line"><svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 5L19 19M5 19L19 5"></path>
+                </svg></div>
+            <div class="hoverButtons hoverButtonReduceNewlines" title="Reduce newlines and spaces"><svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 3 3 L 21 3"></path>
+                <path class="middle" d="M 3 9 L 21 9 "></path>
+                <path d="M 3 15 L 21 15"></path>
+            </svg></div>
+            <div class="hoverButtons hoverButtonCopy" title="Copy to clipboard"><svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M 8 6 H 16 M 8 10 H 16 M 8 14 H 12 M 6 22 H 18 C 20 22 20 22 20 20 V 4 C 20 2 20 2 19 2 H 6 C 4 2 4 2 4 4 V 20 C 4 22 4 22 6 22 Z"></path>
+                </svg></div>
+            <div class="hoverButtons hoverButtonDown" title="Scroll down one line"><svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 21V3M12 3L5 10M12 3L19 10"></path>
+                </svg></div>
+            <div class="hoverButtons hoverButtonUp" title="Scroll up one line"><svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 21V3M12 3L5 10M12 3L19 10"></path>
+                </svg></div>
+            </div>`;
+
+            document.querySelector(".hoverButtonsBackground .hoverButtonDelete").addEventListener("click", function(event) {
                 historyPush();
 
-                removeLine(event.target);
+                removeLine(hoverTarget);
             });
-            element.querySelector(".hoverButtonReduceNewlines").addEventListener("click", function(event) {
+            document.querySelector(".hoverButtonsBackground .hoverButtonReduceNewlines").addEventListener("click", function(event) {
                 historyPush();
 
-                reduceNewlines(event.target);
+                reduceNewlines(hoverTarget);
             });
-            element.querySelector(".hoverButtonUp").addEventListener("click", function(event) {
-                scrollUpDown(event.target, event.clientY, true);
+            document.querySelector(".hoverButtonsBackground .hoverButtonUp").addEventListener("click", function(event) {
+                scrollUpDown(hoverTarget, event.clientY, true);
             });
-            element.querySelector(".hoverButtonDown").addEventListener("click", function(event) {
-                scrollUpDown(event.target, event.clientY, false);
+            document.querySelector(".hoverButtonsBackground .hoverButtonDown").addEventListener("click", function(event) {
+                scrollUpDown(hoverTarget, event.clientY, false);
             });
-            element.querySelector(".hoverButtonCopy").addEventListener("click", function(event) {
-                let elementInner = event.target.closest("pre").querySelector("pre");
+            document.querySelector(".hoverButtonsBackground .hoverButtonCopy").addEventListener("click", function(event) {
+                let elementInner = hoverTarget.querySelector("pre");
                 /**
                  * Copy Methods comparison:
                  * Copy Method 1: e.clipboardData.setData
@@ -659,7 +760,9 @@
                 //Use innerText as it converts <br>'s that were manually added with Enter into \n's. (not necessary on chrome when using display: inline-block)
                 if (isChromium) {
                     //Copy Method 2
-                    navigator.clipboard.writeText(elementInner.innerText).then((result) => {return;});
+                    navigator.clipboard.writeText(elementInner.innerText).then((result) => {
+                        return;
+                    });
                 } else {
                     //Copy Method 3
                     elementInner.focus();
@@ -683,6 +786,14 @@
                 document.removeEventListener("copy", clipListener);
                 */
             });
+
+            //Return the created node
+            return document.querySelector(".hoverButtonsBackground");
+        }
+
+        //get hoverButtonsBackground (or recreate it)
+        function getHoverButtons() {
+            return document.querySelector(".hoverButtonsBackground") || createHoverButtons();
         }
 
         //start undo/redo buttons
@@ -691,13 +802,22 @@
             let dummyDiv = document.createElement("div");
             for (const element of textlinesNode.childNodes) {
                 try {
+                    //ignore text only nodes (that were just inserted)
                     if (element.firstChild.nodeName != "#text") {
                         let textPre = element.querySelector("pre");
                         //clean up contenteditable
                         textPre.removeAttribute("contenteditable");
-                        dummyDiv.append(textPre);
+                        //clean up hover buttons
+                        let bgNode = element.querySelector(".hoverButtonsBackground");
+                        if (bgNode) {
+                            bgNode.remove();
+                        }
+                        //push node with inner pre and hovercontainer
+                        dummyDiv.append(element.cloneNode(true));
                     }
-                } catch {}
+                } catch (error) {
+                    console.error(error);
+                }
             }
             let historydict = {
                 state: dummyDiv.innerHTML,
@@ -712,7 +832,7 @@
                 historystack_forward.length = 0;
             }
 
-            sethistoryButtons();
+            setHistoryButtons();
         }
 
         function historyPop() {
@@ -721,7 +841,7 @@
             forgiveHistoryTimes = popDict.linecount;
             document.querySelector("#textlines").innerHTML = popDict.state;
 
-            sethistoryButtons();
+            setHistoryButtons();
             updateCounter();
         }
 
@@ -735,9 +855,17 @@
                         let textPre = element.querySelector("pre");
                         //clean up contenteditable
                         textPre.removeAttribute("contenteditable");
-                        dummyDiv.append(textPre);
+                        //clean up hover buttons
+                        let bgNode = element.querySelector(".hoverButtonsBackground");
+                        if (bgNode) {
+                            bgNode.remove();
+                        }
+                        //push node with inner pre and hovercontainer
+                        dummyDiv.append(element.cloneNode(true));
                     }
-                } catch {}
+                } catch (error) {
+                    console.error(error);
+                }
             }
             let historydict = {
                 state: dummyDiv.innerHTML,
@@ -756,11 +884,11 @@
             forgiveHistoryTimes = popDict.linecount;
             document.querySelector("#textlines").innerHTML = popDict.state;
 
-            sethistoryButtons();
+            setHistoryButtons();
             updateCounter();
         }
 
-        function sethistoryButtons() {
+        function setHistoryButtons() {
             if (historystack.length >= 1) {
                 document.querySelector("#undo_button").removeAttribute("disabled");
             } else {
@@ -787,12 +915,12 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
     <div id="overlay_bottom_button" style="margin-right: 22px; font-size: 17px; margin-top: 6px;" title="Scroll to the Bottom">🢃</div>
     <div id="overlay_text_button" style="padding-left: 4px; margin-right: 8px; font-size: 18px; margin-top: 4px; font-weight: bold; font-family: Calibri; transform: scale(1.33, 1.05);" title="Toggle Text Visibility
 If you hover this button while it is enabled, text lines will be visible until a new line is added." class="">¶</div>
-    <div id="overlay_background_button" style="font-size: 19; margin-top: 2px;" title="Toggle Backlog Mode">☯</div>
+    <div id="overlay_background_button" style="font-size: 19px; margin-top: 2px;" title="Toggle Backlog Mode">☯</div>
 </div>`;
-
 
             let htmlNode = document.querySelector("html");
             let cssNode = document.querySelector("#overlaycss");
+
             if (htmlNode.classList.contains("overlaymode")) {
                 //turn overlay mode off
                 document.title = document.title.replace(" (Overlay Mode)", "");
@@ -800,7 +928,7 @@ If you hover this button while it is enabled, text lines will be visible until a
                 htmlNode.classList.remove("overlaymode");
                 cssNode.setAttribute("media", "not all");
                 document.querySelector("#overlay_button").classList.remove("overlay_button_on");
-                scroll_fix_alignment = 10;
+                scroll_fix_alignment = 0;
                 //Remove overlay buttons
                 document.querySelector("#overlay_buttons_container").remove();
                 //Set the regular counter's value and remove overlay counter 
@@ -808,17 +936,22 @@ If you hover this button while it is enabled, text lines will be visible until a
                 document.querySelector(".overlaycounter").remove();
 
                 //If backlog mode is enabled, disable it.
-                if (document.querySelector("body.backlogmode")) {
-                    document.querySelector("body").classList.remove("backlogmode");
+                if (overlayModeBacklog) {
+                    toggleBacklogMode();
                 }
                 //If text visibility button is toggled, disable it.
                 if (document.querySelector("#textlines.hidden")) {
-                    document.querySelector("#textlines.hidden").classList.remove("hidden");
+                    toggleTextVisibility();
                 }
 
                 overlayModeEnabled = false;
 
+                //Scroll to the top/bottom based on the current setting
+                doScrollOnNewline();
+
             } else {
+                //Move hover buttons to body
+                document.body.append(getHoverButtons());
 
                 //turn overlay mode on
                 document.title = document.title + " (Overlay Mode)";
@@ -826,7 +959,7 @@ If you hover this button while it is enabled, text lines will be visible until a
                 htmlNode.classList.add("overlaymode");
                 cssNode.setAttribute("media", "all");
                 document.querySelector("#overlay_button").classList.add("overlay_button_on");
-                scroll_fix_alignment = 4;
+                scroll_fix_alignment = 12;
 
                 //Add overlay counter and set its value
                 document.querySelector("#toprightbuttons").insertAdjacentHTML("afterbegin", overlayCounterHTML);
@@ -849,28 +982,16 @@ If you hover this button while it is enabled, text lines will be visible until a
                     }
                 });
                 document.getElementById("overlay_bottom_button").addEventListener("click", function(event) {
-                    if (linecount > 0) {
-                        scrollFirstLast("last");
-                    }
+                    scrollFirstLast("last");
                 });
                 document.getElementById("overlay_top_button").addEventListener("click", function(event) {
-                    if (linecount > 0) {
-                        scrollFirstLast("first");
-                    }
+                    scrollFirstLast("first");
                 });
                 document.getElementById("overlay_background_button").addEventListener("click", function(event) {
                     toggleBacklogMode();
                 });
                 document.getElementById("overlay_text_button").addEventListener("click", function(event) {
-                    if (event.target.classList.contains("button_on")) {
-                        document.querySelector("#textlines").classList.remove("hidden");
-                        event.target.classList.remove("button_on");
-                    } else {
-                        document.querySelector("#textlines").classList.add("hidden");
-                        event.target.classList.add("button_on");
-                    }
-                    //turn temp visibility off
-                    textlinesTempVisible = false;
+                    toggleTextVisibility();
                 });
 
                 //When hovered, temprorarily show text lines until a new line is added (only while the button is turned on)
@@ -889,23 +1010,52 @@ If you hover this button while it is enabled, text lines will be visible until a
             }
         }
 
+        //Overlay Mode: Toggle text visibility
+        function toggleTextVisibility() {
+            let textbutton = document.getElementById("overlay_text_button");
+            if (textbutton.classList.contains("button_on")) {
+                document.querySelector("#textlines").classList.remove("hidden");
+                textbutton.classList.remove("button_on");
+            } else {
+                document.querySelector("#textlines").classList.add("hidden");
+                textbutton.classList.add("button_on");
+            }
+            //turn temp visibility off
+            textlinesTempVisible = false;
+        }
+
         //Overlay Mode: Toggle backlog mode
         function toggleBacklogMode() {
-            if (document.querySelector("body.backlogmode")) {
+            //disable backlog mode
+            if (overlayModeBacklog) {
+                overlayModeBacklog = !overlayModeBacklog;
+
+                //Move hover buttons to body
+                document.body.append(getHoverButtons());
+
                 document.querySelector("body").classList.remove("backlogmode");
                 event.target.classList.remove("button_on");
+
+                //Scroll to the top/bottom based on the current setting
+                doScrollOnNewline();
+
+                //enable backlog mode
             } else {
+                overlayModeBacklog = !overlayModeBacklog;
                 document.querySelector("body").classList.add("backlogmode");
                 event.target.classList.add("button_on");
+
+                //Scroll to the top/bottom based on the current setting
+                doScrollOnNewline();
             }
         }
 
         //toggle editing
         function toggleEditing(firstload = false) {
             if (firstload) {
-                editingEnabled = !editingEnabled;
+                settings.editingEnabled = !settings.editingEnabled;
             }
-            if (editingEnabled) {
+            if (settings.editingEnabled) {
                 //disable editing, set button style
                 const linesArray = document.querySelectorAll("#textlines>pre>pre").forEach(element => {
                     element.removeAttribute("contenteditable");
@@ -928,20 +1078,20 @@ If you hover this button while it is enabled, text lines will be visible until a
                     togglePinning();
                 }
             }
-            editingEnabled = !editingEnabled;
-            localStorage.setItem("editingEnabled", editingEnabled);
+            settings.editingEnabled = !settings.editingEnabled;
+            saveSettings("editingEnabled");
         }
 
         //add new line
         function addNewLine() {
-            if (!editingEnabled) {
+            if (!settings.editingEnabled) {
                 toggleEditing();
             }
 
             newpre = document.createElement("pre");
             newpre.innerHTML = "";
             //append or prepend the new line based on the current setting, prepend is default.
-            switch (scrollOnNewline) {
+            switch (settings.scrollOnNewline) {
                 case "disabled":
                     document.querySelector("#textlines").prepend(newpre);
                     break;
@@ -965,9 +1115,9 @@ If you hover this button while it is enabled, text lines will be visible until a
         //toggle pinning
         function togglePinning(firstload = false) {
             if (firstload) {
-                pinningEnabled = !pinningEnabled;
+                settings.pinningEnabled = !settings.pinningEnabled;
             }
-            if (pinningEnabled) {
+            if (settings.pinningEnabled) {
                 document.querySelector("#toprightbuttons").removeAttribute("style");
                 document.querySelector("#pin_button").classList.remove("pin_button_on");
                 editPinnedButtons = false;
@@ -977,10 +1127,35 @@ If you hover this button while it is enabled, text lines will be visible until a
             }
             //handle menu button visibility (for edge cases)
             handleMenuState();
-            pinningEnabled = !pinningEnabled;
+            settings.pinningEnabled = !settings.pinningEnabled;
             if (!editPinnedButtons) {
-                localStorage.setItem("pinningEnabled", pinningEnabled);
+                saveSettings("pinningEnabled");
             }
+        }
+
+        //purge extra lines
+        function purgeExtraLines() {
+            purged_lines.push("////// STARTED PURGING LINES //////");
+            //es6 NodeList to array
+            let purgeArray = [...document.querySelectorAll("#textlines > pre")];
+            switch (settings.scrollOnNewline) {
+                case "toTop":
+                    //bottom 500
+                    purgeArray = purgeArray.slice(-500);
+                    break;
+                case "disabled":
+                case "toBottom":
+                default:
+                    //top 500
+                    purgeArray = purgeArray.slice(0, 499);
+                    break;
+            }
+            purgeArray.forEach(element => {
+                purged_lines.push(element.innerText);
+                element.remove();
+            });
+            purged_lines.push("////// FINISHED PURGING LINES //////");
+            console.log("🧹 Purged 500 lines. Check purged_lines array. 🧹");
         }
 
         //notify new lines with a document.title change
@@ -1008,7 +1183,7 @@ If you hover this button while it is enabled, text lines will be visible until a
 
         //Pick scroll method (body or window depending on the current view)
         function doScroll(valueX, valueY) {
-            if (overlayModeEnabled) {
+            if (overlayModeEnabled && !overlayModeBacklog) {
                 document.querySelector("body").scroll(valueX, valueY);
             } else {
                 window.scroll(valueX, valueY);
@@ -1017,7 +1192,7 @@ If you hover this button while it is enabled, text lines will be visible until a
 
         //scrolling
         function doScrollOnNewline() {
-            switch (scrollOnNewline) {
+            switch (settings.scrollOnNewline) {
                 case "disabled":
                     break;
                 case "toBottom":
@@ -1037,11 +1212,21 @@ If you hover this button while it is enabled, text lines will be visible until a
                 return;
             }
             //Use a different Y offset depending on the current mode
-            let offsetY = overlayModeEnabled ? 4 : 24;
+            let offsetY = overlayModeEnabled ? 12 : 24;
             if (scrollTo == "last") {
-                doScroll(0, findPos(document.querySelector("#textlines > pre:last-of-type"))[1] - offsetY);
+                let target = document.querySelector("#textlines > pre:last-of-type");
+                doScroll(0, findPos(target)[1] - offsetY);
+                //set overlay mode hover target
+                if (overlayModeEnabled && !overlayModeBacklog) {
+                    moveHoverButtons(target);
+                }
             } else if (scrollTo == "first") {
-                doScroll(0, findPos(document.querySelector("#textlines > pre:first-of-type"))[1] - offsetY);
+                let target = document.querySelector("#textlines > pre:first-of-type");
+                doScroll(0, findPos(target)[1] - offsetY);
+                //set overlay mode hover target
+                if (overlayModeEnabled && !overlayModeBacklog) {
+                    moveHoverButtons(target);
+                }
             }
         }
 
@@ -1049,8 +1234,16 @@ If you hover this button while it is enabled, text lines will be visible until a
             let scrollSelector = overlayModeEnabled ? document.querySelector("body") : document.querySelector("html");
             if (toTop == "top") {
                 scrollSelector.scroll(0, 0);
+                //set overlay mode hover target
+                if (overlayModeEnabled && !overlayModeBacklog) {
+                    moveHoverButtons(document.querySelector("#textlines > pre:first-of-type"));
+                }
             } else if (toTop == "bottom") {
                 scrollSelector.scrollIntoView(false);
+                //set overlay mode hover target
+                if (overlayModeEnabled && !overlayModeBacklog) {
+                    moveHoverButtons(document.querySelector("#textlines > pre:last-of-type"));
+                }
             }
         }
 
@@ -1070,12 +1263,20 @@ If you hover this button while it is enabled, text lines will be visible until a
                     //Do nothing.
                     return;
                 } else {
+
+                    //set overlay mode hover target. Also disable cursor location offset
+                    if (overlayModeEnabled && !overlayModeBacklog) {
+                        moveHoverButtons(scrollto);
+                        clientY = 0;
+                    }
                     //Scroll to the element using mouse clientY and scroll_fix_alignment
                     doScroll(0, findPos(scrollto)[1] - clientY - scroll_fix_alignment);
                     //scrollto.scrollIntoView();
                 }
                 return;
-            } catch (error) {}
+            } catch (error) {
+                console.error(error);
+            }
         }
 
         //find an element's position in the whole page
@@ -1093,6 +1294,9 @@ If you hover this button while it is enabled, text lines will be visible until a
 
         function removeLine(element) {
             let elementOuter = element.closest("pre");
+            //Move the hover buttons to the next target
+            moveHoverButtons(elementOuter.nextElementSibling || elementOuter.previousElementSibling);
+
             elementOuter.remove();
             updateCounter();
         }
@@ -1123,7 +1327,9 @@ If you hover this button while it is enabled, text lines will be visible until a
                 lines.forEach(element => {
                     charlength += element.textContent.length;
                 });
-            } catch (error) {}
+            } catch (error) {
+                console.error(error);
+            }
             document.querySelector("#counter").textContent = charlength + ' / ' + linecount;
             return;
         }
@@ -1140,36 +1346,35 @@ If you hover this button while it is enabled, text lines will be visible until a
         }
 
         body {
-            margin-top: 24px;
+            margin-top: 14px;
             margin-left: 2%;
             margin-right: 2%;
-            margin-bottom: 420px;
+            margin-bottom: 300px;
             background-color: #202020;
             color: #BCBCBC;
             font-size: 1.3em;
             font-weight: 400;
-            font-family: "MS Gothic", "Meiryo";
-            /* font-family: "IPAGothic", "Sazanami Gothic", "Kochi Gothic", "VL Gothic", "Ume Gothic", "Pro W3", "Hiragino Kaku Gothic Pro", "Osaka Mono", "Osaka", "MS Gothic", "Meiryo", "M+ 1m"; */
+            /* Global font. */
+            font-family: "Noto Sans JP Light";
+            /*font-family: "Noto Sans JP Light", "Meiryo", "MS Gothic", system-ui;*/
+            /*font-family: "IPAGothic", "Sazanami Gothic", "Kochi Gothic", "VL Gothic", "Ume Gothic", "Pro W3", "Hiragino Kaku Gothic Pro", "Osaka Mono", "Osaka", "MS Gothic", "Meiryo", "M+ 1m";*/
         }
 
         /* Main text style */
         pre {
-            /* You can pick some other fonts from below as well. Most fonts use MS Gothic for Japanese text (like Segoe UI here) which is the default japanese font for many games and other media. */
-            /*font-family: "IPAGothic", "Sazanami Gothic", "Kochi Gothic", "VL Gothic", "Ume Gothic", "Pro W3", "Hiragino Kaku Gothic Pro", "Osaka Mono", "Osaka", "MS Gothic", "Meiryo", "M+ 1m";*/
-            /* font-family: "Segoe UI"; */
-            font-family: "Noto Sans JP Light";
+            font-family: inherit;
             white-space: pre-wrap;
             word-wrap: break-word;
             margin: 0em 0em 0em 0em;
             padding-bottom: 0px;
-            /* Prevent the editable outline from covering the caret */
+            /* Prevent contenteditable outline from covering the caret */
             outline-offset: 2px;
         }
 
         #textlines > pre {
             border-bottom: #414141 solid 1px;
-            padding-bottom: 1.4em;
-            margin-bottom: 0.46em;
+            padding-bottom: 29px;
+            padding-top: 10px;
         }
 
         #textlines > pre > pre {
@@ -1315,19 +1520,27 @@ If you hover this button while it is enabled, text lines will be visible until a
             cursor: pointer;
             padding: 3px 4px 4px 4px;
             width: 14px;
+            height: 14px;
             fill: #9f9f9f;
+        }
+
+        #add_line_button svg {
+            transform: translate(0px, -7px);
         }
 
         .undoredoButtons {
             background-color: rgba(25, 25, 25, 0.65);
             color: #848484;
-            font-size: 15px;
             height: 10px;
             width: 10px;
             float: left;
             padding: 5px 0px 6px 6px;
             cursor: pointer;
             pointer-events: initial;
+        }
+
+        .undoredoButtons svg {
+            transform: translate(0px, -11px);
         }
 
         .undoredoButtons > div:hover,
@@ -1375,7 +1588,7 @@ If you hover this button while it is enabled, text lines will be visible until a
 
         /* Top/Bottom buttons css */
         #go_to_last_button {
-            margin-left: 88px;
+            margin-left: 120px;
             bottom: -20px;
 
             position: relative;
@@ -1391,8 +1604,8 @@ If you hover this button while it is enabled, text lines will be visible until a
         }
 
         #go_bottom_button {
-            margin-left: 88px;
-            top: -6px !important;
+            margin-left: 120px;
+            top: -7px !important;
             position: absolute;
             cursor: pointer;
             user-select: none;
@@ -1407,8 +1620,8 @@ If you hover this button while it is enabled, text lines will be visible until a
 
         /* Hover buttons CSS */
         .hoverButtonsContainer {
-            width: 88px;
-            margin-top: -20px;
+            width: 105px;
+            margin-top: -22px;
             height: 20px;
             position: absolute;
             display: flex;
@@ -1422,23 +1635,27 @@ If you hover this button while it is enabled, text lines will be visible until a
         }
 
         .hoverButtonsBackground:hover,
-        .hoverButtonsBackground:hover > .hoverButtons {
+        .hoverButtonsBackground:hover > .hoverButtons,
+        .hoverButtonsContainer:hover .hoverButtons {
             opacity: 90%;
+        }
+
+        body > .hoverButtonsBackground {
+            visibility: hidden !important;
         }
 
         .hoverButtonsBackground {
             height: 15px;
-            padding: 2px 4px 5px 10px;
+            padding: 3px 4px 6px 10px;
             border-radius: 6px;
             position: absolute;
             display: flex;
             flex-direction: row;
             justify-content: space-evenly;
-            background-color: #1D1D1D;
+            background-color: #1c1c1c;
             z-index: 555;
             font-size: 14px;
             user-select: none;
-            display: none;
         }
 
         .hoverButtons {
@@ -1449,41 +1666,54 @@ If you hover this button while it is enabled, text lines will be visible until a
         }
 
         .hoverButtons:hover {
-            color: #fff;
+            filter: brightness(1.5);
         }
 
-        .hoverButtonDelete {
-            font-size: 17px;
-            margin-right: 3px;
-            margin-top: -5px;
-            margin-left: -5px;
+        .hoverButtonDelete svg {
+            stroke: #adadad;
+            stroke-width: 3.2px !important;
+            stroke-linecap: round;
+            width: 21px;
+            margin: -3px 0px 0 -8px;
         }
 
-        .hoverButtonReduceNewlines {
-            margin-top: -9px;
-            margin-right: 1px;
-            font-size: 22px;
-            font-family: Segoe UI;
-            font-weight: bold;
+        .hoverButtonReduceNewlines svg {
+            stroke: #adadad;
+            stroke-width: 2.5px;
+            margin: 0px 0px 0px -3px;
+            width: 24px;
+            transform: scale(0.80, 1);
+            /* stroke-linecap: round; */
         }
 
-        .hoverButtonCopy:hover {
-            filter: contrast(170%);
+        /* 
+        .hoverButtonReduceNewlines svg .middle {
+            stroke-width: 3px;
+        }
+        */
+
+        .hoverButtonCopy svg {
+            stroke: #adadad;
+            stroke-width: 3px;
+            width: 17px;
+            margin: -3px 0 0 -1px;
+            stroke-linecap: round;
+            transform: scale(0.99, 0.94);
         }
 
-        .hoverButtonCopy {
-            margin-top: -1px;
-            margin-right: 1px;
-
-            font-size: 13px;
-            font-family: Arial;
-            filter: contrast(90%);
+        .hoverButtonDown svg,
+        .hoverButtonUp svg {
+            stroke: #adadad;
+            stroke-width: 4px;
+            width: 17px;
+            stroke-linejoin: round;
+            stroke-linecap: round;
+            margin: -3px -2px 0px 0px;
         }
 
-        .hoverButtonDown,
-        .hoverButtonUp {
-            font-size: 14px;
-            margin-top: -2px;
+        .hoverButtonDown svg {
+            margin: -3px 0 0 1px;
+            transform: rotate(180deg);
         }
 
         /* Webkit compatibility: Thinner Scrollbar (similar to Firefox) */
@@ -1526,9 +1756,13 @@ If you hover this button while it is enabled, text lines will be visible until a
             height: 100%;
         }
 
+        .overlaymode > body.backlogmode > #textlines {
+            margin-top: 16px;
+        }
+
         .overlaymode > body.backlogmode > #textlines > pre {
             margin-top: 0px;
-            margin-bottom: 0.46em;
+            margin-bottom: 10px;
             border-bottom: #414141 solid 1px;
         }
 
@@ -1538,14 +1772,6 @@ If you hover this button while it is enabled, text lines will be visible until a
 
         .overlaymode #textlines {
             margin-top: 24px;
-        }
-
-        .overlaymode .hoverButtonsContainer {
-            position: relative;
-        }
-
-        .overlaymode .hoverButtonsBackground {
-            position: relative;
         }
 
         .overlaymode #textlines > pre {
@@ -1583,13 +1809,6 @@ If you hover this button while it is enabled, text lines will be visible until a
             margin-right: 6px;
         }
 
-        /*
-        .overlaymode .buttoncontainer {
-            
-            right: -1px;
-            top: -1px;
-        }
-        */
         .overlaymode #menu_button {
             font-size: 11.5px;
             padding: 0px 2px 0px 1px;
@@ -1600,40 +1819,37 @@ If you hover this button while it is enabled, text lines will be visible until a
             display: none;
         }
 
-        /* Style per line hover buttons */
+        /* overmay mode hover buttons */
+        .overlaymode .hoverButtonsContainer {
+            position: relative;
+        }
+
+        .overlaymode body:not(.backlogmode) #textlines .hoverButtonsBackground {
+            visibility: visible !important;
+        }
+
         .overlaymode body:not(.backlogmode) .hoverButtonsBackground {
             display: flex !important;
-            transform: scale(1.26, 0.11) translate(0px, -130px);
+            position: fixed;
+            transform: scale(1.0, 0.11) translate(0px, -88px);
+            top: 0px;
+            left: 23.0%;
         }
 
         .overlaymode body:not(.backlogmode) .hoverButtonsBackground:hover,
+        .overlaymode body:not(.backlogmode) .hoverButtonsContainer:hover .hoverButtonsBackground {
+            transform: scale(1.0, 1.0) translate(0px, -1px);
+            padding: 2px 5px 6px 11px;
+            opacity: 1;
+        }
+
+
         .overlaymode body.backlogmode .hoverButtonsContainer {
-            transform: scale(1.26, 1.26) translate(0px, -5px);
-            padding-bottom: 4px;
+            transform: scale(1.00, 1.00) translate(0px, -8px);
         }
 
-        .overlaymode .hoverButtonReduceNewlines {
-            margin-top: -3px;
-            font-size: 18px;
-            font-family: Verdana;
-        }
-
-        .overlaymode .hoverButtonDelete {
-            margin-top: -3px;
-            margin-right: 2px;
-            font-family: Arial;
-            font-weight: bold;
-        }
-
-        .overlaymode body:not(.backlogmode) .hoverButtonsBackground:not(:hover) .hoverButtonReduceNewlines {
-            margin-top: -8px;
-            font-family: Segoe UI;
-            font-size: 22px;
-        }
-
-        .overlaymode body:not(.backlogmode) .hoverButtonsBackground:not(:hover) .hoverButtonDelete,
-        .overlaymode body:not(.backlogmode) .hoverButtonsBackground:not(:hover) .hoverButtonUp {
-            opacity: 55%;
+        .overlaymode body:not(.backlogmode) #overlay_buttons_container:not(:hover) #overlay_bottom_button {
+            margin-top: -5px;
         }
 
         /* Style new overlay buttons */
@@ -1658,7 +1874,7 @@ If you hover this button while it is enabled, text lines will be visible until a
         }
 
         .overlaymode #overlay_buttons_container > div.button_on {
-            color: #a6f57e;
+            color: #a6f57ed6;
             opacity: 90%;
         }
 
