@@ -379,15 +379,18 @@
              */
             document.addEventListener('mouseover', function(e) {
                 let textlines_Node = document.querySelector("#textlines");
-                let hoverbuttons_Node = getHoverButtons();
                 currentElement = e.target;
-                if (currentElement.tagName == "PRE" && e.path.includes(textlines_Node)) {
-                    //Move hover buttons to target
+
+                //enter pre
+                if (currentElement.tagName == "PRE") {
                     if (currentElement.parentNode != textlines_Node) {
                         currentElement = currentElement.parentNode;
                     }
+                    //Move hover buttons to target
                     moveHoverButtons(currentElement);
-                } else if (!e.path.includes(hoverbuttons_Node)) {
+
+                //are we on hover buttons?
+                } else if (!currentElement.closest(".hoverButtonsBackground")) {
                     //Hide hover buttons
                     moveHoverButtons(null);
                 }
@@ -1793,12 +1796,15 @@ If you hover this button while it is enabled, text lines will be visible until a
         }
 
         /* overmay mode hover buttons */
+        .overlaymode .hoverButtonsBackground {
+            left: 23.0% !important;
+        }
+        
         .overlaymode body:not(.backlogmode) .hoverButtonsBackground {
             position: fixed;
             transform: scale(1.0, 0.10) translate(0px, -108px);
             padding-bottom: 4px;
             top: 0px !important;
-            left: 23.0% !important;
         }
 
         .overlaymode body:not(.backlogmode) .hoverButtonsBackground:hover {
@@ -1930,7 +1936,7 @@ Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>
         <!-- Dummy div for buttons-->
     </div>
 
-    <!-- inserted pre tags go here -->
+    <!-- inserted pre tags go inside #textlines -->
     <div id="textlines"></div>
 
     <div id="go_to_last_button" title="Scroll to the start of the last item">🡹</div>
