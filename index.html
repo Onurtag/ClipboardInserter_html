@@ -11,7 +11,7 @@
         /*
         /////////////////////////////////////////////////////////////////////////
         ////////// Downloadable HTML for Clipboard Inserter (Enhanced) //////////
-        //////////                    Version: 3.0                     //////////
+        /////////                    Version: 3.1.0                     /////////
         /////////////////////////////////////////////////////////////////////////
 
 
@@ -169,7 +169,6 @@
         const historystack_forward = [];
         const purged_lines = [];
         const maxhistorylength = 1000;
-        let scroll_fix_alignment = 0;
         let overlayModeEnabled = false;
         let overlayModeBacklog = false;
         let forgiveHistoryTimes = 0;
@@ -228,7 +227,7 @@
 
             //redo_button
             document.getElementById("redo_button").addEventListener("click", function() {
-                historyPop_forward();
+                historyPop(true);
             });
 
             //edit_button
@@ -382,7 +381,7 @@
                 let textlines_Node = document.querySelector("#textlines");
                 let hoverbuttons_Node = getHoverButtons();
                 currentElement = e.target;
-                if (e.path.includes(textlines_Node) && (currentElement.tagName == "PRE" || currentElement.classList.contains("hoverButtonsContainer"))) {
+                if (currentElement.tagName == "PRE" && e.path.includes(textlines_Node)) {
                     //Move hover buttons to target
                     if (currentElement.parentNode != textlines_Node) {
                         currentElement = currentElement.parentNode;
@@ -430,10 +429,8 @@
                                 //put the added pre text into another pre so we can modify it later on.
                                 node.innerHTML = preNodeOpen + node.innerHTML + "</pre>";
 
-                                //add hover container to the line
-                                createhoverContainer(node);
                             } else {
-                                //History node. No need to add inner pre or container.
+                                //History node. No need to add inner pre.
                                 if (settings.editingEnabled) {
                                     innerPre.setAttribute("contenteditable", "true");
                                 }
@@ -551,16 +548,20 @@
         function moveHoverButtons(newTarget) {
             let hoverButtonsNode = getHoverButtons();
             if (newTarget != null) {
+                //Set new target
                 hoverTarget = newTarget;
-                if (hoverTarget.querySelector(".hoverButtonsBackground") == null) {
-                    hoverTarget.querySelector(".hoverButtonsContainer").append(hoverButtonsNode);
+                //Move hover buttons (except for overlaymode)
+                if (!overlayModeEnabled || overlayModeBacklog) {
+                    let targetXY = findPos(hoverTarget);
+                    hoverButtonsNode.style.setProperty("left", `${targetXY[0]}px`);
+                    hoverButtonsNode.style.setProperty("top", `${targetXY[1]}px`);
                 }
-                //let targetXY = findPos(hoverTarget);
-                //hoverButtonsNode.style.setProperty("left", `${targetXY[0]}px`);
-                //hoverButtonsNode.style.setProperty("top", `${targetXY[1] + 8}px`);
-                hoverButtonsNode.style.setProperty("visibility", "visible");
+                hoverButtonsNode.classList.remove("hidden");
             } else {
-                hoverButtonsNode.style.setProperty("visibility", "hidden");
+                //Don't hide in overlay mode
+                if (!overlayModeEnabled && !overlayModeBacklog) {
+                    hoverButtonsNode.classList.add("hidden");
+                }
             }
         }
 
@@ -693,13 +694,6 @@
             }
         }, 175);
 
-        //Add a hover container to every line
-        function createhoverContainer(element) {
-            let hoverButtons = document.createElement("div");
-            element.prepend(hoverButtons);
-            hoverButtons.outerHTML = `<div class="hoverButtonsContainer"></div>`;
-        }
-
         //Create hover buttons (then we move it)
         function createHoverButtons() {
 
@@ -707,7 +701,7 @@
             document.body.append(hoverButtons);
             //svg art from https://www.svgrepo.com/collection/basicons-interface-line-icons/. MIT.
             hoverButtons.outerHTML = `
-            <div class="hoverButtonsBackground" style="visibility: hidden;">
+            <div class="hoverButtonsBackground hidden">
             <div class="hoverButtons hoverButtonDelete" title="Remove line"><svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M5 5L19 19M5 19L19 5"></path>
                 </svg></div>
@@ -797,22 +791,17 @@
         }
 
         //start undo/redo buttons
-        function historyPush(resetforward = true) {
+        function historyPush(resetforward = true, forward = false) {
             let textlinesNode = document.querySelector("#textlines").cloneNode(true);
             let dummyDiv = document.createElement("div");
             for (const element of textlinesNode.childNodes) {
                 try {
                     //ignore text only nodes (that were just inserted)
-                    if (element.firstChild.nodeName != "#text") {
+                    if (element.firstChild && element.firstChild.nodeName != "#text") {
                         let textPre = element.querySelector("pre");
                         //clean up contenteditable
                         textPre.removeAttribute("contenteditable");
-                        //clean up hover buttons
-                        let bgNode = element.querySelector(".hoverButtonsBackground");
-                        if (bgNode) {
-                            bgNode.remove();
-                        }
-                        //push node with inner pre and hovercontainer
+                        //push node with inner pre
                         dummyDiv.append(element.cloneNode(true));
                     }
                 } catch (error) {
@@ -821,71 +810,48 @@
             }
             let historydict = {
                 state: dummyDiv.innerHTML,
-                linecount: textlinesNode.childNodes.length,
-            }
-            let historylength = historystack.push(historydict);
-            if (historylength > maxhistorylength) {
-                historystack.shift();
-            }
-            if (resetforward) {
-                //reset forward history
-                historystack_forward.length = 0;
+                line_count: dummyDiv.childNodes.length,
             }
 
-            setHistoryButtons();
-        }
+            //Forward history (undo button)
+            if (forward) {
+                let historylength_forward = historystack_forward.push(historydict);
+                if (historylength_forward > maxhistorylength) {
+                    historystack_forward.shift();
+                }
 
-        function historyPop() {
-            historyPush_forward();
-            popDict = historystack.pop();
-            forgiveHistoryTimes = popDict.linecount;
-            document.querySelector("#textlines").innerHTML = popDict.state;
-
-            setHistoryButtons();
-            updateCounter();
-        }
-
-        function historyPush_forward() {
-            let textlinesNode = document.querySelector("#textlines").cloneNode(true);
-            let dummyDiv = document.createElement("div");
-            for (const element of textlinesNode.childNodes) {
-                try {
-                    //ignore text only nodes (that were just inserted)
-                    if (element.firstChild.nodeName != "#text") {
-                        let textPre = element.querySelector("pre");
-                        //clean up contenteditable
-                        textPre.removeAttribute("contenteditable");
-                        //clean up hover buttons
-                        let bgNode = element.querySelector(".hoverButtonsBackground");
-                        if (bgNode) {
-                            bgNode.remove();
-                        }
-                        //push node with inner pre and hovercontainer
-                        dummyDiv.append(element.cloneNode(true));
-                    }
-                } catch (error) {
-                    console.error(error);
+                //Regular history (redo button)
+            } else {
+                let historylength = historystack.push(historydict);
+                if (historylength > maxhistorylength) {
+                    historystack.shift();
+                }
+                if (resetforward) {
+                    //reset forward history
+                    historystack_forward.length = 0;
                 }
             }
-            let historydict = {
-                state: dummyDiv.innerHTML,
-                linecount: textlinesNode.childNodes.length,
-            }
-            let historylength_forward = historystack_forward.push(historydict);
-            if (historylength_forward > maxhistorylength) {
-                historystack_forward.shift();
-            }
+
+            setHistoryButtons();
         }
 
-        function historyPop_forward() {
+        function historyPop(forward = false) {
+            let popDict;
+            //Forward history pop
+            if (forward) {
+                historyPush(false);
+                popDict = historystack_forward.pop();
 
-            historyPush(false);
-            popDict = historystack_forward.pop();
-            forgiveHistoryTimes = popDict.linecount;
+                //Regular history pop
+            } else {
+                historyPush(false, true);
+                popDict = historystack.pop();
+            }
+
+            forgiveHistoryTimes = popDict.line_count;
             document.querySelector("#textlines").innerHTML = popDict.state;
 
             setHistoryButtons();
-            updateCounter();
         }
 
         function setHistoryButtons() {
@@ -928,7 +894,7 @@ If you hover this button while it is enabled, text lines will be visible until a
                 htmlNode.classList.remove("overlaymode");
                 cssNode.setAttribute("media", "not all");
                 document.querySelector("#overlay_button").classList.remove("overlay_button_on");
-                scroll_fix_alignment = 0;
+
                 //Remove overlay buttons
                 document.querySelector("#overlay_buttons_container").remove();
                 //Set the regular counter's value and remove overlay counter 
@@ -959,7 +925,6 @@ If you hover this button while it is enabled, text lines will be visible until a
                 htmlNode.classList.add("overlaymode");
                 cssNode.setAttribute("media", "all");
                 document.querySelector("#overlay_button").classList.add("overlay_button_on");
-                scroll_fix_alignment = 12;
 
                 //Add overlay counter and set its value
                 document.querySelector("#toprightbuttons").insertAdjacentHTML("afterbegin", overlayCounterHTML);
@@ -1211,23 +1176,25 @@ If you hover this button while it is enabled, text lines will be visible until a
             if (linecount <= 0) {
                 return;
             }
-            //Use a different Y offset depending on the current mode
-            let offsetY = overlayModeEnabled ? 12 : 24;
+
+            let target;
             if (scrollTo == "last") {
-                let target = document.querySelector("#textlines > pre:last-of-type");
-                doScroll(0, findPos(target)[1] - offsetY);
-                //set overlay mode hover target
-                if (overlayModeEnabled && !overlayModeBacklog) {
-                    moveHoverButtons(target);
-                }
+                target = document.querySelector("#textlines > pre:last-of-type");
             } else if (scrollTo == "first") {
-                let target = document.querySelector("#textlines > pre:first-of-type");
-                doScroll(0, findPos(target)[1] - offsetY);
-                //set overlay mode hover target
-                if (overlayModeEnabled && !overlayModeBacklog) {
-                    moveHoverButtons(target);
-                }
+                target = document.querySelector("#textlines > pre:first-of-type");
             }
+
+            //Scroll to target
+            doScroll(0, findPos(target)[1]);
+
+            //set overlay mode hover target
+            if (overlayModeEnabled && !overlayModeBacklog) {
+                moveHoverButtons(target);
+            } else {
+                //[HACK] Prevent a problem where hover buttons target a different line when the page moves by itself.
+                moveHoverButtons(null);
+            }
+
         }
 
         function scrollTopBottom(toTop) {
@@ -1263,15 +1230,20 @@ If you hover this button while it is enabled, text lines will be visible until a
                     //Do nothing.
                     return;
                 } else {
+                    //Set new hover target
+                    moveHoverButtons(scrollto);
 
-                    //set overlay mode hover target. Also disable cursor location offset
+                    let scroll_fix_alignment = -12;
+                    //Only for overlay mode
                     if (overlayModeEnabled && !overlayModeBacklog) {
-                        moveHoverButtons(scrollto);
                         clientY = 0;
+                        scroll_fix_alignment = 0;
                     }
+
                     //Scroll to the element using mouse clientY and scroll_fix_alignment
                     doScroll(0, findPos(scrollto)[1] - clientY - scroll_fix_alignment);
                     //scrollto.scrollIntoView();
+
                 }
                 return;
             } catch (error) {
@@ -1330,6 +1302,26 @@ If you hover this button while it is enabled, text lines will be visible until a
             } catch (error) {
                 console.error(error);
             }
+
+            //Show/hide hover buttons on overlay mode
+            if (overlayModeEnabled) {
+                switch (linecount) {
+                    //No more lines
+                    case 0:
+                        getHoverButtons().classList.add("hidden");
+                        break;
+
+                    //There are existing lines
+                    case 1:
+                        let hButtons = getHoverButtons();
+                        hButtons.classList.remove("hidden");
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+
             document.querySelector("#counter").textContent = charlength + ' / ' + linecount;
             return;
         }
@@ -1374,7 +1366,8 @@ If you hover this button while it is enabled, text lines will be visible until a
         #textlines > pre {
             border-bottom: #414141 solid 1px;
             padding-bottom: 29px;
-            padding-top: 10px;
+            padding-top: 22px;
+            margin-top: -12px;
         }
 
         #textlines > pre > pre {
@@ -1618,30 +1611,12 @@ If you hover this button while it is enabled, text lines will be visible until a
             filter: opacity(40%);
         }
 
-        /* Hover buttons CSS */
-        .hoverButtonsContainer {
-            width: 105px;
-            margin-top: -22px;
-            height: 20px;
-            position: absolute;
-            display: flex;
-            background-color: transparent;
-            user-select: none;
-        }
-
-        .hoverButtonsContainer:hover,
-        pre:hover > .hoverButtonsContainer > .hoverButtonsBackground {
-            display: flex !important;
-        }
-
-        .hoverButtonsBackground:hover,
-        .hoverButtonsBackground:hover > .hoverButtons,
-        .hoverButtonsContainer:hover .hoverButtons {
+        .hoverButtonsBackground:hover > .hoverButtons {
             opacity: 90%;
         }
 
-        body > .hoverButtonsBackground {
-            visibility: hidden !important;
+        .hoverButtonsBackground.hidden {
+            visibility: hidden;
         }
 
         .hoverButtonsBackground {
@@ -1666,12 +1641,12 @@ If you hover this button while it is enabled, text lines will be visible until a
         }
 
         .hoverButtons:hover {
-            filter: brightness(1.5);
+            filter: brightness(1.5) !important;
         }
 
         .hoverButtonDelete svg {
             stroke: #adadad;
-            stroke-width: 3.2px !important;
+            stroke-width: 2.8px !important;
             stroke-linecap: round;
             width: 21px;
             margin: -3px 0px 0 -8px;
@@ -1679,11 +1654,12 @@ If you hover this button while it is enabled, text lines will be visible until a
 
         .hoverButtonReduceNewlines svg {
             stroke: #adadad;
-            stroke-width: 2.5px;
+            stroke-width: 2px;
             margin: 0px 0px 0px -3px;
             width: 24px;
-            transform: scale(0.80, 1);
-            /* stroke-linecap: round; */
+            transform: scale(0.70, 1);
+            filter: drop-shadow(0px 0px 1px #9999993d);
+            stroke-linecap: round;
         }
 
         /* 
@@ -1694,16 +1670,16 @@ If you hover this button while it is enabled, text lines will be visible until a
 
         .hoverButtonCopy svg {
             stroke: #adadad;
-            stroke-width: 3px;
-            width: 17px;
+            stroke-width: 2.5px;
+            width: 18px;
             margin: -3px 0 0 -1px;
-            stroke-linecap: round;
-            transform: scale(0.99, 0.94);
+            stroke-linecap: square;
+            transform: scale(0.99, 0.92);
         }
 
         .hoverButtonDown svg,
         .hoverButtonUp svg {
-            stroke: #adadad;
+            stroke: #a2a2a2;
             stroke-width: 4px;
             width: 17px;
             stroke-linejoin: round;
@@ -1760,12 +1736,6 @@ If you hover this button while it is enabled, text lines will be visible until a
             margin-top: 16px;
         }
 
-        .overlaymode > body.backlogmode > #textlines > pre {
-            margin-top: 0px;
-            margin-bottom: 10px;
-            border-bottom: #414141 solid 1px;
-        }
-
         .overlaymode #textlines.hidden {
             visibility: hidden;
         }
@@ -1775,12 +1745,15 @@ If you hover this button while it is enabled, text lines will be visible until a
         }
 
         .overlaymode #textlines > pre {
-            border-bottom: none;
-            margin-bottom: 86px;
-            margin-top: 160px;
             margin-left: auto;
             margin-right: auto;
             width: 56%;
+        }
+
+        .overlaymode > body:not(.backlogmode) #textlines > pre {
+            border-bottom: none;
+            margin-bottom: 86px;
+            margin-top: 160px;
         }
 
         .overlaymode #textlines > pre > pre {
@@ -1820,33 +1793,25 @@ If you hover this button while it is enabled, text lines will be visible until a
         }
 
         /* overmay mode hover buttons */
-        .overlaymode .hoverButtonsContainer {
-            position: relative;
-        }
-
-        .overlaymode body:not(.backlogmode) #textlines .hoverButtonsBackground {
-            visibility: visible !important;
-        }
-
         .overlaymode body:not(.backlogmode) .hoverButtonsBackground {
-            display: flex !important;
             position: fixed;
             transform: scale(1.0, 0.10) translate(0px, -108px);
             padding-bottom: 4px;
-            top: 0px;
-            left: 23.0%;
+            top: 0px !important;
+            left: 23.0% !important;
         }
 
-        .overlaymode body:not(.backlogmode) .hoverButtonsBackground:hover,
-        .overlaymode body:not(.backlogmode) .hoverButtonsContainer:hover .hoverButtonsBackground {
+        .overlaymode body:not(.backlogmode) .hoverButtonsBackground:hover {
             transform: scale(1.0, 1.0) translate(0px, -1px);
             padding: 2px 5px 6px 11px;
-            opacity: 1;
         }
 
+        .overlaymode body:not(.backlogmode) .hoverButtonsBackground > .hoverButtons {
+            filter: brightness(1.3) blur(1px);
+        }
 
-        .overlaymode body.backlogmode .hoverButtonsContainer {
-            transform: scale(1.00, 1.00) translate(0px, -8px);
+        .overlaymode body:not(.backlogmode) .hoverButtonsBackground:hover > .hoverButtons {
+            filter: none;
         }
 
         .overlaymode body:not(.backlogmode) #overlay_buttons_container:not(:hover) #overlay_bottom_button {
