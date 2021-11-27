@@ -36,3 +36,7 @@ I can answer questions and help with small requests but this is mainly customize
 
 **More detailed readme *(with hidden hotkeys and features)*:**  
 - [Read it here](https://github.com/Onurtag/ClipboardInserter_html/blob/master/index.html#L11)  
+
+**Overlay mode:**  
+- Check out the [example overlay mode ahk script](https://github.com/Onurtag/ClipboardInserter_html/blob/master/Clipboard%20Inserter%20Overlay%20Mode.ahk). You can contact me if you have any questions.  
+
