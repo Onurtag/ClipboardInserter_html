@@ -389,7 +389,7 @@
                     //Move hover buttons to target
                     moveHoverButtons(currentElement);
 
-                //are we on hover buttons?
+                    //enter ALL except hover buttons
                 } else if (!currentElement.closest(".hoverButtonsBackground")) {
                     //Hide hover buttons
                     moveHoverButtons(null);
@@ -422,6 +422,7 @@
                                 --forgiveHistoryTimes;
                             }
 
+                            //Why use inner pre? 1) Double/Triple click selection breaks without it. 2) Editable outlines look much better. 
                             //Check if the node is a history node that already has the inner pre and the hover container
                             let innerPre = node.querySelector("pre");
                             if (innerPre == null) {
@@ -531,13 +532,6 @@
                 subtree: false
             });
 
-            /*
-            //Test
-            newpree = document.createElement("pre");
-            newpree.innerHTML = "loremipsum\n\nloremipsumloremipsumloremipsum\n\n\n\nloremipsumloremipsum";
-            document.querySelector("#textlines").prepend(newpree);
-            */
-
         });
         //---DOMContentLoaded end---
         //---DOMContentLoaded end---
@@ -562,7 +556,7 @@
                 hoverButtonsNode.classList.remove("hidden");
             } else {
                 //Don't hide in overlay mode
-                if (!overlayModeEnabled && !overlayModeBacklog) {
+                if (!overlayModeEnabled || overlayModeBacklog) {
                     hoverButtonsNode.classList.add("hidden");
                 }
             }
@@ -613,6 +607,20 @@
             } else {
                 //No stored value
                 return currentVal;
+            }
+        }
+
+        /**
+         * Inserts dummy lines for testing.
+         * amount (optional): number
+         * method (optional): insertAdjacentHTML method. Default "afterbegin"
+         * */
+        function debugInsertLines(amount = 50, method = null) {
+            let textlines = document.querySelector("#textlines");
+            for (let index = 0; index < amount; index++) {
+                setTimeout(() => {
+                    textlines.insertAdjacentHTML(method || "afterbegin", `<pre>${index + 1} 華鳥風月</pre>`);
+                }, index * 10);
             }
         }
 
@@ -1140,7 +1148,7 @@ If you hover this button while it is enabled, text lines will be visible until a
             //Go back to the original title
             setTimeout(() => {
                 document.title = backupTitle;
-                //(test) lame workaround to prevent being stuck in between
+                //Do not get stuck in between frames
                 if (document.title != backupTitle) {
                     setTimeout(() => {
                         document.title = backupTitle;
@@ -1187,8 +1195,10 @@ If you hover this button while it is enabled, text lines will be visible until a
                 target = document.querySelector("#textlines > pre:first-of-type");
             }
 
+            //Offset (leave some space on top of the line for mouseover events)
+            let offset_Y = overlayModeEnabled ? 0 : -2;
             //Scroll to target
-            doScroll(0, findPos(target)[1]);
+            doScroll(0, findPos(target)[1] + offset_Y);
 
             //set overlay mode hover target
             if (overlayModeEnabled && !overlayModeBacklog) {
@@ -1217,9 +1227,10 @@ If you hover this button while it is enabled, text lines will be visible until a
             }
         }
 
-        function scrollUpDown(element, clientY, scrollUp) {
-            //get the pre
-            let elementOuter = element.closest("pre");
+        /**
+         * Scroll to the previous/next line. Requires the current element to be alive.
+         */
+        function scrollUpDown(elementOuter, clientY, scrollUp) {
             let scrollto = null;
             try {
                 if (scrollUp) {
@@ -1267,17 +1278,24 @@ If you hover this button while it is enabled, text lines will be visible until a
             }
         }
 
-        function removeLine(element) {
-            let elementOuter = element.closest("pre");
+        function removeLine(elementOuter) {
             //Move the hover buttons to the next target
-            moveHoverButtons(elementOuter.nextElementSibling || elementOuter.previousElementSibling);
+            if (elementOuter.nextElementSibling) {
+                moveHoverButtons(elementOuter.nextElementSibling);
+            } else {
+                moveHoverButtons(elementOuter.previousElementSibling);
+                //Overlay mode hover buttons consistency: scroll up as well.
+                if (overlayModeEnabled && !overlayModeBacklog) {
+                    scrollUpDown(elementOuter, 0, true);
+                }
+            }
 
             elementOuter.remove();
             updateCounter();
         }
 
-        function reduceNewlines(element) {
-            let elementInner = element.closest("pre").querySelector("pre");
+        function reduceNewlines(elementOuter) {
+            let elementInner = elementOuter.querySelector("pre");
             //Use innerText as it converts <br>'s that were manually added with Enter into \n's.
             let modifystring = elementInner.innerText;
             //trim newline+spaces at the start (once)
@@ -1309,13 +1327,13 @@ If you hover this button while it is enabled, text lines will be visible until a
             //Show/hide hover buttons on overlay mode
             if (overlayModeEnabled) {
                 switch (linecount) {
-                    //No more lines
                     case 0:
+                        //No more lines
                         getHoverButtons().classList.add("hidden");
                         break;
 
-                    //There are existing lines
                     case 1:
+                        //There are existing lines
                         let hButtons = getHoverButtons();
                         hButtons.classList.remove("hidden");
                         break;
@@ -1799,7 +1817,7 @@ If you hover this button while it is enabled, text lines will be visible until a
         .overlaymode .hoverButtonsBackground {
             left: 23.0% !important;
         }
-        
+
         .overlaymode body:not(.backlogmode) .hoverButtonsBackground {
             position: fixed;
             transform: scale(1.0, 0.10) translate(0px, -108px);
