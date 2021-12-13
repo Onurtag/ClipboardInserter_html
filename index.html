@@ -1164,7 +1164,7 @@ If you hover this button while it is enabled, text lines will be visible until a
                     break;
             }
             purgeArray.forEach(element => {
-                purged_lines.push(element.innerText);
+                purged_lines.push(element.textContent);
                 element.remove();
             });
             purged_lines.push("////// FINISHED PURGING LINES //////");
