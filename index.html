@@ -177,6 +177,7 @@
         let textlinesTempVisible = false;
         let isChromium = window.chrome ? true : false
         let hoverTarget = null;
+        let pageTitle = document.title;
 
         //DOMContentLoaded Start (first load)
         document.addEventListener("DOMContentLoaded", function(event) {
@@ -203,9 +204,9 @@
 
             //Document Title is different for local and online pages
             if (document.location.protocol.indexOf("http") == -1) {
-                document.title = document.title += " (Local)";
+                document.title = pageTitle = pageTitle + " (Local)";
             } else {
-                document.title = document.title += " (Online)";
+                document.title = pageTitle = pageTitle + " (Online)";
             }
 
             //load first states
@@ -908,7 +909,7 @@ If you hover this button while it is enabled, text lines will be visible until a
 
             if (htmlNode.classList.contains("overlaymode")) {
                 //turn overlay mode off
-                document.title = document.title.replace(" (Overlay Mode)", "");
+                document.title = pageTitle = pageTitle.replace(" (Overlay Mode)", "");
 
                 htmlNode.classList.remove("overlaymode");
                 cssNode.setAttribute("media", "not all");
@@ -939,7 +940,7 @@ If you hover this button while it is enabled, text lines will be visible until a
                 document.body.append(getHoverButtons());
 
                 //turn overlay mode on
-                document.title = document.title + " (Overlay Mode)";
+                document.title = pageTitle = pageTitle + " (Overlay Mode)";
 
                 htmlNode.classList.add("overlaymode");
                 cssNode.setAttribute("media", "all");
@@ -1172,22 +1173,20 @@ If you hover this button while it is enabled, text lines will be visible until a
 
         //notify new lines with a document.title change
         function notifyUsingTitle() {
-            backupTitle = document.title.replace(/☑ |✔ /gim, "");
-
             //Add notification icon
-            document.title = "✔ " + backupTitle;
+            document.title = "✔ " + pageTitle;
 
             //Blink the icon
             setTimeout(() => {
-                document.title = "☑ " + backupTitle;
+                document.title = "☑ " + pageTitle;
             }, 800);
             //Go back to the original title
             setTimeout(() => {
-                document.title = backupTitle;
+                document.title = pageTitle;
                 //Do not get stuck in between frames
-                if (document.title != backupTitle) {
+                if (document.title != pageTitle) {
                     setTimeout(() => {
-                        document.title = backupTitle;
+                        document.title = pageTitle;
                     }, 500);
                 }
             }, 1600);
@@ -1713,7 +1712,8 @@ If you hover this button while it is enabled, text lines will be visible until a
         .hoverButtonReduceNewlines svg {
             stroke: #adadad;
             stroke-width: 2px;
-            margin: 0px 0px 0px -3px;
+            margin: -1px 0px 0px -3px;
+            padding-top: 1px;
             width: 24px;
             transform: scale(0.70, 1);
             filter: drop-shadow(0px 0px 1px #9999993d);
