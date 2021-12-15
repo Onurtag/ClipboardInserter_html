@@ -909,6 +909,16 @@ If you hover this button while it is enabled, text lines will be visible until a
 
             if (htmlNode.classList.contains("overlaymode")) {
                 //turn overlay mode off
+                
+                //If backlog mode is enabled, disable it.
+                if (overlayModeBacklog) {
+                    toggleBacklogMode();
+                }
+                //If text visibility button is toggled, disable it.
+                if (document.querySelector("#textlines.hidden")) {
+                    toggleTextVisibility("button_click");
+                }
+
                 document.title = pageTitle = pageTitle.replace(" (Overlay Mode)", "");
 
                 htmlNode.classList.remove("overlaymode");
@@ -920,15 +930,6 @@ If you hover this button while it is enabled, text lines will be visible until a
                 //Set the regular counter's value and remove overlay counter 
                 document.querySelector(".countercontainer #counter").textContent = document.querySelector("#toprightbuttons .overlaycounter").textContent;
                 document.querySelector(".overlaycounter").remove();
-
-                //If backlog mode is enabled, disable it.
-                if (overlayModeBacklog) {
-                    toggleBacklogMode();
-                }
-                //If text visibility button is toggled, disable it.
-                if (document.querySelector("#textlines.hidden")) {
-                    toggleTextVisibility("button_click");
-                }
 
                 overlayModeEnabled = false;
 
