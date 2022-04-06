@@ -42,8 +42,6 @@ killWindowTwoInstead := 1
 hookerExcludeWindow := "Clipboard Inserter"
 ;Window with a title that matches this regex string gets activated when the hooked window is restored (when you activate the main window). This is a Regular Expression.
 hookerTopOfWindowTwoRegex := "Clipboard Inserter.*(Overlay Mode)"
-;Always ignore the window named "Kagami"
-protectVNR := 1
 ;-----------------
 
 Hooking := 0
@@ -80,31 +78,7 @@ Return
 
 ;Hotkey Ctrl + Alt + 9: Toggle overlay mode (color green screen and hide window frame if thats enabled)
 ~^!9::
-    WinGetTitle, currentWindow, A
-    IfWinExist %currentWindow%
-
-    WinGet, colorVal, TransColor, A
-
-    if (colorVal == "") {
-        if (hideWindowFrame) {
-            ;;Hiding the title bar was useless
-            ;WinSet, Style, -0xC40000 ; hide title bar
-            WinSet, Style, -0x800000 ; hide thin-line border
-            WinSet, Style, -0x400000 ; hide dialog frame
-            WinSet, Style, -0x40000 ; hide thickframe/sizebox
-        }
-        WinSet, TransColor, 000000 230, A ;Makes your main color (#000000 here) transparent and you CAN click through it. The 230 means that everything else also becomes semi transparent.
-    } else {
-        if (hideWindowFrame) {
-            ;;Hiding the title bar was useless
-            ;WinSet, Style, +0xC00000 ; Show title bar
-            WinSet, Style, +0x800000 ; Show thin-line border
-            WinSet, Style, +0x400000 ; Show dialog frame
-            WinSet, Style, +0x40000 ; Show thickframe/sizebox
-        }
-        WinSet, TransColor, 000000 255, A ;Disable color transparency and semi-transparency.
-        WinSet, TransColor, Off, A  ;Doing this and the above line together was suggested on AHK docs.
-    }
+    ToggleOverlay(hideWindowFrame)
 return
 
 ;Hotkey Ctrl + Alt + 8: Toggle always on top
@@ -120,8 +94,52 @@ return
     }
 return
 
-;disable if
+;(DISABLED) Hotkey Ctrl + Alt + -: Toggle overlay mode (1. moves the window, 2. always hides window frames and 3. makes it even more transparent)
+;~^!-::
+;    ToggleOverlay(True, 160, True)
+;return
+
+;disable global if
 #If
+
+ToggleOverlay(hideFrame:=False, transparency:=230, moveWindow:=False) {
+    WinGetTitle, currentWindow, A
+    IfWinExist %currentWindow%
+    WinGet, colorVal, TransColor, A
+
+    if (moveWindow) {
+        if (colorVal == "") {
+            ;Move here when transparency is enabled
+            WinMove, A,, 1410, -32, 524, 476
+        } else {
+            ;Move back here when transparency is disabled
+            WinMove, A,, 1395, 571, 524, 476
+        }
+    }
+
+    if (colorVal == "") {
+        if (hideFrame) {
+            ;;Hiding the title bar was useless
+            WinSet, Style, -0xC00000 ; hide title bar (combination of border and dialog frame)
+            WinSet, Style, -0x800000 ; hide thin-line border
+            ;WinSet, Style, -0x400000 ; hide dialog frame
+            WinSet, Style, -0x40000 ; hide thickframe/sizebox
+        }
+        WinSet, TransColor, 000000 %transparency%, A ;Makes your main color (#000000 here) transparent and you CAN click through it. The %transparency% means that everything else also becomes semi transparent.
+    } else {
+        if (hideFrame) {
+            ;;Hiding the title bar was useless
+            WinSet, Style, +0xC00000 ; Show title bar (combination of border and dialog frame)
+            WinSet, Style, +0x800000 ; Show thin-line border
+            ;WinSet, Style, +0x400000 ; Show dialog frame
+            WinSet, Style, +0x40000 ; Show thickframe/sizebox
+        }
+        WinSet, TransColor, 000000 255, A ;Disable color transparency and semi-transparency.
+        WinSet, TransColor, Off, A  ;Doing this and the above line together was suggested on AHK docs.
+    }
+}
+
+
 
 /*
 ; ---Useless now---
@@ -146,10 +164,9 @@ return
 Return
 */
 
-;Hooker Start (slightly modified from TSB)
-;Hooker Start (slightly modified from TSB)
-;Hooker Start (slightly modified from TSB)
-;Changes: add option to KILL the hooked window instead of minimizing it
+;Hooker Start (copied over from TSolidBackground)
+;Hooker Start (copied over from TSolidBackground)
+;Hooker Start (copied over from TSolidBackground)
 ShowHooker() {
     Global
     Gui, hook: Destroy
@@ -277,6 +294,8 @@ Hooker() {
         SetTitleMatchMode, %oldMatchModeRX%
 
     } else {
+        ;Always ignore the window named "Kagami"
+        protectVNR := 1
         ;check if active title is not equal to titletwo; if partial is disabled
         ;OR check if active title does not include titletwo; if partial is enabled
         if ((!hookPartialTitle && (CurrActiveTitle != TitleTwo)) || (hookPartialTitle && !InStr(CurrActiveTitle, TitleTwo))) {
