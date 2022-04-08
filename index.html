@@ -353,7 +353,7 @@
 
                                 //Overlay mode
                                 if (overlayModeEnabled) {
-                                    //If text lines were temprorarily made visible, show them.
+                                    //If text lines were temporarily made visible, show them.
                                     if (textlinesTempVisible) {
                                         toggleTextVisibility("temp_hide");
                                     }
@@ -800,7 +800,7 @@ You can access the list of purged lines by typing 'purged_lines' in your browser
 
                 /*
                 //Copy Method 1
-                //Add a temprorary copy event listener
+                //Add a temporary copy event listener
                 function clipListener(e) {
                     e.clipboardData.setData("text/plain", elementInner.innerText);
                     e.preventDefault();
@@ -910,13 +910,15 @@ You can access the list of purged lines by typing 'purged_lines' in your browser
 Undo/Redo functionality will be slower the more lines you have.">0 / 0</div>`;
 
             const overlayButtonsHTML = `<div id="overlay_buttons_container">
-    <div id="overlay_down_button" title="Scroll Down">
+    <div id="overlay_down_button" title="Scroll Down
+(Don't use this button to scroll between lines. Use the 'Scroll down one line' button instead.)">
         <!-- Hand drawn icon using https://yqnn.github.io/svg-path-editor/ -->
         <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" preserveAspectRatio="xMidYMid meet" viewBox="0 0 20 18">
             <path fill="currentColor" d="M 10 18 L 0 0 L 20 0 L 10 18" />
         </svg>
     </div>
-    <div id="overlay_up_button" title="Scroll Up">
+    <div id="overlay_up_button" title="Scroll Up
+(Don't use this button to scroll between lines. Use the 'Scroll up one line' button instead.)">
         <!-- Hand drawn icon using https://yqnn.github.io/svg-path-editor/ -->
         <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" preserveAspectRatio="xMidYMid meet" viewBox="0 0 20 18">
             <path fill="currentColor" d="M 10 0 L 0 18 L 20 18 L 10 0" />
@@ -1049,7 +1051,7 @@ If you hover this button while it is enabled, text lines will be visible until a
                     toggleTextVisibility("button_click");
                 });
 
-                //When hovered, temprorarily show text lines until a new line is added (only while the button is turned on)
+                //When hovered, temporarily show text lines until a new line is added (only while the button is turned on)
                 document.getElementById("overlay_text_button").addEventListener("mouseover", function(event) {
                     if (!textlinesTempVisible && event.target.classList.contains("button_on")) {
                         toggleTextVisibility("temp_show");

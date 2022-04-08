@@ -21,7 +21,7 @@ Menu, Tray, Standard
 ;❗❗❗ --- Hotkeys ---
 ;Ctrl + Alt + 9: Toggle overlay mode (color green screen and hide window frame if thats enabled)
 ;Ctrl + Alt + 8: Toggle always on top
-;These hotkeys only work on the specified windows below. Comment the "#If" lines below (with a ;) if you want them to work on any window.
+;These hotkeys only work on a few specific windows that I will be explaining below.  
 ;-----------------
 
 ;❗❗❗ --- Overlay Mode Options ---
@@ -31,16 +31,16 @@ hideWindowFrame := False
 
 ;Window hooker is just extra. Not necessary for Overlay Mode.
 ;❗ --- Window Hooker Options ---
-;Window title names. TitleTwo is the window that gets minimized/killed when the TitleOne window is not active.
+;Window titles. TitleOne is the host window and TitleTwo is the overlay window that gets minimized/killed when TitleOne is not active.
 TitleOne := "GAME TITLE"
 TitleTwo := "Magpie_Host"
 ;Hook partial window titles instead of exact title
 hookPartialTitle := 1
 ;KILLS window two instead of minimizing it. For Magpie.
 killWindowTwoInstead := 1
-;Window containing this string in its title does not minimize the hooked window (similar to the main window or the alt+tab menu)  
+;Window containing this string in its title does not minimize the overlay window when you activate it (similar to the main window or the alt+tab menu)  
 hookerExcludeWindow := "Clipboard Inserter"
-;Window with a title that matches this regex string gets activated when the hooked window is restored (when you activate the main window). This is a Regular Expression.
+;Window with a title that matches this regex string gets activated when the host window is restored (when you activate the main window). This is a Regular Expression.
 hookerTopOfWindowTwoRegex := "Clipboard Inserter.*(Overlay Mode)"
 ;-----------------
 
@@ -56,17 +56,6 @@ customStart1:
     MsgBox, Customize this for yourself and comment this line with a semicolon. `nExamples below.
     ;Run, "C:\Portables\VivaldiPortable\Application\vivaldi.exe" --profile-directory="Default" --app="file:///C:/Portables/ClipboardInserter_html/ClipboardInserter HTML Enhanced.html"
     ;Run, "C:\Portables\VivaldiPortable\Application\vivaldi.exe" --profile-directory="Default" --app="https://onurtag.github.io/ClipboardInserter_html/"
-Return
-
-;Hotkey Alt + T: Wait 150ms and then bring hooked window to the top (for TSB)
-~!T::
-    ;TrayTip, "overlaymode", % "hooking:" . Hooking . " Aone:" . WinActive("%TitleOne%") . " Etwo:" . WinExist("%TitleTwo%") . " Etsbbg:" . WinExist("TSolidBackground BG")
-    If (Hooking) {
-        Sleep, 150
-        if (WinExist("TSolidBackground BG")) {
-            WinSet, Top,, %TitleTwo%
-        }
-    }
 Return
 
 ;❗❗❗ The hotkeys below only work on the specified applications 
@@ -102,6 +91,18 @@ return
 ;disable global if
 #If
 
+;Hotkey Alt + T: Wait 150ms and then bring hooked window to the top (for TSolidBacgkround)
+~!T::
+    ;TrayTip, "overlaymode", % "hooking:" . Hooking . " Aone:" . WinActive("%TitleOne%") . " Etwo:" . WinExist("%TitleTwo%") . " Etsbbg:" . WinExist("TSolidBackground BG")
+    If (Hooking) {
+        Sleep, 150
+        if (WinExist("TSolidBackground BG")) {
+            WinSet, Top,, %TitleTwo%
+        }
+    }
+Return
+
+;Toggle overlay mode (color transparency)
 ToggleOverlay(hideFrame:=False, transparency:=230, moveWindow:=False) {
     WinGetTitle, currentWindow, A
     IfWinExist %currentWindow%
@@ -119,7 +120,6 @@ ToggleOverlay(hideFrame:=False, transparency:=230, moveWindow:=False) {
 
     if (colorVal == "") {
         if (hideFrame) {
-            ;;Hiding the title bar was useless
             WinSet, Style, -0xC00000 ; hide title bar (combination of border and dialog frame)
             WinSet, Style, -0x800000 ; hide thin-line border
             ;WinSet, Style, -0x400000 ; hide dialog frame
@@ -128,7 +128,6 @@ ToggleOverlay(hideFrame:=False, transparency:=230, moveWindow:=False) {
         WinSet, TransColor, 000000 %transparency%, A ;Makes your main color (#000000 here) transparent and you CAN click through it. The %transparency% means that everything else also becomes semi transparent.
     } else {
         if (hideFrame) {
-            ;;Hiding the title bar was useless
             WinSet, Style, +0xC00000 ; Show title bar (combination of border and dialog frame)
             WinSet, Style, +0x800000 ; Show thin-line border
             ;WinSet, Style, +0x400000 ; Show dialog frame
@@ -139,14 +138,12 @@ ToggleOverlay(hideFrame:=False, transparency:=230, moveWindow:=False) {
     }
 }
 
-
-
 /*
 ; ---Useless now---
 ; Double press caps lock (within 200ms) to send Alt + O to the overlay window (using title regex)
 ~CapsLock::
     if (A_ThisHotkey = A_PriorHotkey && A_TimeSincePriorHotkey < 200) {
-        ;Enable RegEx TitleMatchMode temprorarily
+        ;Enable RegEx TitleMatchMode temporarily
         oldMatchModeCAPS := A_TitleMatchMode
         SetTitleMatchMode, RegEx
         ;Chromium doesn't receive the hotkey unless its activated (ControlSend doesnt work perfectly)
@@ -285,7 +282,7 @@ Hooker() {
         }
         
         ;Handle hookerTopOfWindowTwoRegex
-        ;Enable RegEx TitleMatchMode temprorarily
+        ;Enable RegEx TitleMatchMode temporarily
         oldMatchModeRX := A_TitleMatchMode
         SetTitleMatchMode, RegEx
         ;restore TopOfWindowTwo and move it to the top 
