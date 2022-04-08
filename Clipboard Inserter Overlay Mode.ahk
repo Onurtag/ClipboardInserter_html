@@ -5,7 +5,7 @@ SetWorkingDir %A_ScriptDir% ; Ensures a consistent starting directory.
 #SingleInstance force
 Menu, Tray, Icon, %A_ScriptDir%\Clipboard Inserter.ico
 Menu, Tray, NoStandard
-Menu, Tray, Add, Start "Clipboard Inserter", customStart1
+Menu, Tray, Add, Start Clipboard Inserter (Chromeless), customStart1
 Menu, Tray, Add, ; Adds a Seperator
 Menu, Tray, Add, Show Hooker Menu, StartHookGui
 Menu, Tray, Add, Stop Window Hooker, StopHook
@@ -14,7 +14,7 @@ Menu, Tray, Add, ; Adds a Seperator
 Menu, Tray, Default, Show Hooker Menu ;Default
 Menu, Tray, Standard
 
-;❗❗❗❗❗ Overlay mode (green screen) troubleshooting
+;❗❗❗ Overlay mode (green screen) troubleshooting
 ;1. It might not work on a browser that has hardware acceleration enabled. 
 ;2. On laptops it might not work unless you run your browser using integrated graphics.
 
@@ -26,10 +26,9 @@ Menu, Tray, Standard
 
 ;❗❗❗ --- Overlay Mode Options ---
 ;Enable/Disable hiding window frame. Hiding the window frame is useless if you are using F11 to fullscreen the window.
-hideWindowFrame := False
+hideWindowFrame := 0
 ;-----------------
 
-;Window hooker is just extra. Not necessary for Overlay Mode.
 ;❗ --- Window Hooker Options ---
 ;Window titles. TitleOne is the host window and TitleTwo is the overlay window that gets minimized/killed when TitleOne is not active.
 TitleOne := "GAME TITLE"
@@ -48,14 +47,13 @@ Hooking := 0
 SetTitleMatchMode, 2
 ;Open hooker gui at startup
 ;Gosub, StartHookGui
-;Finish initializing
+
 Return
 
-;Start a custom app/script using the tray menu (dont forget to change the button name above)
+;Start Clipboard Inserter (Chromeless) using the tray menu  
 customStart1:
-    MsgBox, Customize this for yourself and comment this line with a semicolon. `nExamples below.
-    ;Run, "C:\Portables\VivaldiPortable\Application\vivaldi.exe" --profile-directory="Default" --app="file:///C:/Portables/ClipboardInserter_html/ClipboardInserter HTML Enhanced.html"
-    ;Run, "C:\Portables\VivaldiPortable\Application\vivaldi.exe" --profile-directory="Default" --app="https://onurtag.github.io/ClipboardInserter_html/"
+    ;Customize the following Run line below for your environment and uncomment the line (remove the semicolon ; in front)  
+    ;Run, "C:\Portables\VivaldiPortable\Application\vivaldi.exe" --profile-directory="Default" --app="file:///C:/Portables/ClipboardInserter_html/index.html"  
 Return
 
 ;❗❗❗ The hotkeys below only work on the specified applications 

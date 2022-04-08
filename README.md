@@ -47,38 +47,51 @@ Made for personal use.
 <i>Click here to expand</i>
 </summary>
 
-**Prerequisite:**  
-Start the clipboard inserter page in popup mode using one of these methods:
-- *Method 1: Autohotkey script*  
-  1. Open ```"Clipboard Inserter Overlay Mode.ahk"``` with your text or code editor.  
-  2. Scroll down to the block that starts with ```"customStart1:"```
-     - Comment the MsgBox line by adding a ```;``` in front of it
-     - Uncomment ONE of the run lines (by removing the ```;``` ) and modify those two paths (browser exe path and clipboard inserter html path) for your setup.  
-  3. Now you can right click the tray icon of the ahk script and start the clipboard inserter page in popup mode.  
-- *Method 2: Popup extension*  
-  1. Install one of these extensions: [Firefox](https://addons.mozilla.org/en-US/firefox/addon/popup/), [Chrome](https://chrome.google.com/webstore/detail/separate-window/cbgkkbaghihhnaeabfcmmglhnfkfnpon) (or any other popup extension)  
-  2. Open ```index.html``` or the [online page](https://onurtag.github.io/ClipboardInserter_html/) and turn it into a popup.  
-
 **Instructions:**  
-**1.** Clone the repo or download and extract it to a folder.  
-**2.** Install Autohotkey.  
-**4.** On the popup clipboard inserter page:  
-  - Set auto scroll to top (↑)  
-  - Enable overlay mode hotkey in the settings menu  
 
-**5.** Run the ahk script ```"Clipboard Inserter Overlay Mode.ahk"``` if you haven't already.  
-**6.** While the clipboard inserter page is active, press the following keys:  
+1. Download the repo and extract the zip to a folder that contains the string: ```ClipboardInserter``` (for auto url detection)  
+
+2. Install Autohotkey.  
+
+3. Open a working chromeless clipboard inserter page with the following steps:  
+   *(These instructions are for chromium browsers (e.g. vivaldi). On Firefox you need to use a seperate profile with userChrome.css modifications to get a fullscreen chromeless browser)*  
+   1. Install [this modded clipboard inserter extension](https://github.com/Onurtag/clipboard-inserter) (for auto url detection)  
+      - Manage the extension and enable ```"allow access to file URLs"```  
+      - (recommended) Modify extension options for better performance:  
+      i. Element name: ```pre```  
+      ii. Container selector: ```#textlines```  
+      iii. Timer interval: ```200```  
+      iv. Detect url containing: ```ClipboardInserter```  
+      v. Use prepend instead of append: ```Enabled```  
+      
+   2. Open ```"Clipboard Inserter Overlay Mode.ahk"``` with your text or code editor.  
+   3. Scroll down to the block that starts with ```"customStart1:"``` and update the Run line according to your environment.  
+   4. Run the ahk script, right click its tray icon and select ```Start Clipboard Inserter (Chromeless)```  
+   5. You should now have a working chromeless clipboard inserter page.  
+
+4. Setup the chromeless clipboard inserter page:  
+   - Set auto scroll to top (↑ button)  
+   - Enable overlay mode hotkey in the settings menu (🔧 button)  
+
+5. While the chromeless clipboard inserter page is active, press the following keys:  
    - ```Ctrl + Alt + 8``` (enables always on Top)  
-   - ```Ctrl + Alt + 9``` (enables transparency)  
-   - ```Ctrl + Alt + 0``` (or '}' key) (enables overlay mode)  
-   - ```F11``` (makes the window fullscreen)  
+   - ```Ctrl + Alt + 9``` (enables color transparency)  
+   - ```Ctrl + Alt + 0``` (enables overlay mode ☯)  
+   - ```F11``` (makes the chromeless window fullscreen)  
 
-**7.** Done.  
+6. Done.  
+
 If you have done everything correctly, you should now have a transparent Clipboard Inserter overlay.  
-You can hover each button to read its description.  
+You can interact with the overlay and use Alt + Tab to switch to another window and back.    
+
+If you are using yomichan, set the security option ```"Use a secure container around popups"``` to ```off``` or the auto-hide functionality won't work.  
+
+Use the ```↑/↓``` arrows near the copy button to move between the lines.  
 Toggle the ```Text Visibility``` button if you want to hide the text until you need it. You can hover the same button to temporarily show the text until a new line is added.  
+You should also hover each button on the page to read its description.  
 
 </details>
+
 
 ### - **Step-by-step instructions (overlay mode with Magpie)**  
 <details>
@@ -86,56 +99,72 @@ Toggle the ```Text Visibility``` button if you want to hide the text until you n
 <i>Click here to expand</i>
 </summary>
 
-**Problems with this setup:**  
-- You will be seeing two cursors. A bigger cursor for the game and a regular cursor for the overlay.  
-- Your mouse is not confined to the window which means that you can accidently click a window outside the game window.  
-You can use TSolidBackground (google it) to block this if you want (don't change the Alt+T keybind)  
-
-**Prerequisite:**  
-Start the clipboard inserter page in popup mode using one of these methods:
-- *Method 1: Autohotkey script*  
-  1. Open ```"Clipboard Inserter Overlay Mode.ahk"``` with your text or code editor.  
-  2. Scroll down to the block that starts with ```"customStart1:"```
-     - Comment the MsgBox line by adding a ```;``` in front of it
-     - Uncomment ONE of the run lines (by removing the ```;``` ) and modify those two paths (browser exe path and clipboard inserter html path) for your setup.  
-  3. Now you can right click the tray icon of the ahk script and start the clipboard inserter page in popup mode.  
-- *Method 2: Popup extension*  
-  1. Install one of these extensions: [Firefox](https://addons.mozilla.org/en-US/firefox/addon/popup/), [Chrome](https://chrome.google.com/webstore/detail/separate-window/cbgkkbaghihhnaeabfcmmglhnfkfnpon) (or any other popup extension)  
-  2. Open ```index.html``` or the [online page](https://onurtag.github.io/ClipboardInserter_html/) and turn it into a popup.  
+**Problems:**  
+- Annoying to setup for the first time.  
+- You will be seeing two cursors. A larger cursor for the game and a regular cursor for the overlay.  
+- Your mouse is not confined to the game window which means that you can accidently click a random window outside the game window.  
+You can use TSolidBackground to block these clicks if you want (don't change the Alt+T keybind)  
+- [Notebooks only] On some notebooks color transparency might not work on a browser that has hardware acceleration enabled. That setting is carried between profiles so its better to just use a seperate (portable) browser. Also try running the browser with integrated graphics.  
 
 **Instructions:**  
-**1.** Clone the repo or download and extract it to a folder.  
-**2.** Install Autohotkey and download Magpie.  
-**4.** On the popup clipboard inserter page:  
-  - Set auto scroll to top (↑)  
-  - Enable overlay mode hotkey in the settings menu  
 
-**5.** Setup Magpie for overlay mode (instructions are for Magpie v0.8.1):  
-  - Copy Magpie to another folder and use the new folder if you want to keep your old settings and use Magpie normally.  
-  - Change the magpie zoom ```"Hotkey"``` from F11 to something else (or don't)  
-  - Settings > Application tab: Enable ```"Restore fullscreen when source window regains focus"```  
-  - Settings > Zoom tab: Disable ```"Adjust cursor speed while zoomed"``` and ```"Confine the cursor in 3D games"```  
-  - Settings > Zoom tab: Set ```"Zoom factor of the cursor"``` to ```"1.25x"``` and ```"Interpolation mode"``` to ```"bilinear"```  
-  - Settings > Advanced tab: Enable ```"Show debugging options"``` and enable ```"Breakpoint mode"```  
+1. Download the repo and extract the zip to a folder that contains the string: ```ClipboardInserter``` (for auto url detection)  
 
-**6.** Open ```"Clipboard Inserter Overlay Mode.ahk"``` with your text or code editor.  
-  - Under ```"Window Hooker Options"``` replace ```"GAME TITLE"``` with the window title of your game.  
+2. Install Autohotkey.  
 
-**8.** Run the ahk script ```"Clipboard Inserter Overlay Mode.ahk"``` or restart it.  
-**9.** While the clipboard inserter page is active, press the following keys:  
+3. Open a working chromeless clipboard inserter page with the following steps:  
+   *(These instructions are for chromium browsers (e.g. vivaldi). On Firefox you need to use a seperate profile with userChrome.css modifications to get a fullscreen chromeless browser)*  
+   1. Install [this modded clipboard inserter extension](https://github.com/Onurtag/clipboard-inserter) (for auto url detection)  
+      - Manage the extension and enable ```"allow access to file URLs"```  
+      - (recommended) Modify extension options for better performance:  
+      i. Element name: ```pre```  
+      ii. Container selector: ```#textlines```  
+      iii. Timer interval: ```200```  
+      iv. Detect url containing: ```ClipboardInserter```  
+      v. Use prepend instead of append: ```Enabled```  
+      
+   2. Open ```"Clipboard Inserter Overlay Mode.ahk"``` with your text or code editor.  
+   3. Scroll down to the block that starts with ```"customStart1:"``` and update the Run line according to your environment.  
+   4. Run the ahk script, right click its tray icon and select ```Start Clipboard Inserter (Chromeless)```  
+   5. You should now have a working chromeless clipboard inserter page.  
+
+4. Setup the chromeless clipboard inserter page:  
+   - Set auto scroll to top (↑ button)  
+   - Enable overlay mode hotkey in the settings menu (🔧 button)  
+
+5. Setup Magpie for overlay mode (instructions are for Magpie v0.8.1):  
+   1. Copy Magpie to another folder and use the new folder if you want to keep your old settings and use Magpie normally.  
+   2. Change the magpie zoom ```"Hotkey"``` from F11 to something else (or don't)  
+   3. Settings > Application tab: **Enable** ```"Restore fullscreen when source window regains focus"```  
+   4. Settings > Zoom tab: **Disable** ```"Adjust cursor speed while zoomed"``` and **disable** ```"Confine the cursor in 3D games"```  
+   5.  Settings > Zoom tab: Set ```"Zoom factor of the cursor"``` to ```"1.25x"``` and ```"Interpolation mode"``` to ```"bilinear"```  
+   6.  Settings > Advanced tab: **Enable** ```"Show debugging options"``` and **enable** ```"Breakpoint mode"```  
+
+6. Open ```"Clipboard Inserter Overlay Mode.ahk"``` with your text or code editor.  
+    - Under ```"--- Window Hooker Options ---"``` replace ```"GAME TITLE"``` with the window title of your game. This can be a partial match.  
+
+7. Run the ahk script or restart it.  
+
+8. While the chromeless clipboard inserter page is active, press the following keys:  
    - ```Ctrl + Alt + 8``` (enables always on Top)  
-   - ```Ctrl + Alt + 9``` (enables transparency)  
-   - ```Ctrl + Alt + 0``` (or '}' key) (enables overlay mode)  
-   - ```F11``` (makes the window fullscreen)  
+   - ```Ctrl + Alt + 9``` (enables color transparency)  
+   - ```Ctrl + Alt + 0``` (enables overlay mode ☯)  
+   - ```F11``` (makes the chromeless window fullscreen)  
 
-**10.** Right click the tray icon of the ahk script and click ```"Show Hooker Menu"``` and then click ```"Start Hook"```.  
-**11.** Use your Magpie hotkey to zoom your game.  
+9.  Right click the tray icon of the ahk script and click ```"Show Hooker Menu"``` and then click ```"Start Hook"```.  
 
-**12.** Done.  
+10. Use your Magpie hotkey to zoom the game.  
+
+11. Done.  
+
 If you have done everything correctly, you should now have a transparent Clipboard Inserter overlay on top of Magpie.  
-You can interact with the overlay and use Alt + Tab to switch to another window and back.  
-You can hover each button to read its description.  
+You can interact with the overlay and use Alt + Tab to switch to another window and back.    
+
+If you are using yomichan, set the security option ```"Use a secure container around popups"``` to ```off``` or the auto-hide functionality won't work.  
+
+Use the ```↑/↓``` arrows near the copy button to move between the lines.  
 Toggle the ```Text Visibility``` button if you want to hide the text until you need it. You can hover the same button to temporarily show the text until a new line is added.  
+You should also hover each button on the page to read its description.  
 
 </details>
 
