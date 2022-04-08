@@ -75,7 +75,8 @@ Start the clipboard inserter page in popup mode using one of these methods:
 
 **7.** Done.  
 If you have done everything correctly, you should now have a transparent Clipboard Inserter overlay.  
-Don't forget to hover every button to understand what they do.  
+You can hover each button to read its description.  
+Toggle the ```Text Visibility``` button if you want to hide the text until you need it. You can hover the same button to temporarily show the text until a new line is added.  
 
 </details>
 
@@ -133,7 +134,7 @@ Start the clipboard inserter page in popup mode using one of these methods:
 **12.** Done.  
 If you have done everything correctly, you should now have a transparent Clipboard Inserter overlay on top of Magpie.  
 You can interact with the overlay and use Alt + Tab to switch to another window and back.  
-You can hover buttons to read their descriptions.  
+You can hover each button to read its description.  
 Toggle the ```Text Visibility``` button if you want to hide the text until you need it. You can hover the same button to temporarily show the text until a new line is added.  
 
 </details>
