@@ -229,7 +229,7 @@
             document.getElementById("go_to_last_button").addEventListener("click", function() {
                 //document.querySelector("#textlines > pre:last-of-type").scrollIntoView();
                 if (linecount > 0) {
-                    doScroll(0, findPos(document.querySelector("#textlines > pre:last-of-type"))[1] - 200);
+                    doScroll(0, findPos(document.querySelector("#textlines > pre:last-of-type")).top - 200);
                 }
             });
 
@@ -366,7 +366,7 @@
                                     purgeExtraLines();
                                 }
 
-                                //Notify on new line if enabled (using document.title)
+                                //Notify on new line if its enabled (using document.title)
                                 if ((settings.notifyOnNewline) && (!overlayModeEnabled) && (document.querySelector('html:hover') == null)) {
                                     notifyUsingTitle();
                                 }
@@ -395,7 +395,7 @@
                                 return;
                             }
 
-                            //Get new text
+                            //Get the new text
                             let newNode = document.createElement("pre");
                             newNode.innerHTML = node.innerText;
 
@@ -558,8 +558,8 @@ You can access the list of purged lines by typing 'purged_lines' in your browser
                 //Move hover buttons (except for overlaymode)
                 if (!overlayModeEnabled || overlayModeBacklog) {
                     let targetXY = findPos(hoverTarget);
-                    hoverButtonsNode.style.setProperty("left", `${targetXY[0]}px`);
-                    hoverButtonsNode.style.setProperty("top", `${targetXY[1]}px`);
+                    hoverButtonsNode.style.setProperty("left", `${targetXY.left}px`);
+                    hoverButtonsNode.style.setProperty("top", `${targetXY.top}px`);
                 }
                 //Unhide hover buttons (except when textlines are hidden)
                 if (!document.querySelector("#textlines").classList.contains("hidden")) {
@@ -1305,7 +1305,7 @@ If you hover this button while it is enabled, text lines will be visible until a
             //Offset (leave some space on top of the line for mouseover events)
             let offset_Y = overlayModeEnabled ? 0 : -2;
             //Scroll to target
-            doScroll(0, findPos(target)[1] + offset_Y);
+            doScroll(0, findPos(target).top + offset_Y);
 
             //set overlay mode hover target
             if (overlayModeEnabled && !overlayModeBacklog) {
@@ -1362,7 +1362,7 @@ If you hover this button while it is enabled, text lines will be visible until a
                     }
 
                     //Scroll to the element using mouse clientY and scroll_fix_alignment
-                    doScroll(0, findPos(scrollto)[1] - clientY - scroll_fix_alignment);
+                    doScroll(0, findPos(scrollto).top - clientY - scroll_fix_alignment);
                     //scrollto.scrollIntoView();
 
                 }
@@ -1374,14 +1374,10 @@ If you hover this button while it is enabled, text lines will be visible until a
 
         //find an element's position in the whole page
         function findPos(obj) {
-            let curleft = curtop = 0;
-            if (obj && obj.offsetParent) {
-                do {
-                    curleft += obj.offsetLeft;
-                    curtop += obj.offsetTop;
-                } while (obj = obj.offsetParent);
-                values = [curleft, curtop];
-                return values;
+            const rect = obj.getBoundingClientRect();
+            return {
+                left: rect.left + window.scrollX,
+                top: rect.top + window.scrollY
             }
         }
 
@@ -1418,15 +1414,26 @@ If you hover this button while it is enabled, text lines will be visible until a
         }
 
         //Note: linecount is used for more than just the #counter
+        /**
+         * updateCounter:
+         * 1. Counts lines and updates the counter.
+         * 2. Updates "linecount" global variable which is used here and there to detect if there are any existing lines.
+         * 3. Overlay mode: Handles hover button visibility whenever a line is added/removed.
+         * 
+         * */
         function updateCounter() {
             let charlength = 0;
             linecount = 0;
             try {
                 let lines = document.querySelectorAll("#textlines > pre > pre");
                 linecount = lines.length;
+                charlength = document.querySelector("#textlines").textContent.length;
+                /*
+                //Alternative: add up each line's length (slower or same speed)
                 lines.forEach(element => {
                     charlength += element.textContent.length;
                 });
+                */
             } catch (error) {
                 console.error(error);
             }
@@ -1457,7 +1464,7 @@ If you hover this button while it is enabled, text lines will be visible until a
 
     </script>
 
-    <!-- This is the main css that styles everything -->
+    <!-- Main css that styles the page -->
     <style id="maincss" type="text/css">
         html {
             overflow-y: scroll;
@@ -1606,7 +1613,7 @@ If you hover this button while it is enabled, text lines will be visible until a
         }
 
         #pin_button.button_on > #pin_button_inner {
-            transform: translate(0px, 1px);
+            transform: translate(0px, 0px);
         }
 
         #clear_button > svg {
