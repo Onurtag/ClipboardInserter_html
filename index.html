@@ -1003,13 +1003,14 @@ If you hover this button while it is enabled, text lines will be visible until a
                 //Overlay button events
                 document.getElementById("overlay_down_button").addEventListener("click", function(event) {
                     if (linecount > 0) {
-                        //scrollFirstLast("last", 4);
-                        document.querySelector("body").scrollBy(0, 80);
+                        let selector = overlayModeBacklog ? window : document.body;
+                        selector.scrollBy(0, 80);
                     }
                 });
                 document.getElementById("overlay_up_button").addEventListener("click", function(event) {
                     if (linecount > 0) {
-                        document.querySelector("body").scrollBy(0, -80);
+                        let selector = overlayModeBacklog ? window : document.body;
+                        selector.scrollBy(0, -80);
                     }
                 });
 
@@ -1267,7 +1268,7 @@ If you hover this button while it is enabled, text lines will be visible until a
         //Pick scroll method (body or window depending on the current view)
         function doScroll(valueX, valueY) {
             if (overlayModeEnabled && !overlayModeBacklog) {
-                document.querySelector("body").scroll(valueX, valueY);
+                document.body.scroll(valueX, valueY);
             } else {
                 window.scroll(valueX, valueY);
             }
@@ -1318,7 +1319,7 @@ If you hover this button while it is enabled, text lines will be visible until a
         }
 
         function scrollTopBottom(toTop) {
-            let scrollSelector = overlayModeEnabled ? document.querySelector("body") : document.querySelector("html");
+            let scrollSelector = overlayModeEnabled ? document.body : document.querySelector("html");
             if (toTop == "top") {
                 scrollSelector.scroll(0, 0);
                 //set overlay mode hover target
@@ -1374,12 +1375,32 @@ If you hover this button while it is enabled, text lines will be visible until a
 
         //find an element's position in the whole page
         function findPos(obj) {
+            if (!obj) {
+                return;
+            }
+            let curleft = curtop = 0;
+            if (obj && obj.offsetParent) {
+                do {
+                    curleft += obj.offsetLeft;
+                    curtop += obj.offsetTop;
+                } while (obj = obj.offsetParent);
+                return {
+                    left: curleft,
+                    top: curtop
+                };
+            }
+        }
+
+        //Currently this method does not work correctly in overlay mode.
+        /* 
+        function findPos2(obj) {
             const rect = obj.getBoundingClientRect();
             return {
                 left: rect.left + window.scrollX,
                 top: rect.top + window.scrollY
             }
         }
+        */
 
         function removeLine(elementOuter) {
             //Move the hover buttons to the next target
@@ -1503,6 +1524,14 @@ If you hover this button while it is enabled, text lines will be visible until a
         /* css for the "toggle background color" hotkey */
         body.bgtoggled {
             background-color: #000 !important;
+        }
+
+        html.overlaymode body.bgtoggled:not(.backlogmode) {
+            height: 280px;
+        }
+
+        body.bgtoggled.backlogmode #textlines > pre {
+            width: auto;
         }
 
         /* Main text style */
