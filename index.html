@@ -187,26 +187,29 @@
             document.getElementById("remove_button").addEventListener("click", function() {
                 historyPush();
 
-                //Check whether there are any lines.
-                //let linecount = document.querySelectorAll('#textlines > pre').length;
+                //Check if there are any lines.
                 if (linecount > 0) {
+                    //If in overlay mode, remove the hover target.
+                    if (overlayModeEnabled && !overlayModeBacklog) {
+                        removeLine(hoverTarget);
+                    } else {
+                        //Remove the first/last line.
+                        switch (settings.scrollOnNewline) {
+                            case "disabled":
+                                document.querySelector("#textlines > pre:last-of-type").remove();
+                                break;
+                            case "toBottom":
+                                document.querySelector("#textlines > pre:last-of-type").remove();
+                                break;
+                            case "toTop":
+                                document.querySelector("#textlines > pre:first-of-type").remove();
+                                break;
+                            default:
+                                break;
+                        }
 
-                    //Remove the first/last line.
-                    switch (settings.scrollOnNewline) {
-                        case "disabled":
-                            document.querySelector("#textlines > pre:last-of-type").remove();
-                            break;
-                        case "toBottom":
-                            document.querySelector("#textlines > pre:last-of-type").remove();
-                            break;
-                        case "toTop":
-                            document.querySelector("#textlines > pre:first-of-type").remove();
-                            break;
-                        default:
-                            break;
+                        updateCounter();
                     }
-
-                    updateCounter();
                 };
             });
 
@@ -1516,7 +1519,7 @@ If you hover this button while it is enabled, text lines will be visible until a
             font-size: 1.3em;
             font-weight: 400;
             /* Global font. */
-            font-family: "Noto Sans JP Light", "Meiryo", "MS Gothic";
+            font-family: "Noto Sans JP Light", "MS Gothic", "Meiryo";
             /*font-family: "Noto Sans JP Light", "Meiryo", "MS Gothic", system-ui;*/
             /*font-family: "IPAGothic", "Sazanami Gothic", "Kochi Gothic", "VL Gothic", "Ume Gothic", "Pro W3", "Hiragino Kaku Gothic Pro", "Osaka Mono", "Osaka", "MS Gothic", "Meiryo", "M+ 1m";*/
         }
@@ -1527,7 +1530,7 @@ If you hover this button while it is enabled, text lines will be visible until a
         }
 
         html.overlaymode body.bgtoggled:not(.backlogmode) {
-            height: 280px;
+            height: 265px;
         }
 
         body.bgtoggled.backlogmode #textlines > pre {
@@ -1942,15 +1945,20 @@ If you hover this button while it is enabled, text lines will be visible until a
         }
 
         .overlaymode #textlines > pre > pre {
-            color: #fcfcfc;
-            text-shadow: 0px 0px 2px #0b0b0b;
-            -webkit-text-stroke: .2px #eee;
-            /* text-shadow: -1px -1px 0 #101010, 0 -1px 0 #101010, 1px -1px 0 #101010, 1px 0 0 #101010, 1px 1px 0 #101010, 0 1px 0 #101010, -1px 1px 0 #101010, -1px 0 0 #101010; */
-            /* font-size: 1.154em; */
-            /* line-height: 1.15em; */
             font-size: 24px;
             line-height: 28px;
-            font-family: "MS Gothic";
+            /* text-shadow: -1px -1px 0 #101010, 0 -1px 0 #101010, 1px -1px 0 #101010, 1px 0 0 #101010, 1px 1px 0 #101010, 0 1px 0 #101010, -1px 1px 0 #101010, -1px 0 0 #101010; */
+
+            /* ---Old MS Gothic style--- */
+            /* color: #fcfcfc; */
+            /* text-shadow: 0px 0px 2px #0b0b0b; */
+            /* font-family: "MS Gothic", "Noto Sans JP Medium", "Meiryo"; */
+            /* -webkit-text-stroke: .2px #eee; */
+
+            /* ---New Noto Sans JP Medium style--- */
+            color: #f5f5f5;
+            text-shadow: 0px 0px 1.7px #0b0b0b;
+            font-family: "Noto Sans JP Medium", "MS Gothic", "Meiryo";
         }
 
         .overlaymode #go_to_last_button,
