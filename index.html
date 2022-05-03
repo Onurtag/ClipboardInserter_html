@@ -58,7 +58,11 @@
             overlayHotkeyEnabled: false,
             backlogHotkeyEnabled: false,
             purge500LinesWhen: 0,
-            //Currently unused
+            //Regex
+            regexEnabled: false,
+            regexFilterMatch: "/.*onlykeep(.*)between.*/gim",
+            regexFilterReplace: "$1",
+            //Currently testing
             bgHotkeyEnabled: false,
         }
         //------ Explanation ------
@@ -135,6 +139,7 @@
         let editPinnedButtons = false;
         let textlinesTempVisible = false;
         let isChromium = window.chrome ? true : false
+        let regexMatchCompiled = null;
         let hoverTarget = null;
         let pageTitle = document.title;
 
@@ -185,10 +190,10 @@
             });
 
             document.getElementById("remove_button").addEventListener("click", function() {
-                historyPush();
-
                 //Check if there are any lines.
                 if (linecount > 0) {
+                    historyPush();
+
                     //If in overlay mode, remove the hover target.
                     if (overlayModeEnabled && !overlayModeBacklog) {
                         removeLine(hoverTarget);
@@ -334,15 +339,22 @@
                             }
 
                             //Why use inner pre? 1) Double/Triple click selection breaks without it. 2) Editable outlines look much better. 
-                            //Check if the node is a history node that already has the inner pre and the hover container
+                            //Check if the node is a history node that already has the inner pre
                             let innerPre = node.querySelector("pre");
                             if (innerPre == null) {
                                 //Not a history node
 
                                 //check if editing is enabled
                                 let preNodeOpen = settings.editingEnabled ? "<pre contenteditable=\"true\">" : "<pre>";
+
+                                let nodeText = node.innerHTML;
+                                //Regex replace if its enabled
+                                if (settings.regexEnabled) {
+                                    //Use compiled regex
+                                    nodeText = nodeText.replace(regexMatchCompiled, settings.regexFilterReplace);
+                                }
                                 //put the added pre text into another pre so we can modify it later on.
-                                node.innerHTML = preNodeOpen + node.innerHTML + "</pre>";
+                                node.innerHTML = preNodeOpen + nodeText + "</pre>";
 
                             } else {
                                 //History node. No need to add inner pre.
@@ -450,7 +462,8 @@
         //----------functions----------
 
         /**
-         * Set scroll button state 
+         * Open settings menu. 
+         * Input ids are used to save the new data to the settings object.
          * */
         function openSettingsMenu() {
 
@@ -484,6 +497,22 @@
         <input type="checkbox" id="bgHotkeyEnabled" ${settings.bgHotkeyEnabled ? 'checked' : '' }>
         <label for="bgHotkeyEnabled">Toggle BG color hotkey enabled (currently useless)</label>
         <span title="Enables the 'Toggle background color' hotkey '|'" class="settingTooltip">?</span>
+        <br>
+        <br>
+
+        <input type="checkbox" id="regexEnabled" ${settings.regexEnabled ? 'checked' : '' }>
+        <label for="regexEnabled">Enable regex replacer</label>
+        <span title="Enables the regex replacer which uses below two inputs." class="settingTooltip">?</span>
+        <br>
+        <label for="regexFilterMatch">Regex match string:</label>
+        <input type="text" id="regexFilterMatch" value="${settings.regexFilterMatch}">
+        <span title="Regex match string. Example: /your_regex/gim
+For testing use https://regex101.com and select javascript flavor and turn on substitution mode." class="settingTooltip">?</span>
+        <br>
+        <label for="regexFilterReplace">Regex replace string:</label>
+        <input type="text" id="regexFilterReplace" value="${settings.regexFilterReplace}">
+        <span title="Regex replace string. Example: $1
+For testing use https://regex101.com and select javascript flavor and turn on substitution mode." class="settingTooltip">?</span>
         <br>
 
         <br>
@@ -519,6 +548,7 @@ You can access the list of purged lines by typing 'purged_lines' in your browser
                             settings[input.id] = input.valueAsNumber;
                             break;
 
+                        //string inputs
                         default:
                             settings[input.id] = input.value;
                             break;
@@ -526,6 +556,8 @@ You can access the list of purged lines by typing 'purged_lines' in your browser
                 });
                 //Save settings to localStorage
                 saveSettings();
+                //Compile regex
+                compileRegex();
             }
             settingsContainer.remove();
         }
@@ -577,6 +609,17 @@ You can access the list of purged lines by typing 'purged_lines' in your browser
         }
 
         /**
+         * Compile regex
+         * */
+        function compileRegex() {
+            if (settings.regexFilterMatch != "") {
+                //If the regex doesn't match the /str/gim format (== null), use the string itself to create an identical array.
+                let matches = settings.regexFilterMatch.match("\/(.*)\/(.*)") || ["", settings.regexFilterMatch, ""];
+                regexMatchCompiled = new RegExp(matches[1], matches[2]);
+            }
+        }
+
+        /**
          * Load settings from localstorage
          * */
         function loadSettings() {
@@ -584,8 +627,9 @@ You can access the list of purged lines by typing 'purged_lines' in your browser
                 settings[key] = getIfInLocalStorage(key, value);
             });
 
-            //parse integers
+            //parse integers and compile regex
             settings.purge500LinesWhen = parseInt(settings.purge500LinesWhen);
+            compileRegex();
         }
 
         /**
@@ -1865,10 +1909,10 @@ If you hover this button while it is enabled, text lines will be visible until a
             padding: 0% 2% 2% 2%;
         }
 
-        #settingsContainer input[type="number"] {
+        #settingsContainer input[type="number"],
+        #settingsContainer input[type="text"] {
             border-radius: 4px;
             color: #b9b9b9;
-            font-weight: bold;
             padding: 2px 3px;
             background: #222;
             border: 1px solid #555;
@@ -1956,9 +2000,9 @@ If you hover this button while it is enabled, text lines will be visible until a
             /* -webkit-text-stroke: .2px #eee; */
 
             /* ---New Noto Sans JP Medium style--- */
-            color: #f5f5f5;
+            color: #f4f4f4;
             text-shadow: 0px 0px 1.7px #0b0b0b;
-            font-family: "Noto Sans JP Medium", "MS Gothic", "Meiryo";
+            font-family: "Noto Sans JP", "MS Gothic", "Meiryo";
         }
 
         .overlaymode #go_to_last_button,

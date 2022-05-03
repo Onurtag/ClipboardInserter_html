@@ -25,6 +25,7 @@ Made for personal use.
 
 **General tips:**  
 - Hover the buttons on the page to read their descriptions.  
+- Check the settings menu for extra features. (Hover top right cog icon (⚙) -> click wrench icon (🔧))  
 - Both appending and prepending should work for all buttons and functionality. (Even if you don't have a modified Clipboard Inserter)  
 
 **Auto-hide Yomichan popups feature:**  
