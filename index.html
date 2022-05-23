@@ -37,7 +37,7 @@
 
         - ❗ If you are using private browsing mode (or clearing history/cache/localstorage etc.), your settings (button states and hidden options) might not get saved. Just edit below variables directly.
 
-        TODO NEVER: (useless for now) Maybe add a name detection system: (sounds useless)
+        LATER (probably never): (useless for now) Maybe add a name detection system: (sounds useless)
             ^^^ if clipboard text starts with "CI=Name" or something: put it in front of the previous text. If name gets copied first it could be weird.
             ^^^ maybe try using global variables on Textractor lua
 
@@ -505,12 +505,12 @@
         <span title="Enables the regex replacer which uses below two inputs." class="settingTooltip">?</span>
         <br>
         <label for="regexFilterMatch">Regex match string:</label>
-        <input type="text" id="regexFilterMatch" value="${settings.regexFilterMatch}">
+        <input type="text" id="regexFilterMatch" value="${settings.regexFilterMatch}" style="width:220px;">
         <span title="Regex match string. Example: /your_regex/gim
 For testing use https://regex101.com and select javascript flavor and turn on substitution mode." class="settingTooltip">?</span>
         <br>
         <label for="regexFilterReplace">Regex replace string:</label>
-        <input type="text" id="regexFilterReplace" value="${settings.regexFilterReplace}">
+        <input type="text" id="regexFilterReplace" value="${settings.regexFilterReplace}" style="width:220px;">
         <span title="Regex replace string. Example: $1
 For testing use https://regex101.com and select javascript flavor and turn on substitution mode." class="settingTooltip">?</span>
         <br>
@@ -683,22 +683,24 @@ You can access the list of purged lines by typing 'purged_lines' in your browser
         }
 
         //Modified from https://stackoverflow.com/a/24989958/5050478
-        //Mouse in/out check for yomichan (with shadow dom disabled in settings)
+        //Used for "auto hide yomichan popup" (with shadow dom disabled in settings)
+        //Also used to hide hover buttons automatically
         function checkMouseInOut() {
             var theTimer;
             var aFrameWasHidden = false;
 
-            //reset or clear the timer on mouse in/out
+            //Reset or clear the timer on mouse in/out events
             window.onmouseout = resetTimer;
             window.onmouseover = clearTimer;
 
             function doAction() {
                 try {
-                    //hide yomichan if it exists.
+                    //Hide any visible yomichan popups
                     let yomichanFrames = document.querySelectorAll("iframe.yomichan-popup");
                     yomichanFrames.forEach(currFrame => {
                         if (currFrame.style.getPropertyValue("visibility") == "visible") {
-                            currFrame.style.setProperty("visibility", "hidden", "important");
+                            //Use display property (yomichan uses visibility)
+                            currFrame.style.setProperty("display", "none");
                             currFrame.classList.add("thisFrameWasHidden");
                             aFrameWasHidden = true;
                         }
@@ -712,20 +714,16 @@ You can access the list of purged lines by typing 'purged_lines' in your browser
                 //Mouse entered the window or any element
                 clearTimeout(theTimer);
                 try {
+                    //Unhide yomichan popups after 350ms (give the popup some time to hide)
                     if (aFrameWasHidden) {
-                        let yomichanFrames = document.querySelectorAll("iframe.yomichan-popup");
-                        yomichanFrames.forEach(currFrame => {
-                            if (currFrame.classList.contains("thisFrameWasHidden")) {
-                                //transition is used to prevent flashing
-                                currFrame.style.setProperty("transition", "visibility 0.5s linear 0.5s");
-                                currFrame.style.setProperty("visibility", "visible", "important");
-                                setTimeout(() => {
-                                    currFrame.style.removeProperty("transition");
-                                }, 1);
+                        setTimeout(() => {
+                            let hiddenFrames = document.querySelectorAll("iframe.yomichan-popup.thisFrameWasHidden");
+                            hiddenFrames.forEach(currFrame => {
+                                currFrame.style.removeProperty("display");
                                 currFrame.classList.remove("thisFrameWasHidden");
-                                aFrameWasHidden = false;
-                            }
-                        });
+                            });
+                            aFrameWasHidden = false;
+                        }, 350);
                     }
                 } catch (error) {
                     console.error(error);
