@@ -10,7 +10,7 @@
             /*
             /////////////////////////////////////////////////////////////////////////
             ////////// Downloadable HTML for Clipboard Inserter (Enhanced) //////////
-            /////////                    Version: 3.2.0                     /////////
+            /////////                    Version: 3.2.1                     /////////
             /////////////////////////////////////////////////////////////////////////
 
 
@@ -291,28 +291,49 @@
                  * Start detecting hover targets so we can move the hover buttons
                  */
                 document.addEventListener("mouseover", function (e) {
-                    let textlines_Node = document.querySelector("#textlines");
-                    currentElement = e.target;
+                    const textlines_Node = document.querySelector("#textlines");
+                    let currentElement = e.target;
 
-                    //enter pre
-                    if (currentElement.tagName == "PRE") {
-                        if (currentElement.parentNode != textlines_Node) {
-                            currentElement = currentElement.parentNode;
-                        }
+                    const closest = currentElement.closest("#textlines > pre");
+                    //enter #textlines > pre *
+                    if (closest) {
                         //Move hover buttons to target
-                        moveHoverButtons(currentElement);
+                        moveHoverButtons(closest);
 
-                        //enter ALL except hover buttons
+                        //enter anything except the hover buttons (or #textlines > pre * above)
                     } else if (!currentElement.closest(".hoverButtonsBackground")) {
                         //Hide hover buttons
                         moveHoverButtons(null);
                     }
                 });
 
+
+                /**
+                 * Listen to paste event
+                 * Non-Chromium only (Firefox doesn't have contenteditable="plaintext-only")
+                 * (Note: this moves the caret)
+                 */
+                if (isChromium == false) {
+                    document.querySelector("#textlines").addEventListener("paste", function (e) {
+                        const target = e.target;
+                        if (target.nodeName == "PRE" && target.hasAttribute("contenteditable")) {
+                            //do action after the event is done
+                            setTimeout(() => {
+                                //If target has a child (i.e. html was pasted)
+                                if (target.firstElementChild) {
+                                    //get innerText and set textContent (avoids <br>'s)
+                                    const text = target.innerText;
+                                    target.textContent = text;
+                                }
+                            }, 1);
+                        }
+                    });
+                }
+
                 //main mutation observer for new lines.
                 const textlinesMutationObserver = new MutationObserver(function (records) {
                     records.forEach(function (mutation) {
-                        Array.prototype.forEach.call(mutation.addedNodes, function (node) {
+                        mutation.addedNodes.forEach(function (node) {
                             try {
                                 //Compatibility for prepending because most people aren't using an upgraded clipboard inserter add-on that allows prepending.
                                 switch (settings.scrollOnNewline) {
@@ -337,11 +358,12 @@
                                 //Why use inner pre? 1) Double/Triple click selection breaks without it. 2) Editable outlines look much better.
                                 //Check if the node is a history node that already has the inner pre
                                 let innerPre = node.querySelector("pre");
+                                const contenteditableValue = isChromium ? "plaintext-only" : "true";
                                 if (innerPre == null) {
                                     //Not a history node
 
                                     //check if editing is enabled
-                                    let preNodeOpen = settings.editingEnabled ? '<pre contenteditable="true">' : "<pre>";
+                                    let preNodeOpen = settings.editingEnabled ? `<pre contenteditable="${contenteditableValue}">` : "<pre>";
 
                                     let nodeText = node.innerHTML;
                                     //Regex replace if its enabled
@@ -354,7 +376,7 @@
                                 } else {
                                     //History node. No need to add inner pre.
                                     if (settings.editingEnabled) {
-                                        innerPre.setAttribute("contenteditable", "true");
+                                        innerPre.setAttribute("contenteditable", contenteditableValue);
                                     }
                                 }
 
@@ -390,10 +412,10 @@
                     });
                 });
 
-                //mutation observer for compatibility. Because its hard to change the options. (read the readme above)
+                //mutation observer for compatibility. Because not everyone is willing to change their extension's options. (read the readme above)
                 const compatibilityMutationObserver = new MutationObserver(function (records) {
                     records.forEach(function (mutation) {
-                        Array.prototype.forEach.call(mutation.addedNodes, function (node) {
+                        mutation.addedNodes.forEach(function (node) {
                             try {
                                 //Everything other than "body > p" is ignored. (second part might be useless)
                                 if (node.tagName != "P" || node.parentNode.tagName != "BODY") {
@@ -787,7 +809,7 @@ You can access the list of purged lines by typing 'purged_lines' in your browser
                 document.querySelector(".hoverButtonsBackground .hoverButtonReduceNewlines").addEventListener("click", function (event) {
                     historyPush();
 
-                    reduceNewlines(hoverTarget);
+                    reduceNewlines(hoverTarget, event);
                 });
                 document.querySelector(".hoverButtonsBackground .hoverButtonUp").addEventListener("click", function (event) {
                     scrollUpDown(hoverTarget, event.clientY, true);
@@ -1079,7 +1101,7 @@ If you hover this button while it is enabled, text lines will be visible until a
                     });
 
                     //When hovered, temporarily show text lines until a new line is added (only while the button is turned on)
-                    document.getElementById("overlay_text_button").addEventListener("mouseover", function (event) {
+                    document.getElementById("overlay_text_button").addEventListener("mouseenter", function (event) {
                         if (!textlinesTempVisible && event.target.classList.contains("button_on")) {
                             toggleTextVisibility("temp_show");
                         }
@@ -1180,7 +1202,7 @@ If you hover this button while it is enabled, text lines will be visible until a
                     //push to history, enable editing, set button style
                     historyPush();
                     const linesArray = document.querySelectorAll("#textlines>pre>pre").forEach((element) => {
-                        element.setAttribute("contenteditable", "true");
+                        element.setAttribute("contenteditable", isChromium ? "plaintext-only" : "true");
                     });
                     document.querySelector("#edit_button").classList.add("button_on");
                     //also pin the buttons as well
@@ -1440,18 +1462,21 @@ If you hover this button while it is enabled, text lines will be visible until a
                 updateCounter();
             }
 
-            function reduceNewlines(elementOuter) {
+            function reduceNewlines(elementOuter, event) {
                 let elementInner = elementOuter.querySelector("pre");
-                //Use innerText as it converts <br>'s that were manually added with Enter into \n's.
+                //Use innerText for getting the text as it converts all "<br>"'s that were manually added by the Enter key into "\n"'s.
                 let modifystring = elementInner.innerText;
-                //trim newline+spaces at the start (once)
-                modifystring = modifystring.replace(/^[\r\t\f\v 　\u00a0]*\n/, "");
-                //trim spaces+newline at the end (once)
-                modifystring = modifystring.replace(/[\r\t\f\v 　\u00a0]*\n$/, "");
-                //clean spaces
-                modifystring = modifystring.replace(/\n[\r\t\f\v 　\u00a0]*/gm, "\n");
-                //reduce newlines by half (at least 1) (6->3, 5->3, 4->2, 3->2, 2->1, 1->0 etc...)
-                modifystring = modifystring.replace(/(\n(\n+?))|(\n+?)/gm, "$2$3");
+                //Do not modify the text if shift is being held
+                if (!event.shiftKey) {
+                    //trim newline+spaces at the start (once)
+                    modifystring = modifystring.replace(/^[\r\t\f\v 　\u00a0]*\n/, "");
+                    //trim spaces+newline at the end (once)
+                    modifystring = modifystring.replace(/[\r\t\f\v 　\u00a0]*\n$/, "");
+                    //clean spaces
+                    modifystring = modifystring.replace(/\n[\r\t\f\v 　\u00a0]*/gm, "\n");
+                    //reduce newlines by half (at least 1) (6->3, 5->3, 4->2, 3->2, 2->1, 1->0 etc...)
+                    modifystring = modifystring.replace(/(\n(\n+?))|(\n+?)/gm, "$2$3");
+                }
                 //Use textContent or innerHTML to put the clean string into the div (without <br>'s).
                 elementInner.textContent = modifystring;
             }
@@ -1537,8 +1562,7 @@ If you hover this button while it is enabled, text lines will be visible until a
                 font-size: 1.3em;
                 font-weight: 400;
                 /* Global font. */
-                font-family: "Noto Sans JP Light", "MS Gothic", "Meiryo";
-                /*font-family: "Noto Sans JP Light", "Meiryo", "MS Gothic", system-ui;*/
+                font-family: "Noto Sans JP Light", "Noto Sans", "Meiryo", "Arial", "MS Gothic", "sans-serif";
                 /*font-family: "IPAGothic", "Sazanami Gothic", "Kochi Gothic", "VL Gothic", "Ume Gothic", "Pro W3", "Hiragino Kaku Gothic Pro", "Osaka Mono", "Osaka", "MS Gothic", "Meiryo", "M+ 1m";*/
             }
 
@@ -1974,7 +1998,7 @@ If you hover this button while it is enabled, text lines will be visible until a
                 /* ---New Noto Sans JP Medium style--- */
                 color: #f4f4f4;
                 text-shadow: 0px 0px 1.7px #0b0b0b;
-                font-family: "Noto Sans JP", "MS Gothic", "Meiryo";
+                font-family: "Noto Sans JP", "Noto Sans", "Meiryo", "Arial", "MS Gothic", "sans-serif";
             }
 
             .overlaymode #go_to_last_button,
@@ -2160,7 +2184,7 @@ Requires external help (e.g. ahk script) to function correctly."
             <div
                 id="clear_button"
                 title="Clear all lines.
-Clears the history as well when clicked while holding Shift."
+(Shift+Click: clear all history as well)"
             >
                 <!-- Codicon, License: CC BY 4.0, https://github.com/microsoft/vscode-codicons -->
                 <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" preserveAspectRatio="xMidYMid meet" viewBox="0 0 16 16">
