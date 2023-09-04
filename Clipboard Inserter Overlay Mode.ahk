@@ -1,4 +1,4 @@
-﻿#NoEnv ; Recommended for performance and compatibility with future AutoHotkey releases.
+#NoEnv ; Recommended for performance and compatibility with future AutoHotkey releases.
 ; #Warn  ; Enable warnings to assist with detecting common errors.
 SendMode Input ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir% ; Ensures a consistent starting directory.
@@ -14,7 +14,7 @@ Menu, Tray, Add, ; Adds a Seperator
 Menu, Tray, Default, Show Hooker Menu ;Default
 Menu, Tray, Standard
 
-;❗❗❗ Overlay mode (green screen) troubleshooting
+;❗❗❗❗❗ Overlay mode (green screen) troubleshooting
 ;1. It might not work on a browser that has hardware acceleration enabled. 
 ;2. On laptops it might not work unless you run your browser using integrated graphics.
 
@@ -29,6 +29,7 @@ Menu, Tray, Standard
 hideWindowFrame := 0
 ;-----------------
 
+;Window hooker is just extra. Not necessary for Overlay Mode.
 ;❗ --- Window Hooker Options ---
 ;Window titles. TitleOne is the host window and TitleTwo is the overlay window that gets minimized/killed when TitleOne is not active.
 TitleOne := "GAME TITLE"
@@ -47,7 +48,7 @@ Hooking := 0
 SetTitleMatchMode, 2
 ;Open hooker gui at startup
 ;Gosub, StartHookGui
-
+;Finish initializing
 Return
 
 ;Start Clipboard Inserter (Chromeless) using the tray menu  
@@ -115,15 +116,17 @@ ToggleOverlay(hideFrame:=False, transparency:=230, moveWindow:=False) {
             WinMove, A,, 1395, 571, 524, 476
         }
     }
-
+    
+    ; !!! > When removing the caption from a window that will use WinSet TransColor, remove it only after setting the TransColor.
+    
     if (colorVal == "") {
+        WinSet, TransColor, 000000 %transparency%, A ;Makes your main color (#000000 here) transparent and you CAN click through it. The %transparency% means that everything else also becomes semi transparent.
         if (hideFrame) {
             WinSet, Style, -0xC00000 ; hide title bar (combination of border and dialog frame)
             WinSet, Style, -0x800000 ; hide thin-line border
             ;WinSet, Style, -0x400000 ; hide dialog frame
             WinSet, Style, -0x40000 ; hide thickframe/sizebox
         }
-        WinSet, TransColor, 000000 %transparency%, A ;Makes your main color (#000000 here) transparent and you CAN click through it. The %transparency% means that everything else also becomes semi transparent.
     } else {
         if (hideFrame) {
             WinSet, Style, +0xC00000 ; Show title bar (combination of border and dialog frame)
@@ -305,22 +308,22 @@ Hooker() {
                 ;and Check for the custom title. (Can be improved if necessary)
                 && (InStr(CurrActiveTitle, hookerExcludeWindow) == 0))
             {
-                ;check if title two is always on top
-                if (TwoWindowExStyle & 0x8) {
-                    WinSet, AlwaysOnTop, off, %TitleTwo%
+                if (killWindowTwoInstead) {
+                    ;Just kill it
+                    WinClose, %TitleTwo%
                 } else {
-                    ;do nothing if TitleTwo is NOT always on top
-                }
-
-                ;if TitleTwo is not minimized, minimize it.
-                if (TwoisNotMin != -1) {
-                    ;kill it or minimize it
-                    if (killWindowTwoInstead) {
-                        WinClose, %TitleTwo%
+                    ;check if title two is always on top
+                    if (TwoWindowExStyle & 0x8) {
+                        WinSet, AlwaysOnTop, off, %TitleTwo%
                     } else {
+                        ;do nothing if TitleTwo is NOT always on top
+                    }
+                    ;if TitleTwo is not minimized, minimize it.
+                    if (TwoisNotMin != -1) {
                         WinMinimize, %TitleTwo%
                     }
                 }
+
             }
         }
         /*
@@ -333,7 +336,7 @@ Hooker() {
         */
     }
     if (Hooking) {
-        SetTimer, Hooker, 200
+        SetTimer, Hooker, 300
     } else {
         ;if disabled, turn always on top off for TitleTwo
         if (TwoWindowExStyle & 0x8) {
