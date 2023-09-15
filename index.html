@@ -36,10 +36,6 @@
 
             - ❗ If you are using private browsing mode (or clearing history/cache/localstorage etc.), your settings (button states and hidden options) might not get saved. Just edit below variables directly.
 
-            LATER (probably never): (useless for now) Maybe add a name detection system: (sounds useless)
-                ^^^ if clipboard text starts with "CI=Name" or something: put it in front of the previous text. If name gets copied first it could be weird.
-                ^^^ maybe try using global variables on Textractor lua
-
             */
 
             //------ Default Options ------
@@ -63,6 +59,8 @@
                 regexFilterReplace: "$1",
                 //Currently testing
                 bgHotkeyEnabled: false,
+                hoverScrollEnabled: false,
+                hoverScrollSpeed: 108,
             };
             //------ Explanation ------
             /**
@@ -110,6 +108,12 @@
              * bgHotkeyEnabled (currently abandoned. It has no real use.)
              *
              * Enables the "Toggle background color" hotkey "|"
+             *
+             * */
+            /**
+             * hoverScrollEnabled (currently testing.)
+             *
+             * When enabled you can scroll within the same line when you hover the "Scroll Down" "Scroll Up" overlay mode buttons.
              *
              * */
             /**
@@ -504,6 +508,12 @@
         <input type="checkbox" id="bgHotkeyEnabled" ${settings.bgHotkeyEnabled ? "checked" : ""}>
         <label for="bgHotkeyEnabled">Toggle BG color hotkey enabled (currently useless)</label>
         <span title="Enables the 'Toggle background color' hotkey '|'" class="settingTooltip">?</span>
+        <br>
+        <input type="checkbox" id="hoverScrollEnabled" ${settings.hoverScrollEnabled ? "checked" : ""}>
+        <label for="hoverScrollEnabled">Overlay mode hover scroll enabled.</label>
+        <label for="hoverScrollSpeed">Speed:</label>
+        <input type="number" id="hoverScrollSpeed" min="1" max="1000" value="${settings.hoverScrollSpeed}">
+        <span title="(Currently Testing.) When enabled you can scroll within the same line when you hover the 'Scroll Down' 'Scroll Up' overlay mode buttons." class="settingTooltip">?</span>
         <br>
         <br>
 
@@ -1052,40 +1062,49 @@ If you hover this button while it is enabled, text lines will be visible until a
                     document.getElementById("overlay_down_button").addEventListener("click", function (event) {
                         if (linecount > 0) {
                             let selector = overlayModeBacklog ? window : document.body;
-                            selector.scrollBy(0, 80);
+                            selector.scrollBy({ left: 0, top: 108, behavior: "smooth" });
                         }
                     });
                     document.getElementById("overlay_up_button").addEventListener("click", function (event) {
                         if (linecount > 0) {
                             let selector = overlayModeBacklog ? window : document.body;
-                            selector.scrollBy(0, -80);
+                            selector.scrollBy({ left: 0, top: -108, behavior: "smooth" });
                         }
                     });
 
-                    /*
-                //slowly scroll up/down when these buttons are hovered
-                let scrollInterval = null;
-                document.getElementById("overlay_down_button").addEventListener("mouseenter", function(event) {
-                    if (linecount > 0) {
-                        scrollInterval = setInterval(() => {
-                            document.querySelector("body").scrollBy(0, 2);
-                        }, 25);
-                    }
-                });
-                document.getElementById("overlay_down_button").addEventListener("mouseleave", function(event) {
-                    clearInterval(scrollInterval);
-                });
-                document.getElementById("overlay_up_button").addEventListener("mouseenter", function(event) {
-                    if (linecount > 0) {
-                        scrollInterval = setInterval(() => {
-                            document.querySelector("body").scrollBy(0, -2);
-                        }, 25);
-                    }
-                });
-                document.getElementById("overlay_up_button").addEventListener("mouseleave", function(event) {
-                    clearInterval(scrollInterval);
-                });
-                */
+                    //slowly scroll up/down when these buttons are hovered
+                    let scrollInterval = null;
+                    let scrollTimeout = null;
+                    document.getElementById("overlay_down_button").addEventListener("mouseenter", function (event) {
+                        if (settings.hoverScrollEnabled && linecount > 0) {
+                            scrollTimeout = setTimeout(() => {
+                                // scrollInterval = setInterval(() => {
+                                //behavior: "smooth" feels worse if we repeat the action
+                                document.querySelector("body").scrollBy({ left: 0, top: settings.hoverScrollSpeed, behavior: "smooth" });
+                                // }, 10);
+                            }, 400);
+                        }
+                    });
+
+                    document.getElementById("overlay_down_button").addEventListener("mouseleave", function (event) {
+                        clearTimeout(scrollTimeout);
+                        clearInterval(scrollInterval);
+                    });
+
+                    document.getElementById("overlay_up_button").addEventListener("mouseenter", function (event) {
+                        if (settings.hoverScrollEnabled && linecount > 0) {
+                            scrollTimeout = setTimeout(() => {
+                                // scrollInterval = setInterval(() => {
+                                document.querySelector("body").scrollBy({ left: 0, top: -settings.hoverScrollSpeed, behavior: "smooth" });
+                                // }, 10);
+                            }, 400);
+                        }
+                    });
+
+                    document.getElementById("overlay_up_button").addEventListener("mouseleave", function (event) {
+                        clearTimeout(scrollTimeout);
+                        clearInterval(scrollInterval);
+                    });
 
                     document.getElementById("overlay_bottom_button").addEventListener("click", function (event) {
                         scrollFirstLast("last");
@@ -1314,9 +1333,9 @@ If you hover this button while it is enabled, text lines will be visible until a
             //Pick scroll method (body or window depending on the current view)
             function doScroll(valueX, valueY) {
                 if (overlayModeEnabled && !overlayModeBacklog) {
-                    document.body.scroll(valueX, valueY);
+                    document.body.scroll({ left: valueX, top: valueY }); //behavior: "smooth"
                 } else {
-                    window.scroll(valueX, valueY);
+                    window.scroll({ left: valueX, top: valueY });
                 }
             }
 
