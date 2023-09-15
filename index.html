@@ -795,7 +795,8 @@ You can access the list of purged lines by typing 'purged_lines' in your browser
             <div class="hoverButtons hoverButtonDelete" title="Remove line"><svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M5 5L19 19M5 19L19 5"></path>
                 </svg></div>
-            <div class="hoverButtons hoverButtonReduceNewlines" title="Reduce newlines and spaces"><svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <div class="hoverButtons hoverButtonReduceNewlines" title="Reduce newlines and spaces
+(Alt+Click: Remove all spaces & tabs as well)"><svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M 3 3 L 21 3"></path>
                 <path class="middle" d="M 3 9 L 21 9 "></path>
                 <path d="M 3 15 L 21 15"></path>
@@ -1495,6 +1496,11 @@ If you hover this button while it is enabled, text lines will be visible until a
                     modifystring = modifystring.replace(/\n[\r\t\f\v 　\u00a0]*/gm, "\n");
                     //reduce newlines by half (at least 1) (6->3, 5->3, 4->2, 3->2, 2->1, 1->0 etc...)
                     modifystring = modifystring.replace(/(\n(\n+?))|(\n+?)/gm, "$2$3");
+
+                    if (event.altKey) {
+                        //completely remove all tabs and spaces etc.
+                        modifystring = modifystring.replace(/[\r\t\f\v 　\u00a0]/gm, "");
+                    }
                 }
                 //Use textContent or innerHTML to put the clean string into the div (without <br>'s).
                 elementInner.textContent = modifystring;
