@@ -134,7 +134,7 @@
             const historystack = [];
             const historystack_forward = [];
             const purged_lines = [];
-            const maxhistorylength = 1000;
+            const maxhistorylength = 500;
             let overlayModeEnabled = false;
             let overlayModeBacklog = false;
             let forgiveHistoryTimes = 0;
@@ -316,6 +316,7 @@
                  * Listen to paste event
                  * Non-Chromium only (Firefox doesn't have contenteditable="plaintext-only")
                  * (Note: this moves the caret)
+                 * //TODO: Firefox 115 might have fixed this
                  */
                 if (isChromium == false) {
                     document.querySelector("#textlines").addEventListener("paste", function (e) {
@@ -352,7 +353,7 @@
                                         break;
                                 }
 
-                                //push history (delete forward history)
+                                //push history (clears forward history)
                                 if (forgiveHistoryTimes == 0) {
                                     historyPush();
                                 } else {
@@ -388,7 +389,7 @@
                                 if (forgiveHistoryTimes == 0) {
                                     //Overlay mode
                                     if (overlayModeEnabled) {
-                                        //If text lines were temporarily made visible, show them.
+                                        //If text lines were temporarily made visible, hide them.
                                         if (textlinesTempVisible) {
                                             toggleTextVisibility("temp_hide");
                                         }
@@ -430,7 +431,7 @@
                                 let newNode = document.createElement("pre");
                                 newNode.innerHTML = node.innerText;
 
-                                //Remove the node
+                                //Remove the node (never appears on the page)
                                 node.remove();
 
                                 //Append or prepend the new node depending on the current setting
@@ -643,7 +644,7 @@ You can access the list of purged lines by typing 'purged_lines' in your browser
                     settings[key] = getIfInLocalStorage(key, value);
                 });
 
-                //parse integers and compile regex
+                //parse integers and compile regex (i.e. handle everything that isn't a string or a boolean)
                 settings.purge500LinesWhen = parseInt(settings.purge500LinesWhen);
                 compileRegex();
             }
@@ -669,7 +670,7 @@ You can access the list of purged lines by typing 'purged_lines' in your browser
             function getIfInLocalStorage(itemName, currentVal) {
                 let storedVal = localStorage.getItem(itemName);
                 if (storedVal != null) {
-                    //If the stored value is true or false return those.
+                    //If the stored value is true or false return the boolean value.
                     switch (storedVal.toLowerCase()) {
                         case "true":
                             return true;
@@ -756,9 +757,9 @@ You can access the list of purged lines by typing 'purged_lines' in your browser
                         if (!overlayModeEnabled) {
                             getHoverButtons().classList.add("hidden");
                         }
-                        //Hide yomichan popups 600ms after the cursor leaves the window
+                        //Hide yomichan popups N ms after the cursor leaves the window
                         if (settings.autoHideYomichan) {
-                            theTimer = setTimeout(doAction, 600);
+                            theTimer = setTimeout(doAction, 300);
                         }
                     }
                 }
@@ -904,14 +905,14 @@ You can access the list of purged lines by typing 'purged_lines' in your browser
                     line_count: dummyDiv.childNodes.length,
                 };
 
-                //Forward history (undo button)
+                //Forward history (redo button)
                 if (forward) {
                     let historylength_forward = historystack_forward.push(historydict);
                     if (historylength_forward > maxhistorylength) {
                         historystack_forward.shift();
                     }
 
-                    //Regular history (redo button)
+                    //Regular history (undo button)
                 } else {
                     let historylength = historystack.push(historydict);
                     if (historylength > maxhistorylength) {
@@ -928,12 +929,12 @@ You can access the list of purged lines by typing 'purged_lines' in your browser
 
             function historyPop(forward = false) {
                 let popDict;
-                //Forward history pop
+                //Forward history pop (redo)
                 if (forward) {
                     historyPush(false);
                     popDict = historystack_forward.pop();
 
-                    //Regular history pop
+                    //Regular history pop (undo)
                 } else {
                     historyPush(false, true);
                     popDict = historystack.pop();
@@ -1206,6 +1207,7 @@ If you hover this button while it is enabled, text lines will be visible until a
             //toggle editing
             function toggleEditing(firstload = false) {
                 if (firstload) {
+                    //Exists so we can simply use this function without toggling
                     settings.editingEnabled = !settings.editingEnabled;
                 }
                 if (settings.editingEnabled) {
@@ -1218,6 +1220,8 @@ If you hover this button while it is enabled, text lines will be visible until a
                     if (editPinnedButtons) {
                         togglePinning();
                     }
+                    settings.editingEnabled = !settings.editingEnabled;
+                    saveSettings("editingEnabled");
                 } else {
                     //push to history, enable editing, set button style
                     historyPush();
@@ -1230,9 +1234,13 @@ If you hover this button while it is enabled, text lines will be visible until a
                         editPinnedButtons = true;
                         togglePinning();
                     }
+                    settings.editingEnabled = !settings.editingEnabled;
+                    saveSettings("editingEnabled");
+                    //If there are no lines, add a new line (and focus it)
+                    if (!firstload && linecount == 0) {
+                        addNewLine();
+                    }
                 }
-                settings.editingEnabled = !settings.editingEnabled;
-                saveSettings("editingEnabled");
             }
 
             //add new line
@@ -1267,6 +1275,7 @@ If you hover this button while it is enabled, text lines will be visible until a
             //toggle pinning
             function togglePinning(firstload = false) {
                 if (firstload) {
+                    //Exists so we can simply use this function without toggling
                     settings.pinningEnabled = !settings.pinningEnabled;
                 }
                 if (settings.pinningEnabled) {
@@ -2236,7 +2245,7 @@ Also prepends new lines by default if set to top(↑)."
             <div
                 id="edit_button"
                 onclick="toggleEditing();"
-                title="Enables line editing.
+                title="Toggles editable lines.
 History is saved right when you enable this,
 so disable it if you want when you are done.
 Toggle Shortcut: Alt + S"
