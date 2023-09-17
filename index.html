@@ -1063,7 +1063,7 @@ If you hover this button while it is enabled, text lines will be visible until a
 </div>
 `;
 
-                let htmlNode = document.querySelector("html");
+                let htmlNode = document.documentElement;
 
                 if (htmlNode.classList.contains("overlaymode")) {
                     //turn overlay mode off
@@ -1237,7 +1237,7 @@ If you hover this button while it is enabled, text lines will be visible until a
                     //Move hover buttons to body
                     document.body.append(getHoverButtons());
 
-                    document.body.classList.remove("backlogmode");
+                    document.documentElement.classList.remove("backlogmode");
                     document.querySelector("#overlay_background_button").classList.remove("button_on");
 
                     //Scroll to the top/bottom based on the current setting
@@ -1246,7 +1246,7 @@ If you hover this button while it is enabled, text lines will be visible until a
                     //enable backlog mode
                 } else {
                     overlayModeBacklog = !overlayModeBacklog;
-                    document.body.classList.add("backlogmode");
+                    document.documentElement.classList.add("backlogmode");
                     document.querySelector("#overlay_background_button").classList.add("button_on");
 
                     //Scroll to the top/bottom based on the current setting
@@ -1643,7 +1643,7 @@ If you hover this button while it is enabled, text lines will be visible until a
 
             /* Chromium compatibility: Thin Scrollbar (similar to Firefox thin) */
             ::-webkit-scrollbar {
-                width: 6px;
+                width: 8px;
             }
 
             ::-webkit-scrollbar-thumb {
@@ -1673,11 +1673,11 @@ If you hover this button while it is enabled, text lines will be visible until a
                 background-color: #000 !important;
             }
 
-            html.overlaymode body.bgtoggled:not(.backlogmode) {
+            html.overlaymode:not(.backlogmode) > body.bgtoggled {
                 height: 265px;
             }
 
-            body.bgtoggled.backlogmode #textlines > pre {
+            html.backlogmode > body.bgtoggled #textlines > pre {
                 width: auto;
             }
 
@@ -2050,50 +2050,70 @@ If you hover this button while it is enabled, text lines will be visible until a
 
         <!-- This style is only for the overlay mode. Disabled by default (media="not all") -->
         <style id="overlaycss" type="text/css" media="not all">
-            .overlaymode > body {
+            html.overlaymode > body {
                 background-color: #000;
                 margin-bottom: -31px;
                 margin-top: 0px;
                 overflow: auto;
                 height: 134px;
+            }
+
+            /* Hide scrollbar (except for .backlogmode) */
+            html.overlaymode,
+            html.overlaymode > body {
                 /* Firefox */
                 scrollbar-width: none;
             }
 
-            .overlaymode > body.backlogmode {
+            html.overlaymode:not(.backlogmode) > body::-webkit-scrollbar {
+                /* Chromium */
+                width: 0 !important;
+            }
+
+            html.overlaymode.backlogmode {
+                scrollbar-width: thin;
+            }
+
+            /* Prevent reflow caused by the backlog's scrollbar (both browsers) */
+            html.overlaymode.backlogmode #overlay_buttons_container {
+                left: calc(30% + 2.4px); /* 30% of 8px */
+            }
+
+            html.overlaymode:not(.backlogmode) {
+                margin-right: 8px;
+            }
+
+            html.overlaymode.backlogmode > body {
                 background-color: #202020;
                 height: 100%;
             }
 
-            .overlaymode > body.backlogmode > #textlines {
-                margin-top: 16px;
+            html.overlaymode.backlogmode > body > #textlines {
+                margin-top: 12px;
             }
 
-            .overlaymode > body.backlogmode > #textlines > pre > pre {
+            html.overlaymode.backlogmode > body > #textlines > pre > pre {
                 color: #e3e3e3;
             }
 
-            .overlaymode #textlines.hidden {
+            html.overlaymode #textlines.hidden {
                 visibility: hidden;
             }
 
-            .overlaymode #textlines {
-                margin-top: 24px;
-            }
-
-            .overlaymode #textlines > pre {
+            html.overlaymode #textlines > pre {
                 margin-left: auto;
                 margin-right: auto;
                 width: 56%;
             }
 
-            .overlaymode > body:not(.backlogmode) #textlines > pre {
-                border-bottom: none;
-                margin-bottom: 86px;
-                margin-top: 160px;
+            html.overlaymode:not(.backlogmode) > body #textlines > pre {
+                padding-bottom: 134px;
+                margin-top: 0px;
+                border-width: 2px;
+                border-color: #2f2f2f;
             }
 
-            .overlaymode #textlines > pre > pre {
+            html.overlaymode #textlines > pre > pre {
                 font-size: 24px;
                 line-height: 28px;
                 /* text-shadow: -1px -1px 0 #101010, 0 -1px 0 #101010, 1px -1px 0 #101010, 1px 0 0 #101010, 1px 1px 0 #101010, 0 1px 0 #101010, -1px 1px 0 #101010, -1px 0 0 #101010; */
@@ -2110,67 +2130,67 @@ If you hover this button while it is enabled, text lines will be visible until a
                 font-family: "Noto Sans JP", "Noto Sans", "Meiryo", "Arial", "MS Gothic", "sans-serif";
             }
 
-            .overlaymode #go_to_last_button,
-            .overlaymode #go_bottom_button {
+            html.overlaymode #go_to_last_button,
+            html.overlaymode #go_bottom_button {
                 display: none;
             }
 
-            .overlaymode #toprightbuttons {
+            html.overlaymode #toprightbuttons {
                 background-color: #50505099;
                 border-radius: 4px;
                 top: 0px;
             }
 
-            .overlaymode #counter.overlaycounter {
+            html.overlaymode #counter.overlaycounter {
                 padding: 5px 6px 4px 6px;
                 margin-right: 6px;
                 cursor: auto;
             }
 
-            .overlaymode #menucontainer {
+            html.overlaymode #menucontainer {
                 opacity: 0.5;
             }
 
-            .overlaymode #menu_button {
+            html.overlaymode #menu_button {
                 padding: 2px;
                 line-height: 1px;
             }
 
-            .overlaymode #menu_button > svg {
+            html.overlaymode #menu_button > svg {
                 width: 9px;
                 height: 9px;
             }
 
-            .overlaymode .countercontainer {
+            html.overlaymode .countercontainer {
                 display: none;
             }
 
             /* overmay mode hover buttons */
-            .overlaymode .hoverButtonsBackground {
+            html.overlaymode .hoverButtonsBackground {
                 left: 23% !important;
             }
 
-            .overlaymode body:not(.backlogmode) .hoverButtonsBackground {
+            html.overlaymode:not(.backlogmode) body .hoverButtonsBackground {
                 position: fixed;
                 transform: scale(1, 0.1) translate(0px, -108px);
                 padding-bottom: 4px;
                 top: 0px !important;
             }
 
-            .overlaymode body:not(.backlogmode) .hoverButtonsBackground:hover {
+            html.overlaymode:not(.backlogmode) body .hoverButtonsBackground:hover {
                 transform: scale(1, 1) translate(0px, -1px);
                 padding: 2px 5px 6px 11px;
             }
 
-            .overlaymode body:not(.backlogmode) .hoverButtonsBackground > .hoverButtons {
+            html.overlaymode:not(.backlogmode) body .hoverButtonsBackground > .hoverButtons {
                 filter: brightness(1.3) blur(1px);
             }
 
-            .overlaymode body:not(.backlogmode) .hoverButtonsBackground:hover > .hoverButtons {
+            html.overlaymode:not(.backlogmode) body .hoverButtonsBackground:hover > .hoverButtons {
                 filter: none;
             }
 
-            .overlaymode body:not(.backlogmode) #overlay_buttons_container:not(:hover) #overlay_bottom_button {
+            html.overlaymode:not(.backlogmode) body #overlay_buttons_container:not(:hover) #overlay_bottom_button {
                 margin-top: -5px;
             }
 
@@ -2248,10 +2268,6 @@ If you hover this button while it is enabled, text lines will be visible until a
                 width: 19px;
                 height: 19px;
                 margin-top: 7px;
-            }
-
-            ::-webkit-scrollbar {
-                width: 0 !important;
             }
         </style>
     </head>
