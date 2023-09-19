@@ -1255,7 +1255,7 @@ If you hover this button while it is enabled, text lines will be visible until a
             }
 
             //toggle editing
-            function toggleEditing(firstload = false) {
+            function toggleEditing(firstload = false, nonewline = false) {
                 if (firstload) {
                     //Exists so we can simply use this function without toggling
                     settings.editingEnabled = !settings.editingEnabled;
@@ -1287,7 +1287,7 @@ If you hover this button while it is enabled, text lines will be visible until a
                     settings.editingEnabled = !settings.editingEnabled;
                     saveSettings("editingEnabled");
                     //If there are no lines, add a new line (and focus it)
-                    if (!firstload && linecount == 0) {
+                    if (!nonewline && !firstload && linecount == 0) {
                         addNewLine();
                     }
                 }
@@ -1314,7 +1314,7 @@ If you hover this button while it is enabled, text lines will be visible until a
             //add new line
             function addNewLine() {
                 if (!settings.editingEnabled) {
-                    toggleEditing();
+                    toggleEditing(false, true);
                 }
 
                 newpre = document.createElement("pre");
