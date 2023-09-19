@@ -53,6 +53,7 @@
                 autoHideYomichan: true,
                 overlayHotkeyEnabled: false,
                 backlogHotkeyEnabled: false,
+                addNewLineHotkeyEnabled: false,
                 purge500LinesWhen: 0,
                 //Regex
                 regexEnabled: false,
@@ -264,6 +265,12 @@
                     } else if (e.altKey && e.key.toLowerCase() == "o") {
                         if (overlayModeEnabled && settings.backlogHotkeyEnabled) {
                             toggleBacklogMode();
+                            e.preventDefault();
+                        }
+                        //Alt + E: Add a new line (disabled by default)
+                    } else if (e.altKey && e.key.toLowerCase() == "e") {
+                        if (settings.addNewLineHotkeyEnabled) {
+                            addNewLine();
                             e.preventDefault();
                         }
                         //Alt + 0, Ctrl + Alt + 0 or '}' key: Toggle Overlay mode (disabled by default)
@@ -547,17 +554,22 @@
         <br>
 
         <input type="checkbox" id="overlayHotkeyEnabled" ${settings.overlayHotkeyEnabled ? "checked" : ""}>
-        <label for="overlayHotkeyEnabled">Overlay mode hotkey enabled</label>
+        <label for="overlayHotkeyEnabled">"Overlay mode" hotkey enabled</label>
         <span title="Enables the 'Toggle overlay mode' hotkey 'Alt + 0', 'Ctrl + Alt + 0' or '}'" class="settingTooltip">?</span>
         <br>
 
         <input type="checkbox" id="backlogHotkeyEnabled" ${settings.backlogHotkeyEnabled ? "checked" : ""}>
-        <label for="backlogHotkeyEnabled">Backlog mode hotkey enabled</label>
+        <label for="backlogHotkeyEnabled">"Backlog mode" hotkey enabled</label>
         <span title="Enables the 'Toggle backlog mode' hotkey 'Alt + O'" class="settingTooltip">?</span>
         <br>
 
+        <input type="checkbox" id="addNewLineHotkeyEnabled" ${settings.addNewLineHotkeyEnabled ? "checked" : ""}>
+        <label for="addNewLineHotkeyEnabled">"Add a new line" hotkey enabled</label>
+        <span title="Enables the 'Add a new line' hotkey 'Alt + E'" class="settingTooltip">?</span>
+        <br>
+
         <input type="checkbox" id="bgHotkeyEnabled" ${settings.bgHotkeyEnabled ? "checked" : ""}>
-        <label for="bgHotkeyEnabled">Toggle BG color hotkey enabled (currently useless)</label>
+        <label for="bgHotkeyEnabled">"Toggle BG color" hotkey enabled (Testing)</label>
         <span title="Enables the 'Toggle background color' hotkey '|'" class="settingTooltip">?</span>
         <br>
         <input type="checkbox" id="hoverScrollEnabled" ${settings.hoverScrollEnabled ? "checked" : ""}>
