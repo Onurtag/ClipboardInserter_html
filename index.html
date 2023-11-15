@@ -10,7 +10,7 @@
             /*
             /////////////////////////////////////////////////////////////////////////
             ////////// Downloadable HTML for Clipboard Inserter (Enhanced) //////////
-            /////////                    Version: 3.3.1                     /////////
+            /////////                    Version: 3.3.2                     /////////
             /////////////////////////////////////////////////////////////////////////
 
 
@@ -237,7 +237,7 @@
                         historyPush();
                     }
 
-                    document.querySelectorAll("#textlines")[0].innerHTML = "";
+                    document.querySelector("#textlines").innerHTML = "";
                     //Update the counter.
                     updateCounter();
                 });
@@ -386,7 +386,6 @@
                     records.forEach(function (mutation) {
                         mutation.addedNodes.forEach(function (node) {
                             try {
-                                // let nodeText = node.innerHTML;
                                 let nodeText = node.textContent;
                                 //If the inserted text was copied on this page, do not insert it. (depending on the current setting)
                                 if (forgiveCopyArray.length > 0 && forgiveCopyArray.includes(nodeText)) {
@@ -435,7 +434,8 @@
                                         nodeText = nodeText.replace(regexMatchCompiled, settings.regexFilterReplace);
                                     }
                                     //put the added pre text into another pre so we can modify it later on.
-                                    node.innerHTML = preNodeOpen + nodeText + "</pre>";
+                                    node.innerHTML = preNodeOpen + "</pre>";
+                                    node.firstChild.textContent = nodeText;
                                 } else {
                                     //History node. No need to add inner pre.
                                     if (settings.editingEnabled) {
@@ -487,7 +487,7 @@
 
                                 //Get the new text
                                 let newNode = document.createElement("pre");
-                                newNode.innerHTML = node.innerText;
+                                newNode.textContent = node.textContent;
 
                                 //Remove the node (never appears on the page)
                                 node.remove();
@@ -1592,7 +1592,7 @@ If you hover this button while it is enabled, text lines will be visible until a
                         modifystring = modifystring.replace(/[\r\t\f\v 　\u00a0]/gm, "");
                     }
                 }
-                //Use textContent or innerHTML to put the clean string into the div (without <br>'s).
+                //Use textContent to put the clean string into the div (without <br>'s).
                 elementInner.textContent = modifystring;
             }
 
