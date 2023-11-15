@@ -10,7 +10,7 @@
             /*
             /////////////////////////////////////////////////////////////////////////
             ////////// Downloadable HTML for Clipboard Inserter (Enhanced) //////////
-            /////////                    Version: 3.3.0                     /////////
+            /////////                    Version: 3.3.1                     /////////
             /////////////////////////////////////////////////////////////////////////
 
 
@@ -386,7 +386,8 @@
                     records.forEach(function (mutation) {
                         mutation.addedNodes.forEach(function (node) {
                             try {
-                                let nodeText = node.innerHTML;
+                                // let nodeText = node.innerHTML;
+                                let nodeText = node.textContent;
                                 //If the inserted text was copied on this page, do not insert it. (depending on the current setting)
                                 if (forgiveCopyArray.length > 0 && forgiveCopyArray.includes(nodeText)) {
                                     const strindex = forgiveCopyArray.indexOf(nodeText);
