@@ -33,7 +33,8 @@ hideWindowFrame := 0
 ;❗ --- Window Hooker Options ---
 ;Window titles. TitleOne is the host window and TitleTwo is the overlay window that gets minimized/killed when TitleOne is not active.
 TitleOne := "GAME TITLE"
-TitleTwo := "Magpie_Host"
+;Title two can also be a class name like: "ahk_class YourWindowClass"
+TitleTwo := "ahk_class Window_Magpie_967EB565-6F73-4E94-AE53-00CC42592A22"
 ;Hook partial window titles instead of exact title
 hookPartialTitle := 1
 ;KILLS window two instead of minimizing it. For Magpie.
@@ -44,6 +45,7 @@ hookerExcludeWindow := "Clipboard Inserter"
 hookerTopOfWindowTwoRegex := "Clipboard Inserter.*(Overlay Mode)"
 ;-----------------
 
+TitleTwoClass := ""
 Hooking := 0
 SetTitleMatchMode, 2
 ;Open hooker gui at startup
@@ -92,7 +94,7 @@ return
 ;     ToggleOverlay(True, 200, True)
 ; return
 
-;disable global if
+;finish global if
 #If
 
 ;Hotkey Alt + T: Wait 150ms and then bring hooked window to the top (for TSolidBacgkround)
@@ -183,8 +185,8 @@ ShowHooker() {
     Gui, hook: Add, Text, x90 y47, Window Hooker does this: `nWhen you tab on to the Main window, the Hooked window will be brought on top. `nWhen you leave the Main window, the Hooked window will be minimized.
     Gui, hook: Font, s10 cDCDCCC norm
     Gui, hook: Add, Text, x112 y112, Main Window:  
-    Gui, hook: Add, Text, x112 y152, Hooked Window:  
-    Gui, hook: Add, Checkbox, x112 y280 Checked%hookPartialTitle% vhookPartialTitle gSetnow, `nHook anything that contains the Main Window Title `n(off: Hooks only when the titles are identical)
+    Gui, hook: Add, Text, x112 y152, Hooked Window:`n(can also use ahk_class YourWindowClass)
+    Gui, hook: Add, Checkbox, x112 y280 Checked%hookPartialTitle% vhookPartialTitle gSetnow, `nHook partial titles `n(off: Hooks only when the titles are identical)
     Gui, hook: Font, s10
     Gui, hook: Add, Text, x500 y355, Tip: You can `nalso stop the `nwindow hooker `nusing the `ntray menu.
     Gui, hook: Font, s10 cBlack norm
@@ -240,7 +242,16 @@ StartHook:
     Gui, Submit, NoHide
     Hooking := 1
     Gui, hook: Destroy
-    Hooker()
+
+    ;Check if TitleTwo is a class name, if so get it.
+    if (InStr(TitleTwo, "ahk_class")) {
+        ;WinGetClass, TitleTwoClass, %TitleTwo%
+        TitleTwoClass := StrReplace(TitleTwo, "ahk_class ")
+    } else {
+        TitleTwoClass := ""
+    }
+
+    SetTimer, Hooker, 300
     Menu, Tray, Enable, Stop Window Hooker
 Return
 
@@ -261,11 +272,14 @@ Hooker() {
         SetTitleMatchMode, 2
         WinGetTitle, CurrActiveTitle, A
         checkTitleOne := InStr(CurrActiveTitle, TitleOne)
+        checkTitleTwo := InStr(CurrActiveTitle, TitleTwo)
     } else {
         SetTitleMatchMode, 1
         WinGetTitle, CurrActiveTitle, A
         checkTitleOne := (CurrActiveTitle == TitleOne)
+        checkTitleTwo := (CurrActiveTitle == TitleTwo)
     }
+    WinGetClass, CurrActiveClass, A
     WinGet, TwoisNotMin, MinMax, %TitleTwo%
     WinGet, TwoWindowExStyle, ExStyle, %TitleTwo%
     ;If TitleOne was found
@@ -299,9 +313,9 @@ Hooker() {
     } else {
         ;Always ignore the window named "Kagami"
         protectVNR := 1
-        ;check if active title is not equal to titletwo; if partial is disabled
-        ;OR check if active title does not include titletwo; if partial is enabled
-        if ((!hookPartialTitle && (CurrActiveTitle != TitleTwo)) || (hookPartialTitle && !InStr(CurrActiveTitle, TitleTwo))) {
+        ;if titletwo is a class name: compare with active class
+        ;OR if titletwo is NOT a class name, check if the current window is NOT titletwo
+        if (((TitleTwoClass != "") && (TitleTwoClass != CurrActiveClass)) || ((TitleTwoClass == "") && (checkTitleTwo <= 0))) {
                 ;Check if the title is empty
             if ((CurrActiveTitle != "")
                 ;and Check for VNR
@@ -341,7 +355,7 @@ Hooker() {
         */
     }
     if (Hooking) {
-        SetTimer, Hooker, 300
+        ; SetTimer, Hooker, 300
     } else {
         ;if disabled, turn always on top off for TitleTwo
         if (TwoWindowExStyle & 0x8) {
