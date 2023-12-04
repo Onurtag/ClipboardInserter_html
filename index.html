@@ -329,6 +329,12 @@
                 const INSERTER_MAX_DELAY = 550;
                 function copyncutHandler(event) {
                     if (settings.copyOnPageEnabled == false) {
+                        //Change selection color using css and remove after 100ms
+                        document.body.classList.add("selectioncopied");
+                        setTimeout(() => {
+                            document.body.classList.remove("selectioncopied");
+                        }, 100);
+
                         //We use the text content to detect this as a simpler system would make a mistake if some other automated text was inserted between the copy event and the insertion by the extension.
                         const selectedText = document.getSelection().toString();
                         const selectedTextTrimmed = selectedText.trim();
@@ -1648,6 +1654,12 @@ If you hover this button while it is enabled, text lines will be visible until a
 
         <!-- Main css that styles the page -->
         <style id="maincss" type="text/css">
+            /* For flashing the selection background when copied/cut */
+            body.selectioncopied ::selection {
+                background-color: rgb(17, 71, 180);
+                color: rgb(253,253,253);
+            }
+
             html {
                 overflow-y: scroll;
                 /* Thin scrollbar (firefox) */
