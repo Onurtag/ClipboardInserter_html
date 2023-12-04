@@ -333,7 +333,7 @@
                         document.body.classList.add("selectioncopied");
                         setTimeout(() => {
                             document.body.classList.remove("selectioncopied");
-                        }, 100);
+                        }, 150);
 
                         //We use the text content to detect this as a simpler system would make a mistake if some other automated text was inserted between the copy event and the insertion by the extension.
                         const selectedText = document.getSelection().toString();
@@ -1656,7 +1656,7 @@ If you hover this button while it is enabled, text lines will be visible until a
         <style id="maincss" type="text/css">
             /* For flashing the selection background when copied/cut */
             body.selectioncopied ::selection {
-                background-color: rgb(17, 71, 180);
+                background-color: rgb(20, 75, 185);
                 color: rgb(253,253,253);
             }
 
