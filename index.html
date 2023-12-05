@@ -554,7 +554,7 @@
         <br>
 
         <input type="checkbox" id="autoHideYomichan" ${settings.autoHideYomichan ? "checked" : ""}>
-        <label for="autoHideYomichan">Auto-hide Yomichan popup</label>
+        <label for="autoHideYomichan">Auto-hide Yomichan popups</label>
         <span title="Hides all yomichan popups when your mouse leaves the window.
 !!! This option requires the setting 'Use a secure container around popups' to be off in yomichan options." class="settingTooltip">?</span>
         <br>
@@ -1383,7 +1383,7 @@ If you hover this button while it is enabled, text lines will be visible until a
 
             //purge extra lines
             function purgeExtraLines() {
-                purged_lines.push("////// STARTED PURGING LINES //////");
+                purged_lines.push("////// STARTED PURGING LINES. Time: " + new Date().toString());
                 //es6 NodeList to array
                 let purgeArray = [...document.querySelectorAll("#textlines > pre")];
                 switch (settings.scrollOnNewline) {
@@ -1402,7 +1402,7 @@ If you hover this button while it is enabled, text lines will be visible until a
                     purged_lines.push(element.textContent);
                     element.remove();
                 });
-                purged_lines.push("////// FINISHED PURGING LINES //////");
+                purged_lines.push("////// FINISHED PURGING LINES. Time: " + new Date().toString());
                 console.log("🧹 Purged 500 lines. Check purged_lines array. 🧹");
             }
 
