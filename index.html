@@ -157,12 +157,14 @@
                 //Load scroll button state (to top/to bottom/disabled)
                 setScrollButton();
 
-                //Document Title is different for local and online pages
+                //Document Title is different for local and online pages. Timeout is for being able to notice page refreshes.
+                setTimeout(() => {
                 if (document.location.protocol.includes("http")) {
                     document.title = pageTitle = pageTitle + " (Online)";
                 } else {
                     document.title = pageTitle = pageTitle + " (Local)";
                 }
+                }, 150);
 
                 //load first states for top right buttons
                 if (settings.pinningEnabled) {
@@ -1711,7 +1713,7 @@ If you hover this button while it is enabled, text lines will be visible until a
                 font-family: inherit;
                 white-space: pre-wrap;
                 word-wrap: break-word;
-                margin: 0em 0em 0em 0em;
+                margin: 0;
                 padding-bottom: 0px;
                 /* Prevent contenteditable outline from covering the caret */
                 outline-offset: 2px;
@@ -1741,7 +1743,6 @@ If you hover this button while it is enabled, text lines will be visible until a
                 right: 1px;
                 position: fixed;
                 display: inline-block;
-                font-size: 1.4em;
                 user-select: none;
             }
 
@@ -2040,6 +2041,10 @@ If you hover this button while it is enabled, text lines will be visible until a
                 font-family: Arial;
                 line-height: 1.5em;
                 padding: 0% 2% 2% 2%;
+            }
+
+            #settingsWindow input[type="checkbox"] {
+                margin-left: 0px;
             }
 
             #settingsContainer input[type="number"],
