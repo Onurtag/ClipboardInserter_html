@@ -552,7 +552,7 @@
     <div id="settingsWindow">
         <h2 style="text-align: center;margin-block: 0.4em;">Settings</h2>
 
-        <label for="customFontSize">Custom font size</label>
+        <label for="customFontSize">Custom font size:</label>
         <input type="text" id="customFontSize" value="${settings.customFontSize}" style="width:44px;">
         <span title="Custom font size. Some examples: 16pt, 22px, 2em etc...
 Leave the field empty to use default font size." class="settingTooltip">?</span>
@@ -592,7 +592,7 @@ Leave the field empty to use default font size." class="settingTooltip">?</span>
         <input type="checkbox" id="hoverScrollEnabled" ${settings.hoverScrollEnabled ? "checked" : ""}>
         <label for="hoverScrollEnabled">Overlay mode hover scroll enabled.</label>
         <label for="hoverScrollSpeed">Speed:</label>
-        <input type="number" id="hoverScrollSpeed" min="1" max="1000" value="${settings.hoverScrollSpeed}">
+        <input type="number" id="hoverScrollSpeed" min="1" max="1000" value="${settings.hoverScrollSpeed}" style="width:80px;">
         <span title="(Currently Testing.) When enabled you can scroll within the same line when you hover the 'Scroll Down' 'Scroll Up' overlay mode buttons." class="settingTooltip">?</span>
         <br>
         <br>
@@ -615,7 +615,7 @@ For testing use https://regex101.com and select javascript flavor and turn on su
         <br>
 
         <label for="purge500LinesWhen">Purge 500 lines when over:</label>
-        <input type="number" id="purge500LinesWhen" min="0" max="10000" value="${settings.purge500LinesWhen}">
+        <input type="number" id="purge500LinesWhen" min="0" max="10000" value="${settings.purge500LinesWhen}" style="width:80px;">
         <span title="Purges oldest 500 lines when you go over this amount (which can keep the page smooth). I use 1500.
 Setting this to 0 disables purging lines.
 You can access the list of purged lines by typing 'purged_lines' in your browser console." class="settingTooltip">?</span>
