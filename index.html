@@ -55,6 +55,7 @@
                 backlogHotkeyEnabled: false,
                 addNewLineHotkeyEnabled: false,
                 purge500LinesWhen: 0,
+                customFontSize: "",
                 //Regex
                 regexEnabled: false,
                 regexFilterMatch: "/.*onlykeep(.*)between.*/gim",
@@ -159,11 +160,11 @@
 
                 //Document Title is different for local and online pages. Timeout is for being able to notice page refreshes.
                 setTimeout(() => {
-                if (document.location.protocol.includes("http")) {
-                    document.title = pageTitle = pageTitle + " (Online)";
-                } else {
-                    document.title = pageTitle = pageTitle + " (Local)";
-                }
+                    if (document.location.protocol.includes("http")) {
+                        document.title = pageTitle = pageTitle + " (Online)";
+                    } else {
+                        document.title = pageTitle = pageTitle + " (Local)";
+                    }
                 }, 150);
 
                 //load first states for top right buttons
@@ -550,6 +551,13 @@
     <div id="settingsBackground" title="Close" onclick="menuClose(false)"></div>
     <div id="settingsWindow">
         <h2 style="text-align: center;margin-block: 0.4em;">Settings</h2>
+
+        <label for="customFontSize">Custom font size</label>
+        <input type="text" id="customFontSize" value="${settings.customFontSize}" style="width:44px;">
+        <span title="Custom font size. Some examples: 16pt, 22px, 2em etc...
+Leave the field empty to use default font size." class="settingTooltip">?</span>
+        <br>
+
         <input type="checkbox" id="notifyOnNewline" ${settings.notifyOnNewline ? "checked" : ""}>
         <label for="notifyOnNewline">Notify on new line</label>
         <span title="Whenever a new line is added; the symbol ✔ will flash on the window's title for a short time.\nDisabled in Overlay Mode." class="settingTooltip">?</span>
@@ -644,8 +652,8 @@ You can access the list of purged lines by typing 'purged_lines' in your browser
                     });
                     //Save settings to localStorage
                     saveSettings();
-                    //Compile regex
-                    compileRegex();
+                    //Apply the newly saved settings
+                    loadSettings(true);
                 }
                 settingsContainer.remove();
             }
@@ -710,14 +718,18 @@ You can access the list of purged lines by typing 'purged_lines' in your browser
             /**
              * Load settings from localstorage
              * */
-            function loadSettings() {
-                Object.entries(settings).forEach(([key, value]) => {
-                    settings[key] = getIfInLocalStorage(key, value);
-                });
-
-                //parse integers and compile regex (i.e. handle everything that isn't a string or a boolean)
-                settings.purge500LinesWhen = parseInt(settings.purge500LinesWhen);
+            function loadSettings(useCurrent = false) {
+                if (!useCurrent) {
+                    Object.entries(settings).forEach(([key, value]) => {
+                        settings[key] = getIfInLocalStorage(key, value);
+                    });
+                    //parse integers (i.e. handle everything that isn't a string or a boolean)
+                    settings.purge500LinesWhen = parseInt(settings.purge500LinesWhen);
+                }
+                //Compile regex
                 compileRegex();
+                //Set custom font size
+                document.body.style["font-size"] = settings.customFontSize;
             }
 
             /**
