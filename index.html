@@ -55,7 +55,10 @@
                 backlogHotkeyEnabled: false,
                 addNewLineHotkeyEnabled: false,
                 purge500LinesWhen: 0,
-                customFontSize: "",
+                customFontSize: "30px",
+                customFontSizeEnabled: false,
+                customFontSizeOverlay: "40px",
+                customFontSizeOverlayEnabled: false,
                 //Regex
                 regexEnabled: false,
                 regexFilterMatch: "/.*onlykeep(.*)between.*/gim",
@@ -552,9 +555,16 @@
     <div id="settingsWindow">
         <h2 style="text-align: center;margin-block: 0.4em;">Settings</h2>
 
+        <input type="checkbox" id="customFontSizeEnabled" ${settings.customFontSizeEnabled ? "checked" : ""}>
         <label for="customFontSize">Custom font size:</label>
-        <input type="text" id="customFontSize" value="${settings.customFontSize}" style="width:44px;">
-        <span title="Custom font size. Some examples: 16pt, 22px, 2em etc...
+        <input type="text" id="customFontSize" value="${settings.customFontSize}" style="width:40px;">
+        <span title="Custom font sizes. Some examples: 16pt, 22px, 2em etc...
+Leave the field empty to use default font size." class="settingTooltip">?</span>
+        <br>
+        <input type="checkbox" id="customFontSizeOverlayEnabled" ${settings.customFontSizeOverlayEnabled ? "checked" : ""}>
+        <label for="customFontSizeOverlay">Overlay mode custom font size:</label>
+        <input type="text" id="customFontSizeOverlay" value="${settings.customFontSizeOverlay}" style="width:40px;">
+        <span title="Custom font sizes. Some examples: 16pt, 22px, 2em etc...
 Leave the field empty to use default font size." class="settingTooltip">?</span>
         <br>
 
@@ -586,14 +596,14 @@ Leave the field empty to use default font size." class="settingTooltip">?</span>
         <br>
 
         <input type="checkbox" id="bgHotkeyEnabled" ${settings.bgHotkeyEnabled ? "checked" : ""}>
-        <label for="bgHotkeyEnabled">"Toggle BG color" hotkey enabled (Testing)</label>
-        <span title="Enables the 'Toggle background color' hotkey '|'" class="settingTooltip">?</span>
+        <label for="bgHotkeyEnabled">"Toggle BG color" hotkey enabled</label>
+        <span title="(Currently testing) Enables the 'Toggle background color' hotkey '|'" class="settingTooltip">?</span>
         <br>
         <input type="checkbox" id="hoverScrollEnabled" ${settings.hoverScrollEnabled ? "checked" : ""}>
         <label for="hoverScrollEnabled">Overlay mode hover scroll enabled.</label>
         <label for="hoverScrollSpeed">Speed:</label>
         <input type="number" id="hoverScrollSpeed" min="1" max="1000" value="${settings.hoverScrollSpeed}" style="width:80px;">
-        <span title="(Currently Testing.) When enabled you can scroll within the same line when you hover the 'Scroll Down' 'Scroll Up' overlay mode buttons." class="settingTooltip">?</span>
+        <span title="(Currently testing) When enabled you can scroll within the same line when you hover the 'Scroll Down' 'Scroll Up' overlay mode buttons." class="settingTooltip">?</span>
         <br>
         <br>
 
@@ -716,6 +726,33 @@ You can access the list of purged lines by typing 'purged_lines' in your browser
             }
 
             /**
+             * Set custom font sizes from options
+             * */
+            function setCustomFontSizes() {
+                //Use a giga template
+                const customStyleHTML = `
+                <style id="customFontSizes">
+                    ${settings.customFontSizeEnabled ? `
+                        body {
+                            font-size: ${settings.customFontSize};
+                        }
+                    ` : ""}
+
+                    ${settings.customFontSizeOverlayEnabled ? `
+                        html.overlaymode #textlines > pre > pre {
+                            font-size: ${settings.customFontSizeOverlay};
+                        }
+                    ` : ""}
+                </style>
+                `;
+                let styleNode = document.querySelector("#customFontSizes");
+                if (styleNode) {
+                    styleNode.remove();
+                }
+                document.head.insertAdjacentHTML("beforeend", customStyleHTML);
+            }
+
+            /**
              * Load settings from localstorage
              * */
             function loadSettings(useCurrent = false) {
@@ -728,8 +765,8 @@ You can access the list of purged lines by typing 'purged_lines' in your browser
                 }
                 //Compile regex
                 compileRegex();
-                //Set custom font size
-                document.body.style["font-size"] = settings.customFontSize;
+                //Set custom font sizes
+                setCustomFontSizes();
             }
 
             /**
@@ -1700,7 +1737,7 @@ If you hover this button while it is enabled, text lines will be visible until a
                 margin-bottom: 300px;
                 background-color: #202020;
                 color: #bcbcbc;
-                font-size: 1.3em;
+                font-size: 21px;
                 font-weight: 400;
                 /* Global font. */
                 font-family: "Noto Sans JP Light", "Noto Sans", "Meiryo", "Arial", "MS Gothic", "sans-serif";
@@ -2159,7 +2196,7 @@ If you hover this button while it is enabled, text lines will be visible until a
 
             html.overlaymode #textlines > pre > pre {
                 font-size: 24px;
-                line-height: 28px;
+                line-height: 1.125em;
                 /* text-shadow: -1px -1px 0 #101010, 0 -1px 0 #101010, 1px -1px 0 #101010, 1px 0 0 #101010, 1px 1px 0 #101010, 0 1px 0 #101010, -1px 1px 0 #101010, -1px 0 0 #101010; */
 
                 /* ---Old MS Gothic style--- */
@@ -2240,14 +2277,15 @@ If you hover this button while it is enabled, text lines will be visible until a
 
             /* Style overlay buttons */
             #overlay_buttons_container {
+                font-size: 21px;
                 position: fixed;
+                display: flex;
                 top: 0px;
+                left: 30%;
+                height: 28px;
+                padding: 0px 10px 1px 10px;
                 background-color: #1d1d1d;
                 color: #fff;
-                left: 30%;
-                display: flex;
-                padding: 0px 10px 1px 10px;
-                height: 28px;
                 /* related to hover functionality */
                 transform: scale(1, 0.08) translate(0px, -180px);
                 border-radius: none;
