@@ -1715,6 +1715,8 @@ If you hover this button while it is enabled, text lines will be visible until a
                 overflow-y: scroll;
                 /* Thin scrollbar (firefox) */
                 scrollbar-width: thin;
+                /* Scrollbar colors (new chromium?) */
+                scrollbar-color: #7a7a7b #232327;
             }
 
             /* Chromium compatibility: Thin Scrollbar (similar to Firefox thin) */
@@ -1722,6 +1724,7 @@ If you hover this button while it is enabled, text lines will be visible until a
                 width: 8px;
             }
 
+            /* scrollbar colors (old chromium) */
             ::-webkit-scrollbar-thumb {
                 background: #7a7a7b !important;
             }
