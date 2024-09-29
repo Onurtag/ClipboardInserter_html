@@ -72,7 +72,7 @@
             /**
              * autoHideYomichan
              *
-             * true: Hides all yomichan popups when your mouse leaves the window
+             * true: Hides all yomichan/yomitan popups when your mouse leaves the window
              * false: disabled
              * ❗ This option requires the setting "Use a secure container around popups" to be off in yomichan's options.
              *
@@ -574,9 +574,9 @@ Leave the field empty to use default font size." class="settingTooltip">?</span>
         <br>
 
         <input type="checkbox" id="autoHideYomichan" ${settings.autoHideYomichan ? "checked" : ""}>
-        <label for="autoHideYomichan">Auto-hide Yomichan popups</label>
-        <span title="Hides all yomichan popups when your mouse leaves the window.
-!!! This option requires the setting 'Use a secure container around popups' to be off in yomichan options." class="settingTooltip">?</span>
+        <label for="autoHideYomichan">Auto-hide Yomichan/Yomitan popups</label>
+        <span title="Hides all yomichan/yomitan popups when your mouse leaves the window.
+!!! This option requires the setting 'Use a secure container around popups' to be off in yomichan/yomitan options." class="settingTooltip">?</span>
         <br>
         <br>
 
@@ -833,7 +833,7 @@ You can access the list of purged lines by typing 'purged_lines' in your browser
                 function doAction() {
                     try {
                         //Hide any visible yomichan popups
-                        let yomichanFrames = document.querySelectorAll("iframe.yomichan-popup");
+                        let yomichanFrames = document.querySelectorAll("iframe.yomichan-popup, iframe.yomitan-popup");
                         yomichanFrames.forEach((currFrame) => {
                             if (currFrame.style.getPropertyValue("visibility") == "visible") {
                                 //Use display property (yomichan uses visibility)
@@ -854,7 +854,7 @@ You can access the list of purged lines by typing 'purged_lines' in your browser
                         //Unhide yomichan popups after 350ms (give the popup some time to hide)
                         if (aFrameWasHidden) {
                             setTimeout(() => {
-                                let hiddenFrames = document.querySelectorAll("iframe.yomichan-popup.thisFrameWasHidden");
+                                let hiddenFrames = document.querySelectorAll("iframe.yomichan-popup.thisFrameWasHidden, iframe.yomitan-popup.thisFrameWasHidden");
                                 hiddenFrames.forEach((currFrame) => {
                                     currFrame.style.removeProperty("display");
                                     currFrame.classList.remove("thisFrameWasHidden");
