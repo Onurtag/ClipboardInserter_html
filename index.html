@@ -554,7 +554,12 @@
     <div id="settingsBackground" title="Close" onclick="menuClose(false)"></div>
     <div id="settingsWindow">
         <h2 style="text-align: center;margin-block: 0.4em;">Settings</h2>
-
+        <div class="settingCloseButton" title="Close" onclick="menuClose(false)">
+            <!-- Octicons, License: MIT, https://github.com/primer/octicons/ -->
+            <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" preserveAspectRatio="xMidYMid meet" viewBox="0 0 16 16">
+                <path fill="currentColor" fill-rule="evenodd" d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.75.75 0 1 1 1.06 1.06L9.06 8l3.22 3.22a.75.75 0 1 1-1.06 1.06L8 9.06l-3.22 3.22a.75.75 0 0 1-1.06-1.06L6.94 8L3.72 4.78a.75.75 0 0 1 0-1.06z"></path>
+            </svg>
+        </div>
         <input type="checkbox" id="customFontSizeEnabled" ${settings.customFontSizeEnabled ? "checked" : ""}>
         <label for="customFontSize">Custom font size:</label>
         <input type="text" id="customFontSize" value="${settings.customFontSize}" style="width:40px;">
@@ -2129,6 +2134,22 @@ If you hover this button while it is enabled, text lines will be visible until a
                 cursor: help;
                 vertical-align: -1px;
                 line-height: 1px;
+            }
+
+            #settingsContainer .settingCloseButton {
+                position: absolute;
+                right: 6px;
+                top: 6px;
+                border-radius: 10px;
+                background: #353535;
+                padding: 1px 0px 0px 1px;
+                cursor: pointer;
+                width: 31px;
+                height: 31px;
+
+                &:hover {
+                    background: #444;
+                }
             }
         </style>
 
