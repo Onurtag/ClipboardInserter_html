@@ -67,6 +67,8 @@
                 bgHotkeyEnabled: false,
                 hoverScrollEnabled: false,
                 hoverScrollSpeed: 108,
+                //Debugging
+                debuggingEnabled: false
             };
             //------ Explanation ------
             /**
@@ -157,6 +159,9 @@
             document.addEventListener("DOMContentLoaded", function (event) {
                 //Load settings from localstorage
                 loadSettings();
+
+                //Show error notifications if the setting is turned on
+                setDebugState();
 
                 //Load scroll button state (to top/to bottom/disabled)
                 setScrollButton();
@@ -626,7 +631,6 @@ For testing use https://regex101.com and select javascript flavor and turn on su
         <span title="Regex replace string. Example: $1
 For testing use https://regex101.com and select javascript flavor and turn on substitution mode." class="settingTooltip">?</span>
         <br>
-
         <br>
 
         <label for="purge500LinesWhen">Purge 500 lines when over:</label>
@@ -636,6 +640,13 @@ Setting this to 0 disables purging lines.
 You can access the list of purged lines by typing 'purged_lines' in your browser console." class="settingTooltip">?</span>
         <br>
         <br>
+
+        <input type="checkbox" id="debuggingEnabled" ${settings.debuggingEnabled ? "checked" : ""}>
+        <label for="debuggingEnabled">Show error notifications</label>
+        <span title="Shows simple error notifications when enabled." class="settingTooltip">?</span>
+        <br>
+        <br>
+
         <!--
         <div style="font-size: 10pt;opacity:0.7;text-align: center;line-height: 10pt;">Settings will be reset if you clear browser data.</div>
         -->
@@ -755,6 +766,24 @@ You can access the list of purged lines by typing 'purged_lines' in your browser
                     styleNode.remove();
                 }
                 document.head.insertAdjacentHTML("beforeend", customStyleHTML);
+            }
+
+            /**
+             * Debugging stuff
+             * */
+            function setDebugState() {
+                if (settings.debuggingEnabled) {
+                    //Show simple debugging notifications.
+                    window.addEventListener("error", (e) => {
+                        const notification = document.createElement("div");
+                        notification.textContent = `Error: ${e.message}.\n\nFor more info check the console.`;
+                        Object.assign(notification.style, { position: "fixed", bottom: "10px", right: "10px", background: "#f44336", color: "white", padding: "10px", borderRadius: "5px", zIndex: 1000, boxShadow: "0 2px 5px rgba(0, 0, 0, 0.3)", whiteSpace: "pre-line"});
+                        document.body.appendChild(notification);
+                        setTimeout(() => notification.remove(), 10000);
+                        console.error(e.message, {error: e});
+                        return false;
+                    });
+                }
             }
 
             /**
