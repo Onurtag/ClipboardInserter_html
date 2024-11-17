@@ -1067,6 +1067,8 @@ You can access the list of purged lines by typing 'purged_lines' in your browser
 
                 forgiveHistoryTimes = popDict.line_count;
                 document.querySelector("#textlines").innerHTML = popDict.state;
+                //Update the counter (for blank history states)
+                updateCounter();
 
                 setHistoryButtons();
             }
