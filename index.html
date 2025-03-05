@@ -1993,7 +1993,7 @@ If you hover this button while it is enabled, text lines will be visible until a
                 opacity: 90%;
             }
 
-            .hoverButtonsBackground.hidden {
+            html:not(.backlogmode) .hoverButtonsBackground.hidden {
                 visibility: hidden;
             }
 
@@ -2182,8 +2182,13 @@ If you hover this button while it is enabled, text lines will be visible until a
             }
 
             /* Prevent reflow caused by the backlog's scrollbar (both browsers) */
-            html.overlaymode.backlogmode #overlay_buttons_container {
-                left: calc(30% + 2.4px); /* 30% of 8px */
+            html.overlaymode.backlogmode {
+                & #overlay_buttons_container {
+                    left: calc(30% + 3px); /* 30% of 8px */
+                }
+                & #textlines {
+                    margin-right: -3px;
+                }
             }
 
             html.overlaymode:not(.backlogmode) {
@@ -2318,7 +2323,8 @@ If you hover this button while it is enabled, text lines will be visible until a
                 opacity: 0.7;
             }
 
-            #overlay_buttons_container:hover {
+            #overlay_buttons_container:hover,
+            html.overlaymode.backlogmode #overlay_buttons_container {
                 transform: scale(1, 1) translate(0px, -8px);
                 border-radius: 6px;
                 opacity: 1;
