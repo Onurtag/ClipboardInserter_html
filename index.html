@@ -345,9 +345,10 @@
                 function copyncutHandler(event) {
                     if (settings.copyOnPageEnabled == false) {
                         //Change selection color using css and remove after 100ms
-                        document.body.classList.add("selectioncopied");
+                        const selNode = document.getElementById("copiedselectionstyle");
+                        selNode.media = "all";
                         setTimeout(() => {
-                            document.body.classList.remove("selectioncopied");
+                            selNode.media = "not all";
                         }, 150);
 
                         //We use the text content to detect this as a simpler system would make a mistake if some other automated text was inserted between the copy event and the insertion by the extension.
@@ -355,7 +356,6 @@
                         const selectedText = document.getSelection().toString();
                         const selectedTextArray = [selectedText, selectedText.trim(), selectedText.replace(/\r\n/g, "\n"), selectedText.trim().replace(/\r\n/g, "\n")];
                         forgiveCopyArray.push(...selectedTextArray);
-                        console.log("  ~ ADDED THESE TO ~ forgiveCopyArray:", forgiveCopyArray);
                         //The following is here to prevent the situation where the copy/cut event is ran; but the inserter doesn't insert the copied text (i.e. as it is identical to the current clipboard content)
                         //Also cleans up the remaining trimmed/non-trimmed text
                         setTimeout(() => {
@@ -1712,12 +1712,6 @@ If you hover this button while it is enabled, text lines will be visible until a
 
         <!-- Main css that styles the page -->
         <style id="maincss" type="text/css">
-            /* For flashing the selection background when copied/cut */
-            body.selectioncopied ::selection {
-                background-color: rgb(20, 75, 185);
-                color: rgb(253,253,253);
-            }
-
             html {
                 overflow-y: scroll;
                 /* Thin scrollbar (firefox) */
@@ -2152,6 +2146,14 @@ If you hover this button while it is enabled, text lines will be visible until a
                 &:hover {
                     background: #444;
                 }
+            }
+        </style>
+
+        <!-- For flashing the selection background when text is copied/cut -->
+        <style id="copiedselectionstyle" type="text/css" media="not all">
+            ::selection {
+                background-color: rgb(20, 75, 185) !important;
+                color: rgb(253,253,253) !important;
             }
         </style>
 
