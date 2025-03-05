@@ -379,29 +379,6 @@
                 document.addEventListener("copy", copyncutHandler);
                 document.addEventListener("cut", copyncutHandler);
 
-                /**
-                 * Listen to paste event
-                 * Non-Chromium only (Firefox doesn't have contenteditable="plaintext-only")
-                 * (Note: this moves the caret)
-                 * //TODO: Firefox 115 might have fixed this
-                 */
-                if (isChromium == false) {
-                    document.querySelector("#textlines").addEventListener("paste", function (e) {
-                        const target = e.target;
-                        if (target.nodeName == "PRE" && target.hasAttribute("contenteditable")) {
-                            //do action after the event is done
-                            setTimeout(() => {
-                                //If target has a child (i.e. html was pasted)
-                                if (target.firstElementChild) {
-                                    //get innerText and set textContent (avoids <br>'s)
-                                    const text = target.innerText;
-                                    target.textContent = text;
-                                }
-                            }, 1);
-                        }
-                    });
-                }
-
                 //main mutation observer for new lines.
                 const textlinesMutationObserver = new MutationObserver(function (records) {
                     records.forEach(function (mutation) {
@@ -442,12 +419,11 @@
                                 //Why use inner pre? 1) Double/Triple click selection breaks without it. 2) Editable outlines look much better.
                                 //Check if the node is a history node that already has the inner pre
                                 let innerPre = node.querySelector("pre");
-                                const contenteditableValue = isChromium ? "plaintext-only" : "true";
                                 if (innerPre == null) {
                                     //Not a history node
 
                                     //check if editing is enabled
-                                    let preNodeOpen = settings.editingEnabled ? `<pre contenteditable="${contenteditableValue}">` : "<pre>";
+                                    let preNodeOpen = settings.editingEnabled ? `<pre contenteditable="plaintext-only">` : "<pre>";
 
                                     //Regex replace if its enabled
                                     if (settings.regexEnabled) {
@@ -460,7 +436,7 @@
                                 } else {
                                     //History node. No need to add inner pre.
                                     if (settings.editingEnabled) {
-                                        innerPre.setAttribute("contenteditable", contenteditableValue);
+                                        innerPre.setAttribute("contenteditable", "plaintext-only");
                                     }
                                 }
 
@@ -1387,7 +1363,7 @@ If you hover this button while it is enabled, text lines will be visible until a
                     //push to history, enable editing, set button style
                     historyPush();
                     const linesArray = document.querySelectorAll("#textlines>pre>pre").forEach((element) => {
-                        element.setAttribute("contenteditable", isChromium ? "plaintext-only" : "true");
+                        element.setAttribute("contenteditable", "plaintext-only");
                     });
                     document.querySelector("#edit_button").classList.add("button_on");
                     //also pin the buttons as well
