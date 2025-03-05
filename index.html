@@ -351,26 +351,16 @@
                         }, 150);
 
                         //We use the text content to detect this as a simpler system would make a mistake if some other automated text was inserted between the copy event and the insertion by the extension.
+                        //Firefox uses /r/n on selectedText so the array grows up. These are all fast so it's not a problem.
                         const selectedText = document.getSelection().toString();
-                        const selectedTextTrimmed = selectedText.trim();
-                        //Clipboard Inserter might or might not trim the copied text (depending on extension)
-                        forgiveCopyArray.push(selectedText);
-                        if (selectedText != selectedTextTrimmed) {
-                            forgiveCopyArray.push(selectedTextTrimmed);
-                        }
+                        const selectedTextArray = [selectedText, selectedText.trim(), selectedText.replace(/\r\n/g, "\n"), selectedText.trim().replace(/\r\n/g, "\n")];
+                        forgiveCopyArray.push(...selectedTextArray);
+                        console.log("  ~ ADDED THESE TO ~ forgiveCopyArray:", forgiveCopyArray);
                         //The following is here to prevent the situation where the copy/cut event is ran; but the inserter doesn't insert the copied text (i.e. as it is identical to the current clipboard content)
                         //Also cleans up the remaining trimmed/non-trimmed text
                         setTimeout(() => {
                             if (forgiveCopyArray.length > 0) {
-                                //Remove regular and trimmed text from the array
-                                const strindex = forgiveCopyArray.indexOf(selectedText);
-                                if (strindex !== -1) {
-                                    forgiveCopyArray.splice(strindex, 1);
-                                }
-                                const trimstrindex = forgiveCopyArray.indexOf(selectedTextTrimmed);
-                                if (trimstrindex !== -1) {
-                                    forgiveCopyArray.splice(trimstrindex, 1);
-                                }
+                                forgiveCopyArray = forgiveCopyArray.filter((text) => !selectedTextArray.includes(text));
                             }
                         }, INSERTER_MAX_DELAY);
                     }
